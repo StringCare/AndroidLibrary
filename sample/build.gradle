@@ -1,0 +1,70 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+
+    }
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
+    defaultConfig {
+        applicationId "com.efraespada.stringobfuscator"
+        minSdkVersion 9
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+        }
+    }
+}
+
+
+repositories {
+    jcenter()
+}
+
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    testCompile 'junit:junit:4.12'
+    // compile project(path: ':androidstringobfuscator')
+    compile 'efraespada:androidstringobfuscator:0.2'
+}
+
+/* string obfuscation */
+android.applicationVariants.all{ variant ->
+    variant.mergeResources.doLast{
+        println  ":" + project.name + ":stringObfuscation"
+        def sha1 = ""
+        if (variant.dirName == "release") sha1 = "E1:28:0C:3E:65:96:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF"
+        else sha1 = "E1:28:0C:3E:65:96:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF"
+        def sha1_ = sha1.replaceAll(":","")
+        def path = "build" + File.separator + "intermediates" + File.separator + "res" + File.separator + "merged" + File.separator +  "${variant.dirName}" + File.separator + "values" + File.separator + "values.xml"
+        def stringsFile = file(path)
+        if (stringsFile.isFile()) {
+            javaexec {
+                main = "-jar";
+                args = [
+                        "AndroidStringObfuscator.jar",
+                        path,
+                        sha1
+                ]
+            }
+            def stringsFileObfus = file(sha1_ + "/strings.xml")
+            stringsFile.write(stringsFileObfus.getText('UTF-8'))
+            stringsFileObfus.delete()
+        } else logger.error("strings.xml file couldn't be found: " + path)
+    }
+}
+
+
