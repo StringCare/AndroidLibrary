@@ -129,7 +129,7 @@ public class Core {
 				} else {
 					encrypted = AES.encrypt(result, key);
 					toShow = result;				
-					xmlO = xmlO.replaceAll(result, encrypted);
+					xmlO = xmlO.replaceAll(">" + result + "<", ">" + encrypted + "<");
 				}
 				
 				
