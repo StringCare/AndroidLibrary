@@ -8,7 +8,7 @@ Note that there is a difference between release and debug fingerprint.
 Installation
 ------------
 
-Put [AndroidStringObfuscator.jar](https://github.com/efraespada/AndroidStringObfuscator/raw/master/AndroidStringObfuscator.jar) on the app's module folder, next to "build.gradle" file and "build" folder.
+Put [AndroidStringObfuscator.jar](https://github.com/efraespada/AndroidStringObfuscator/raw/master/sample/AndroidStringObfuscator.jar) on the app's module folder, next to "build.gradle" file and "build" folder.
 
 #### Gradle 
 
@@ -46,6 +46,8 @@ android.applicationVariants.all{ variant ->
     }
 }
 ```
+
+
 
 
 Get encrypted strings

@@ -2,13 +2,5 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="/Users/efrainespada/Desktop/AndroidStringObfuscator/obfuscator-script/src/libs/apache-commons-lang.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/efrainespada/Desktop/AndroidStringObfuscator/obfuscator-script/src/libs/commons-codec-1.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/efrainespada/Desktop/AndroidStringObfuscator/obfuscator-script/src/libs/ezmorph-1.0.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/efrainespada/Desktop/AndroidStringObfuscator/obfuscator-script/src/libs/json-lib.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/efrainespada/Desktop/AndroidStringObfuscator/obfuscator-script/src/libs/org-apache-commons-logging.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/efrainespada/Desktop/AndroidStringObfuscator/obfuscator-script/src/libs/org.apache.commons.beanutils.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/efrainespada/Desktop/AndroidStringObfuscator/obfuscator-script/src/libs/org.apache.commons.collections.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/efrainespada/Desktop/AndroidStringObfuscator/obfuscator-script/src/libs/xom-1.2.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

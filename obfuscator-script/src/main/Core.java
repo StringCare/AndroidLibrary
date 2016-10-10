@@ -18,7 +18,9 @@ public class Core {
 	public static void main(String[] args) {
 
 		String xml = "";
-		System.out.println(":obfuscator-script:hello!");
+		System.out.println(":obfuscator-script: -----------------------------------------------------------------------------");
+		System.out.println(":obfuscator-script: v0.3 --- bugs or improvements to https://github.com/efraespada/AndroidStringObfuscator/issues");
+		System.out.println(":obfuscator-script: -----------------------------------------------------------------------------");
 
 		if (args.length != 2) {
 			System.out.println(":obfuscator-script: -> params [xml_file_name] [SHA1_fingerprint_app]");
@@ -62,7 +64,7 @@ public class Core {
 	    
 	    File xmlFile = new File(fingerFolder, "strings.xml");
 	    writeFile(xmlFile, xml);
-		System.out.println(":obfuscator-script:end");
+		System.out.println(":obfuscator-script: -----------------------------------------------------------------------------");
 	}
 
 	public static String getString(BufferedReader br) {
@@ -97,9 +99,9 @@ public class Core {
 		try {
 			if (AES.decrypt(value, key).equals(value)) { // not encrypted value
 				encrypted = false;
-			}
+			} else encrypted = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			encrypted = false;
 		}
 		return encrypted;
 	}
@@ -114,11 +116,26 @@ public class Core {
 			String result = extrac(toAnalyze);
 			
 			try {
-				String encrypted = AES.encrypt(result, key);
-				xmlO = xmlO.replaceAll(result, encrypted);
-				String toShow = result.length() > 8 ? result.substring(0, 8) + ".." : result;
-				String toShow_ = encrypted.length() > 8 ? encrypted.substring(0, 8) + ".." : encrypted;
-				System.out.println(":obfuscator-script: -> " + toShow + " -> " + toShow_);
+				String encrypted = "";
+				String toShow = "";
+				
+				String extra = " value_already_encrypted";
+				boolean hasExtra = false;
+				
+				if (isEncrypted(result, key)) {
+					encrypted = result;
+					toShow = AES.decrypt(result, key);
+					hasExtra = true;
+				} else {
+					encrypted = AES.encrypt(result, key);
+					toShow = result;				
+					xmlO = xmlO.replaceAll(result, encrypted);
+				}
+				
+				
+				toShow = toShow.length() > 8 ? toShow.substring(0, 8) + ".." : toShow;
+				encrypted = encrypted.length() > 8 ? encrypted.substring(0, 8) + ".." : encrypted;
+				System.out.println(":obfuscator-script: -> [" + toShow + "] - [" + encrypted + "]" + (hasExtra ? extra : ""));
 			} catch (Exception e) {
 				System.out.println("error on " + result);
 				e.printStackTrace();
