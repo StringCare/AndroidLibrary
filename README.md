@@ -8,7 +8,7 @@ Note that there is a difference between release and debug fingerprint.
 Installation
 ------------
 
-Put [AndroidStringObfuscator.jar](https://github.com/efraespada/AndroidStringObfuscator/raw/master/sample/AndroidStringObfuscator.jar) on the app's module folder, next to "build.gradle" file and "build" folder.
+Put [AndroidStringObfuscator.jar](https://github.com/efraespada/AndroidStringObfuscator/raw/master/sample/AndroidStringObfuscator.jar) on the app's module folder, next to `build.gradle` file and `build` folder.
 
 #### Gradle 
 
@@ -47,12 +47,12 @@ android.applicationVariants.all{ variant ->
 }
 ```
 
-
+Replace `sha1` variable with your SHA1 fingerprint. Use `AndroidStringObfuscator.getCertificateSHA1Fingerprint(Context)` method to obtain this value.
 
 
 Get encrypted strings
 ---------------------
-You don't need to do anything. The script will encrypt all string tags with [hidden="true"] as attribute.
+You don't need to do anything. The script will encrypt all string tags with `hidden="true"` as attribute.
 
 ```xml
 <resources>
