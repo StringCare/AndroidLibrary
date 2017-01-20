@@ -11,11 +11,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class Core {
 	
 	static BufferedWriter writer = null;
+	static String module = null;
+	static String variant = null;
+	
+	final String TAG = "obfuscator-script";
 
 	public static void main(String[] args) {
 
@@ -23,43 +28,25 @@ public class Core {
 		System.out.println(":obfuscator-script: -----------------------------------------------------------------------------");
 		System.out.println(":obfuscator-script: v0.4 --- bugs or improvements to https://github.com/efraespada/AndroidStringObfuscator/issues");
 		System.out.println(":obfuscator-script: -----------------------------------------------------------------------------");
-
 		
-		
-		try {
-			
-			Runtime.getRuntime().exec("chmod +x ../gradlew");
-			
-			// or gradlew.bat assembleDebug (windows)
-			
-			InputStream is = Runtime.getRuntime().exec("../gradlew signingReport").getInputStream();
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader buff = new BufferedReader (isr);
-
-			String line;
-			String trace = "";
-			while((line = buff.readLine()) != null) {
-			    trace += line + "\n";
-			    System.out.println(line);
-			}
-			
-			System.out.println(trace);
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		}
-		
-		if (args.length != 2) {
-			System.out.println(":obfuscator-script: -> params [xml_file_name] [SHA1_fingerprint_app]");
+		if (args.length != 3) {
+			System.out.println(":obfuscator-script: -> params [xml_file_name] [variant] [module]");
 			System.exit(0);
 			return;
 		}
-		String key = "";
+		
 		String file = "";
 		
 		for (int i = 0; i < args.length; i++) {
-			if (i == 0) file = args[i];
-			if (i == 1) key = args[i];
+			if (i == 0)
+				file = args[i];
+			else if (i == 1)
+				variant = args[i];
+			else if (i == 2)
+				module = args[i];
 		}
+		
+		String key = getKey(variant, module);
 		
 		File jarFile = new File(".");
 		
@@ -182,5 +169,63 @@ public class Core {
 		val = val.substring(val.indexOf('>') + 1, val.length());
 		val = val.substring(0, val.indexOf("</string>"));
 		return val;
+	}
+	
+	public static String getKey(String variant, String module) {
+		String key = null;
+		
+		try {
+			
+			String cmd = "";
+			if (System.getProperty("os.name").contains("windows")) {
+				cmd = "gradlew.bat";
+			} else {
+				cmd = "gradlew";
+				Runtime.getRuntime().exec("chmod +x ../" + cmd);
+			}
+						
+			InputStream is = Runtime.getRuntime().exec("../" + cmd + " signingReport").getInputStream();
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader buff = new BufferedReader (isr);
+
+			String line;
+			String trace = "";
+			ArrayList<String> traces = new ArrayList<>()
+			while((line = buff.readLine()) != null) {
+				boolean result = parseTrace(module, variant, line);
+				
+				traces.add(e)
+			    trace += line + "\n";
+			    System.out.println(line);
+			}
+			
+			System.out.println(trace);
+		} catch (IOException e2) {
+			e2.printStackTrace();
+			return null;
+		}
+		
+		return key;
+	}
+
+	/**
+	 * returns true if 
+	 * @param moduleName
+	 * @param traces
+	 * @param variant
+	 * @return boolean
+	 */
+	public static boolean parseTrace(String moduleName, String variant, String line) {
+		
+		return false;
+	}
+	
+	private static void print() {
+		String var = ":undefined";
+		
+		if (variant != null)
+			var = variant;
+		
+		var += "" 
 	}
 }
