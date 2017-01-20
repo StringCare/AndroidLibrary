@@ -47,12 +47,8 @@ android.applicationVariants.all{ variant ->
 
     variant.mergeResources.doLast{
 
-        println  ":" + project.name + ":stringObfuscation"
-        def sha1 = ""
-        if (variant.dirName == "release") sha1 = "E1:28:0C:3E:65:96:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF"
-        else sha1 = "E1:28:0C:3E:65:96:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF"
-        def sha1_ = sha1.replaceAll(":","")
-        def path = "build" + File.separator + "intermediates" + File.separator + "res" + File.separator + "merged" + File.separator +  "${variant.dirName}" + File.separator + "values" + File.separator + "values.xml"
+        println  ":" + project.name + ":initStringObfuscator"
+        def path = "build" + File.separator + "intermediates" + File.separator + "res" + File.separator + "merged" + File.separator +  variant.dirName + File.separator + "values" + File.separator + "values.xml"
         def stringsFile = file(path)
         if (stringsFile.isFile()) {
             javaexec {
@@ -60,10 +56,11 @@ android.applicationVariants.all{ variant ->
                 args = [
                         "AndroidStringObfuscator.jar",
                         path,
-                        sha1
+                        variant.dirName,
+                        project.name
                 ]
             }
-            def stringsFileObfus = file(sha1_ + "/strings.xml")
+            def stringsFileObfus = file("string_obfuscation/strings.xml")
             stringsFile.write(stringsFileObfus.getText('UTF-8'))
             stringsFileObfus.delete()
         } else logger.error("strings.xml file couldn't be found: " + path)

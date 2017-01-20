@@ -17,20 +17,21 @@ import java.util.Map;
 public class Core {
 	
 	static BufferedWriter writer = null;
+	static String key = null;
 	static String module = null;
 	static String variant = null;
+	static boolean variantLocated = false;
 	
-	final String TAG = "obfuscator-script";
+	final static String TAG = "obfuscator-script";
+	final static String SEPARATOR = "-----------------------------------------------------------------------------";
+	final static String VERSION = "0.4";
+	final static int maxToShow = 15;
+	final static String FOLDER = "string_obfuscation";
 
 	public static void main(String[] args) {
-
-		String xml = "";
-		System.out.println(":obfuscator-script: -----------------------------------------------------------------------------");
-		System.out.println(":obfuscator-script: v0.4 --- bugs or improvements to https://github.com/efraespada/AndroidStringObfuscator/issues");
-		System.out.println(":obfuscator-script: -----------------------------------------------------------------------------");
 		
 		if (args.length != 3) {
-			System.out.println(":obfuscator-script: -> params [xml_file_name] [variant] [module]");
+			print("-> params [xml_file_name] [variant] [module]");
 			System.exit(0);
 			return;
 		}
@@ -46,12 +47,15 @@ public class Core {
 				module = args[i];
 		}
 		
-		String key = getKey(variant, module);
+		String xml = "";
+		print(SEPARATOR);
+		
+		getKey();
 		
 		File jarFile = new File(".");
 		
         String inputFilePath = jarFile.getAbsolutePath().replace(".", "") + file;
-		System.out.println(":obfuscator-script: -> looking for string file on -> " + inputFilePath);
+        print("looking for string file on -> " + inputFilePath);
 		String message = "";
 	    try {
 	    	FileInputStream stream = new FileInputStream(new File(inputFilePath));
@@ -65,10 +69,8 @@ public class Core {
 		}
 	    
 	    xml = find(message, key);
-	   
-	    String folderName = key.replaceAll(":", "");
 	    
-	    File fingerFolder = new File(folderName);
+	    File fingerFolder = new File(FOLDER);
 	    if (!fingerFolder.exists()) {
 	    	try {
 				Files.createDirectory(fingerFolder.toPath());
@@ -79,7 +81,10 @@ public class Core {
 	    
 	    File xmlFile = new File(fingerFolder, "strings.xml");
 	    writeFile(xmlFile, xml);
-		System.out.println(":obfuscator-script: -----------------------------------------------------------------------------");
+
+	    print(SEPARATOR);
+	    print("v" + VERSION + " --- bugs or improvements to https://github.com/efraespada/AndroidStringObfuscator/issues");
+		print(SEPARATOR);
 	}
 
 	public static String getString(BufferedReader br) {
@@ -148,11 +153,11 @@ public class Core {
 				}
 				
 				
-				toShow = toShow.length() > 8 ? toShow.substring(0, 8) + ".." : toShow;
-				encrypted = encrypted.length() > 8 ? encrypted.substring(0, 8) + ".." : encrypted;
-				System.out.println(":obfuscator-script: -> [" + toShow + "] - [" + encrypted + "]" + (hasExtra ? extra : ""));
+				toShow = toShow.length() > maxToShow ? toShow.substring(0, maxToShow) + ".." : toShow;
+				encrypted = encrypted.length() > maxToShow ? encrypted.substring(0, maxToShow) + ".." : encrypted;
+				print("[" + toShow + "] - [" + encrypted + "]" + (hasExtra ? extra : ""));
 			} catch (Exception e) {
-				System.out.println("error on " + result);
+				print("error on " + result);
 				e.printStackTrace();
 			}
 			
@@ -171,9 +176,7 @@ public class Core {
 		return val;
 	}
 	
-	public static String getKey(String variant, String module) {
-		String key = null;
-		
+	public static void getKey() {
 		try {
 			
 			String cmd = "";
@@ -189,43 +192,66 @@ public class Core {
 			BufferedReader buff = new BufferedReader (isr);
 
 			String line;
-			String trace = "";
-			ArrayList<String> traces = new ArrayList<>()
-			while((line = buff.readLine()) != null) {
-				boolean result = parseTrace(module, variant, line);
+			while ((line = buff.readLine()) != null) {
+				parseTrace(line);
 				
-				traces.add(e)
-			    trace += line + "\n";
-			    System.out.println(line);
+				if (key != null) {
+					print("SHA1 fingerprint: " + key);
+					break;
+				}
+					
 			}
 			
-			System.out.println(trace);
-		} catch (IOException e2) {
-			e2.printStackTrace();
-			return null;
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		
-		return key;
 	}
 
 	/**
-	 * returns true if 
+	 * returns true if key has been located
 	 * @param moduleName
-	 * @param traces
 	 * @param variant
+	 * @param line
 	 * @return boolean
 	 */
-	public static boolean parseTrace(String moduleName, String variant, String line) {
+	public static void parseTrace(String line) {
 		
-		return false;
+		boolean mustPrint = false;
+		
+		if (line.toLowerCase().contains("downloading")) {
+			mustPrint = true;
+		} else if (line.toLowerCase().contains("unzipping")) {
+			mustPrint = true;			
+		} else if (line.toLowerCase().contains("permissions")) {
+			mustPrint = true;			
+		} else if (line.toLowerCase().contains("sha")) {
+			if (variantLocated)
+				key = line.split(" ")[1];
+				
+		} else if (line.toLowerCase().contains("variant")) {
+			String locV = line.split(" ")[1];
+			if (locV.equals(variant)) {
+				print(locV + " variant");
+				variantLocated = true;
+			}
+		}
+		
+		if (mustPrint)
+			print(line);
 	}
 	
-	private static void print() {
-		String var = ":undefined";
+	/**
+	 * prints messages (for gradle console)
+	 * @param message
+	 */
+	private static void print(String message) {
+		String var = ":undefined:";
 		
 		if (variant != null)
-			var = variant;
+			var = ":" + module + ":";
 		
-		var += "" 
+		var += TAG;
+		
+		System.out.println(var + " - " + message);
 	}
 }

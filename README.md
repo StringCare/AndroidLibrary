@@ -3,8 +3,6 @@ Android String Obfuscator
 
 Hide strings easyly with that lib! It uses AES/ECB/PKCS5Padding transformation to convert strings with your app's SHA1 fingerprint.
 
-Note that there is a difference between release and debug fingerprint.
-
 Installation
 ------------
 
@@ -22,13 +20,11 @@ dependencies {
 }
 
 android.applicationVariants.all{ variant ->
+
     variant.mergeResources.doLast{
-        println  ":" + project.name + ":stringObfuscation"
-        def sha1 = ""
-        if (variant.dirName == "release")       sha1 = "SHA1_fingerprint_RELEASE"
-        else                                    sha1 = "SHA1_fingerprint_DEBUG"
-        def sha1_ = sha1.replaceAll(":","")
-        def path = "build" + File.separator + "intermediates" + File.separator + "res" + File.separator + "merged" + File.separator +  "${variant.dirName}" + File.separator + "values" + File.separator + "values.xml"
+
+        println  ":" + project.name + ":initStringObfuscator"
+        def path = "build" + File.separator + "intermediates" + File.separator + "res" + File.separator + "merged" + File.separator +  variant.dirName + File.separator + "values" + File.separator + "values.xml"
         def stringsFile = file(path)
         if (stringsFile.isFile()) {
             javaexec {
@@ -36,18 +32,17 @@ android.applicationVariants.all{ variant ->
                 args = [
                         "AndroidStringObfuscator.jar",
                         path,
-                        sha1
+                        variant.dirName,
+                        project.name
                 ]
             }
-            def stringsFileObfus = file(sha1_ + "/strings.xml")
+            def stringsFileObfus = file("string_obfuscation/strings.xml")
             stringsFile.write(stringsFileObfus.getText('UTF-8'))
             stringsFileObfus.delete()
         } else logger.error("strings.xml file couldn't be found: " + path)
     }
 }
 ```
-
-Replace `sha1` variable with your SHA1 fingerprint. Use `AndroidStringObfuscator.getCertificateSHA1Fingerprint(Context)` method to obtain this value.
 
 
 Get encrypted strings
@@ -68,12 +63,6 @@ Get decrypted strings
 String decrypted = AndroidStringObfuscator.getString(context, R.string.app_name);
 ```
 
-
-Get SHA1 fingerprint
---------------------
-```java
-String SHA1_fingerprint = AndroidStringObfuscator.getCertificateSHA1Fingerprint(context);
-```
 
 License
 -------
