@@ -45,9 +45,9 @@ android.applicationVariants.all{ variant ->
 ```
 
 
-Get encrypted strings
----------------------
-You don't need to do anything. The script will encrypt all string tags with `hidden="true"` as attribute.
+Encrypt Strings
+---------------
+The script will encrypt all string tags with `hidden="true"` as attribute.
 
 ```xml
 <resources>
@@ -56,9 +56,14 @@ You don't need to do anything. The script will encrypt all string tags with `hid
 </resources>
 ```
 
+You can encrypt strings programmatically by doing:
 
-Get decrypted strings
----------------------
+```java
+String encrypted = AndroidStringObfuscator.simulateString(context, some_string);
+```
+
+Decrypt Strings
+---------------
 ```java
 String decrypted = AndroidStringObfuscator.getString(context, R.string.app_name);
 ```
