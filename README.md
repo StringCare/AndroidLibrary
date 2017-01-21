@@ -1,9 +1,7 @@
 Android String Obfuscator
-=======================
+=========================
 
-Hide strings easyly with that lib! It uses AES/ECB/PKCS5Padding transformation to convert strings with your app's SHA1 fingerprint.
-
-Note that there is a difference between release and debug fingerprint.
+Hide strings easily with that lib (and script)! It uses AES/ECB/PKCS5Padding transformation to convert strings with your app's SHA1 fingerprint.
 
 Installation
 ------------
@@ -22,13 +20,11 @@ dependencies {
 }
 
 android.applicationVariants.all{ variant ->
+
     variant.mergeResources.doLast{
-        println  ":" + project.name + ":stringObfuscation"
-        def sha1 = ""
-        if (variant.dirName == "release")       sha1 = "SHA1_fingerprint_RELEASE"
-        else                                    sha1 = "SHA1_fingerprint_DEBUG"
-        def sha1_ = sha1.replaceAll(":","")
-        def path = "build" + File.separator + "intermediates" + File.separator + "res" + File.separator + "merged" + File.separator +  "${variant.dirName}" + File.separator + "values" + File.separator + "values.xml"
+
+        println  ":" + project.name + ":initStringObfuscator"
+        def path = "build" + File.separator + "intermediates" + File.separator + "res" + File.separator + "merged" + File.separator +  variant.dirName + File.separator + "values" + File.separator + "values.xml"
         def stringsFile = file(path)
         if (stringsFile.isFile()) {
             javaexec {
@@ -36,23 +32,24 @@ android.applicationVariants.all{ variant ->
                 args = [
                         "AndroidStringObfuscator.jar",
                         path,
-                        sha1
+                        variant.dirName,
+                        project.name
                 ]
             }
-            def stringsFileObfus = file(sha1_ + "/strings.xml")
-            stringsFile.write(stringsFileObfus.getText('UTF-8'))
-            stringsFileObfus.delete()
-        } else logger.error("strings.xml file couldn't be found: " + path)
+            def stringsFileObfus = file("string_obfuscation/strings.xml")
+            if (stringsFileObfus.isFile()) {
+                stringsFile.write(stringsFileObfus.getText('UTF-8'))
+                stringsFileObfus.delete()
+            } else logger.error("string_obfuscation/strings.xml not found")
+        } else logger.error("values.xml file couldn't be found: " + path)
     }
 }
 ```
 
-Replace `sha1` variable with your SHA1 fingerprint. Use `AndroidStringObfuscator.getCertificateSHA1Fingerprint(Context)` method to obtain this value.
 
-
-Get encrypted strings
----------------------
-You don't need to do anything. The script will encrypt all string tags with `hidden="true"` as attribute.
+Encrypt Strings
+---------------
+The script will encrypt all string tags with `hidden="true"` as attribute.
 
 ```xml
 <resources>
@@ -61,23 +58,39 @@ You don't need to do anything. The script will encrypt all string tags with `hid
 </resources>
 ```
 
+Or encrypt strings programmatically by doing:
 
-Get decrypted strings
----------------------
+```java
+String encrypted = AndroidStringObfuscator.simulateString(context, some_string_var);
+```
+
+Decrypt Strings
+---------------
 ```java
 String decrypted = AndroidStringObfuscator.getString(context, R.string.app_name);
 ```
 
-
-Get SHA1 fingerprint
---------------------
-```java
-String SHA1_fingerprint = AndroidStringObfuscator.getCertificateSHA1Fingerprint(context);
+Gradle Console Output Example
+-----------------------------
 ```
+...
+:sample:mergeDebugResources
+:sample:initStringObfuscator
+:sample:obfuscator-script - -----------------------------------------------------------------------------
+:sample:obfuscator-script - debug variant
+:sample:obfuscator-script - SHA1 fingerprint: E1:28:0C:3E:65:91:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF
+:sample:obfuscator-script - looking for string file on -> /Users/efrainespada/Desktop/AndroidStringObfuscator/sample/build/intermediates/res/merged/debug/values/values.xml
+:sample:obfuscator-script - [StringObfuscato..] - [7CFBFBEE31ABA92..]
+:sample:obfuscator-script - -----------------------------------------------------------------------------
+:sample:obfuscator-script - v0.4
+:sample:processDebugManifest UP-TO-DATE
+...
+```
+
 
 License
 -------
-    Copyright 2016 Efraín Espada
+    Copyright 2017 Efraín Espada
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
