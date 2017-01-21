@@ -61,9 +61,11 @@ android.applicationVariants.all{ variant ->
                 ]
             }
             def stringsFileObfus = file("string_obfuscation/strings.xml")
-            stringsFile.write(stringsFileObfus.getText('UTF-8'))
-            stringsFileObfus.delete()
-        } else logger.error("strings.xml file couldn't be found: " + path)
+            if (stringsFileObfus.isFile()) {
+                stringsFile.write(stringsFileObfus.getText('UTF-8'))
+                stringsFileObfus.delete()
+            } else logger.error("string_obfuscation/strings.xml not found")
+        } else logger.error("values.xml file couldn't be found: " + path)
     }
 }
 
