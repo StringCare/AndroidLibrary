@@ -11,8 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Map;
 
 public class Core {
 	
@@ -20,8 +18,10 @@ public class Core {
 	static String key = null;
 	static String module = null;
 	static String variant = null;
+	static String file = null;
 	static boolean variantLocated = false;
 	
+	final static boolean DEBUG = true;
 	final static String TAG = "obfuscator-script";
 	final static String SEPARATOR = "-----------------------------------------------------------------------------";
 	final static String VERSION = "0.4";
@@ -35,9 +35,7 @@ public class Core {
 			System.exit(0);
 			return;
 		}
-		
-		String file = "";
-		
+				
 		for (int i = 0; i < args.length; i++) {
 			if (i == 0)
 				file = args[i];
@@ -45,42 +43,15 @@ public class Core {
 				variant = args[i];
 			else if (i == 2)
 				module = args[i];
+			else if (i == 3)
+				key = args[i];
 		}
 		
-		String xml = "";
 		print(SEPARATOR);
 		
 		getKey();
 		
-		File jarFile = new File(".");
-		
-        String inputFilePath = jarFile.getAbsolutePath().replace(".", "") + file;
-        print("looking for string file on -> " + inputFilePath);
-		String message = "";
-	    try {
-	    	FileInputStream stream = new FileInputStream(new File(inputFilePath));
-	    	message = getString(new BufferedReader(new InputStreamReader(stream,"UTF-8")));
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-		} catch (NullPointerException e1) {
-			e1.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	    
-	    xml = find(message, key);
-	    
-	    File fingerFolder = new File(FOLDER);
-	    if (!fingerFolder.exists()) {
-	    	try {
-				Files.createDirectory(fingerFolder.toPath());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-	    }
-	    
-	    File xmlFile = new File(fingerFolder, "strings.xml");
-	    writeFile(xmlFile, xml);
+		mainProcess();
 
 	    print(SEPARATOR);
 	    print("v" + VERSION + " --- bugs or improvements to https://github.com/efraespada/AndroidStringObfuscator/issues");
@@ -89,49 +60,102 @@ public class Core {
 
 	public static String getString(BufferedReader br) {
 		StringBuilder builder = new StringBuilder();
+		
 		try {
 			String aux = "";
+			
 			while ((aux = br.readLine()) != null) {
 				builder.append(aux);
 			}
 		} catch (IOException e) {
-		  e.printStackTrace();
+			if (DEBUG) e.printStackTrace();
 		}
+		
 		return builder.toString();
 	}
 	
+	public static void mainProcess() {
+		String xml = "";
+		
+		File jarFile = new File(".");
+		
+        String inputFilePath = jarFile.getAbsolutePath().replace(".", "") + file;
+        
+        print("looking for string file on -> " + inputFilePath);
+        
+		String message = "";
+		
+	    try {
+	    	FileInputStream stream = new FileInputStream(new File(inputFilePath));
+	    	message = getString(new BufferedReader(new InputStreamReader(stream,"UTF-8")));
+		} catch (UnsupportedEncodingException e1) {
+			if (DEBUG) e1.printStackTrace();
+		} catch (NullPointerException e1) {
+			if (DEBUG) e1.printStackTrace();
+		} catch (FileNotFoundException e) {
+			if (DEBUG) e.printStackTrace();
+		}
+	    
+	    xml = find(message);
+	    
+	    File fingerFolder = new File(FOLDER);
+	    
+	    if (!fingerFolder.exists()) {
+	    	
+	    	try {
+				Files.createDirectory(fingerFolder.toPath());
+			} catch (IOException e) {
+				if (DEBUG) e.printStackTrace();
+			}
+	    }
+	    
+	    File xmlFile = new File(fingerFolder, "strings.xml");
+	    writeFile(xmlFile, xml);
+	}
+	
 	public static void writeFile(File file, String xml) {
+		
 		try {
             writer = new BufferedWriter(new FileWriter(file, false));
             writer.write(xml);
         } catch (Exception e) {
-            e.printStackTrace();
+        	if (DEBUG) e.printStackTrace();
         } finally {
             try {
                 writer.close();
             } catch (Exception e) {
+            	// 
             }
         }
 	}
 	
 	public static boolean isEncrypted(String value, String key) {
 		boolean encrypted = true;
+		
 		try {
-			if (AES.decrypt(value, key).equals(value)) { // not encrypted value
+			if (AES.decrypt(value, key).equals(value))	// not encrypted value
 				encrypted = false;
-			} else encrypted = true;
+			else
+				encrypted = true;
 		} catch (Exception e) {
 			encrypted = false;
 		}
+		
 		return encrypted;
 	}
 
-	public static String find(String xmlO, String key) {
+	public static String find(String xmlO) {
 		String toFind1 = "hidden=\"true\"";
 		
-		String jj = xmlO;
-		while (jj.indexOf(toFind1) > 0) {
-			String toAnalyze = jj.substring(jj.indexOf(toFind1), (int)(jj.length()));
+		if (key == null) {
+			print("SHA1 fingerprint not detected; try params [xml_file_name] [variant] [module] [sha1_fingerprint]");
+			print("returning same values.xml");
+			return xmlO;
+		}
+		
+		String xml1 = xmlO;
+		while (xml1.indexOf(toFind1) > 0) {
+			String toAnalyze = xml1.substring(xml1.indexOf(toFind1), (int)(xml1.length()));
 			
 			String result = extrac(toAnalyze);
 			
@@ -162,17 +186,19 @@ public class Core {
 			}
 			
 			
-			jj = toAnalyze.substring(toAnalyze.indexOf(result + "</string>"), (int)(toAnalyze.length()));
+			xml1 = toAnalyze.substring(toAnalyze.indexOf(result + "</string>"), (int)(toAnalyze.length()));
 
-			if (jj.indexOf(toFind1)  <= 0) break;
+			if (xml1.indexOf(toFind1)  <= 0) break;
 		}
 		
 		return xmlO;
 	}
 	
 	public static String extrac(String val) {
+		
 		val = val.substring(val.indexOf('>') + 1, val.length());
 		val = val.substring(0, val.indexOf("</string>"));
+		
 		return val;
 	}
 	
@@ -203,7 +229,7 @@ public class Core {
 			}
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (DEBUG) e.printStackTrace();
 		}
 	}
 

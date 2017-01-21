@@ -1,7 +1,7 @@
 Android String Obfuscator
-=======================
+=========================
 
-Hide strings easyly with that lib! It uses AES/ECB/PKCS5Padding transformation to convert strings with your app's SHA1 fingerprint.
+Hide strings easyly with that lib (and script)! It uses AES/ECB/PKCS5Padding transformation to convert strings with your app's SHA1 fingerprint.
 
 Installation
 ------------
@@ -56,10 +56,10 @@ The script will encrypt all string tags with `hidden="true"` as attribute.
 </resources>
 ```
 
-You can encrypt strings programmatically by doing:
+Or encrypt strings programmatically by doing:
 
 ```java
-String encrypted = AndroidStringObfuscator.simulateString(context, some_string);
+String encrypted = AndroidStringObfuscator.simulateString(context, some_string_var);
 ```
 
 Decrypt Strings
@@ -68,9 +68,8 @@ Decrypt Strings
 String decrypted = AndroidStringObfuscator.getString(context, R.string.app_name);
 ```
 
-Trace Example
--------------
-
+Gradle Console Output Example
+-----------------------------
 ```
 ...
 :sample:mergeDebugResources
@@ -90,7 +89,7 @@ Trace Example
 
 License
 -------
-    Copyright 2016 Efraín Espada
+    Copyright 2017 Efraín Espada
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
