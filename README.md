@@ -1,7 +1,7 @@
 Android String Obfuscator
 =========================
 
-Hide strings easyly with that lib (and script)! It uses AES/ECB/PKCS5Padding transformation to convert strings with your app's SHA1 fingerprint.
+Hide strings easily with that lib (and script)! It uses AES/ECB/PKCS5Padding transformation to convert strings with your app's SHA1 fingerprint.
 
 Installation
 ------------
@@ -37,9 +37,11 @@ android.applicationVariants.all{ variant ->
                 ]
             }
             def stringsFileObfus = file("string_obfuscation/strings.xml")
-            stringsFile.write(stringsFileObfus.getText('UTF-8'))
-            stringsFileObfus.delete()
-        } else logger.error("strings.xml file couldn't be found: " + path)
+            if (stringsFileObfus.isFile()) {
+                stringsFile.write(stringsFileObfus.getText('UTF-8'))
+                stringsFileObfus.delete()
+            } else logger.error("string_obfuscation/strings.xml not found")
+        } else logger.error("values.xml file couldn't be found: " + path)
     }
 }
 ```
@@ -76,12 +78,11 @@ Gradle Console Output Example
 :sample:initStringObfuscator
 :sample:obfuscator-script - -----------------------------------------------------------------------------
 :sample:obfuscator-script - debug variant
-:sample:obfuscator-script - SHA1 fingerprint: E1:28:0C:3E:65:96:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF
+:sample:obfuscator-script - SHA1 fingerprint: E1:28:0C:3E:65:91:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF
 :sample:obfuscator-script - looking for string file on -> /Users/efrainespada/Desktop/AndroidStringObfuscator/sample/build/intermediates/res/merged/debug/values/values.xml
 :sample:obfuscator-script - [StringObfuscato..] - [7CFBFBEE31ABA92..]
 :sample:obfuscator-script - -----------------------------------------------------------------------------
-:sample:obfuscator-script - v0.4 --- bugs or improvements to https://github.com/efraespada/AndroidStringObfuscator/issues
-:sample:obfuscator-script - -----------------------------------------------------------------------------
+:sample:obfuscator-script - v0.4
 :sample:processDebugManifest UP-TO-DATE
 ...
 ```

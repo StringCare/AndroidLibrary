@@ -30,8 +30,8 @@ public class Core {
 
 	public static void main(String[] args) {
 		
-		if (args.length != 3) {
-			print("-> params [xml_file_name] [variant] [module]");
+		if (args.length < 3) {
+			print("-> params [xml_file_name] [variant] [module] [optional:sha1]");
 			System.exit(0);
 			return;
 		}
@@ -51,11 +51,15 @@ public class Core {
 		
 		getKey();
 		
+		if (key == null) {
+			print("SHA1 fingerprint not detected; try params [xml_file_name] [variant] [module] [sha1_fingerprint]");
+			System.exit(0);
+		}
+		
 		mainProcess();
 
 	    print(SEPARATOR);
-	    print("v" + VERSION + " --- bugs or improvements to https://github.com/efraespada/AndroidStringObfuscator/issues");
-		print(SEPARATOR);
+	    print("v" + VERSION);
 	}
 
 	public static String getString(BufferedReader br) {
@@ -147,12 +151,6 @@ public class Core {
 	public static String find(String xmlO) {
 		String toFind1 = "hidden=\"true\"";
 		
-		if (key == null) {
-			print("SHA1 fingerprint not detected; try params [xml_file_name] [variant] [module] [sha1_fingerprint]");
-			print("returning same values.xml");
-			return xmlO;
-		}
-		
 		String xml1 = xmlO;
 		while (xml1.indexOf(toFind1) > 0) {
 			String toAnalyze = xml1.substring(xml1.indexOf(toFind1), (int)(xml1.length()));
@@ -219,6 +217,7 @@ public class Core {
 
 			String line;
 			while ((line = buff.readLine()) != null) {
+				
 				parseTrace(line);
 				
 				if (key != null) {
