@@ -68,7 +68,6 @@ Gradle Console Output Example
 :sample:obfuscator-script - -----------------------------------------------------------------------------
 :sample:obfuscator-script - debug variant
 :sample:obfuscator-script - SHA1 fingerprint: E1:28:0C:3E:65:91:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF
-:sample:obfuscator-script - looking for string file on -> /Users/efrainespada/Desktop/AndroidStringObfuscator/sample/build/intermediates/res/merged/debug/values/values.xml
 :sample:obfuscator-script - [StringObfuscato..] - [7CFBFBEE31ABA92..]
 :sample:obfuscator-script - -----------------------------------------------------------------------------
 :sample:obfuscator-script - v 0.5
@@ -76,8 +75,8 @@ Gradle Console Output Example
 ...
 ```
 
-## Posible errors
-No `~/.android/debug.keystore`.
+## Possible errors
+Missing `~/.android/debug.keystore`. Run your app to generate that file.
 ```
 ...
 :sample:mergeDebugResources

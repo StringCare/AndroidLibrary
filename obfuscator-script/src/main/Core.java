@@ -27,7 +27,7 @@ public class Core {
 	static boolean moduleLocated = false;
 	static String stringPath = null;
 	
-	final static boolean DEBUG = true;
+	final static boolean DEBUG = false;
 	final static String TAG = "obfuscator-script";
 	final static String SEPARATOR = "-----------------------------------------------------------------------------";
 	final static String VERSION = "0.5";
@@ -113,7 +113,7 @@ public class Core {
 				
         String inputFilePath = getCurrentPath() + stringPath;
        
-        print("looking for string file on -> " + inputFilePath);
+        if (DEBUG) print("looking for string file on -> " + inputFilePath);
         
 		String message = "";
 		
@@ -319,8 +319,6 @@ public class Core {
 		boolean ok = false;
 		
 		File thisRoot = new File(getCurrentPath());
-		
-		print(getCurrentPath());
 				
 		for (final File fileEntry : thisRoot.listFiles()) {
 	        if (fileEntry.isDirectory() && isModule(fileEntry)
