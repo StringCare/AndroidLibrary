@@ -4,12 +4,12 @@ android {
     signingConfigs {
 
     }
-    compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.efraespada.stringobfuscator"
         minSdkVersion 9
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -35,10 +35,11 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
     testCompile 'junit:junit:4.12'
     // compile project(path: ':androidstringobfuscator')
     compile 'efraespada:androidstringobfuscator:0.2'
+
 }
 
 /* string obfuscation */
@@ -46,26 +47,15 @@ dependencies {
 android.applicationVariants.all{ variant ->
 
     variant.mergeResources.doLast{
-
         println  ":" + project.name + ":initStringObfuscator"
-        def path = "build" + File.separator + "intermediates" + File.separator + "res" + File.separator + "merged" + File.separator +  variant.dirName + File.separator + "values" + File.separator + "values.xml"
-        def stringsFile = file(path)
-        if (stringsFile.isFile()) {
-            javaexec {
-                main = "-jar";
-                args = [
-                        "AndroidStringObfuscator.jar",
-                        path,
-                        variant.dirName,
-                        project.name
-                ]
-            }
-            def stringsFileObfus = file("string_obfuscation/strings.xml")
-            if (stringsFileObfus.isFile()) {
-                stringsFile.write(stringsFileObfus.getText('UTF-8'))
-                stringsFileObfus.delete()
-            } else logger.error("string_obfuscation/strings.xml not found")
-        } else logger.error("values.xml file couldn't be found: " + path)
+        javaexec {
+            main = "-jar";
+            args = [
+                    "../AndroidStringObfuscator.jar",
+                    project.name,
+                    variant.dirName
+            ]
+        }
     }
 }
 

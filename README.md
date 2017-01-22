@@ -6,7 +6,7 @@ Hide strings easily with that lib (and script)! It uses AES/ECB/PKCS5Padding tra
 Installation
 ------------
 
-Put [AndroidStringObfuscator.jar](https://github.com/efraespada/AndroidStringObfuscator/raw/master/sample/AndroidStringObfuscator.jar) on the app's module folder, next to `build.gradle` file and `build` folder.
+Put [AndroidStringObfuscator.jar](https://github.com/efraespada/AndroidStringObfuscator/raw/master/AndroidStringObfuscator.jar) in the root of the project.
 
 #### Gradle 
 
@@ -21,28 +21,17 @@ dependencies {
 
 android.applicationVariants.all{ variant ->
 
-    variant.mergeResources.doLast{
-
-        println  ":" + project.name + ":initStringObfuscator"
-        def path = "build" + File.separator + "intermediates" + File.separator + "res" + File.separator + "merged" + File.separator +  variant.dirName + File.separator + "values" + File.separator + "values.xml"
-        def stringsFile = file(path)
-        if (stringsFile.isFile()) {
-            javaexec {
-                main = "-jar";
-                args = [
-                        "AndroidStringObfuscator.jar",
-                        path,
-                        variant.dirName,
-                        project.name
-                ]
-            }
-            def stringsFileObfus = file("string_obfuscation/strings.xml")
-            if (stringsFileObfus.isFile()) {
-                stringsFile.write(stringsFileObfus.getText('UTF-8'))
-                stringsFileObfus.delete()
-            } else logger.error("string_obfuscation/strings.xml not found")
-        } else logger.error("values.xml file couldn't be found: " + path)
-    }
+      variant.mergeResources.doLast{
+          println  ":" + project.name + ":initStringObfuscator"
+          javaexec {
+              main = "-jar";
+              args = [
+                      "../AndroidStringObfuscator.jar",
+                      project.name,
+                      variant.dirName
+              ]
+          }
+      }
 }
 ```
 
@@ -82,11 +71,26 @@ Gradle Console Output Example
 :sample:obfuscator-script - looking for string file on -> /Users/efrainespada/Desktop/AndroidStringObfuscator/sample/build/intermediates/res/merged/debug/values/values.xml
 :sample:obfuscator-script - [StringObfuscato..] - [7CFBFBEE31ABA92..]
 :sample:obfuscator-script - -----------------------------------------------------------------------------
-:sample:obfuscator-script - v0.4
+:sample:obfuscator-script - v 0.5
 :sample:processDebugManifest UP-TO-DATE
 ...
 ```
 
+## Posible errors
+No `~/.android/debug.keystore`.
+```
+...
+:sample:mergeDebugResources
+:sample:initStringObfuscator
+:sample:obfuscator-script - -----------------------------------------------------------------------------
+:sample:obfuscator-script - debug variant
+:sample:obfuscator-script - Missing keystore
+:sample:obfuscator-script - SHA1 fingerprint not detected; try params [module] [variant] [optional:sha1]
+:sample:obfuscator-script - -----------------------------------------------------------------------------
+:sample:obfuscator-script - v 0.5
+:sample:processDebugManifest
+...
+```
 
 License
 -------
