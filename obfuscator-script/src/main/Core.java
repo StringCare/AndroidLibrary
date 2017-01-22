@@ -5,61 +5,70 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 
 public class Core {
 	
 	static BufferedWriter writer = null;
 	static String key = null;
-	static String module = null;
 	static String variant = null;
+	static String module = null;
 	static String file = null;
+	static String error = null;
 	static boolean variantLocated = false;
+	static boolean moduleLocated = false;
+	static String stringPath = null;
 	
-	final static boolean DEBUG = true;
+	final static boolean DEBUG = false;
 	final static String TAG = "obfuscator-script";
 	final static String SEPARATOR = "-----------------------------------------------------------------------------";
-	final static String VERSION = "0.4";
+	final static String VERSION = "0.5";
 	final static int maxToShow = 15;
 	final static String FOLDER = "string_obfuscation";
+	final static String PARAMS_ORDER = "params [module] [variant] [optional:sha1]";
+	        
 
 	public static void main(String[] args) {
-		
-		if (args.length < 3) {
-			print("-> params [xml_file_name] [variant] [module] [optional:sha1]");
+				
+		if (args.length < 2) {
+			print(PARAMS_ORDER);
 			System.exit(0);
 			return;
 		}
 				
 		for (int i = 0; i < args.length; i++) {
 			if (i == 0)
-				file = args[i];
+				module = args[i];
 			else if (i == 1)
 				variant = args[i];
 			else if (i == 2)
-				module = args[i];
-			else if (i == 3)
 				key = args[i];
 		}
+		
 		
 		print(SEPARATOR);
 		
 		getKey();
 		
 		if (key == null) {
-			print("SHA1 fingerprint not detected; try params [xml_file_name] [variant] [module] [sha1_fingerprint]");
-			System.exit(0);
+			if (error != null)
+				print(error);
+			
+			print("SHA1 fingerprint not detected; try " + PARAMS_ORDER);
+		} else {
+			mainProcess();
 		}
-		
-		mainProcess();
 
 	    print(SEPARATOR);
-	    print("v" + VERSION);
+	    print("v " + VERSION);
 	}
 
 	public static String getString(BufferedReader br) {
@@ -81,16 +90,36 @@ public class Core {
 	public static void mainProcess() {
 		String xml = "";
 		
-		File jarFile = new File(".");
+		if (variant != null)
+			stringPath = module + File.separator + "build" + File.separator + "intermediates" +
+					File.separator + "res" + File.separator + "merged" +
+					File.separator +  variant + File.separator + "values" +
+					File.separator + "values.xml";
 		
-        String inputFilePath = jarFile.getAbsolutePath().replace(".", "") + file;
-        
-        print("looking for string file on -> " + inputFilePath);
+		else {
+			print("variant not detected; try " + PARAMS_ORDER);
+			System.exit(0);
+		}
+		
+		if (module == null) {
+			print("module not detected; try " + PARAMS_ORDER);
+			print(SEPARATOR);
+			System.exit(0);
+		} else if (!checkModule()) {
+			print("module " + module + " not detected; wrong module name");
+			print(SEPARATOR);
+			System.exit(0);
+		}
+				
+        String inputFilePath = getCurrentPath() + stringPath;
+       
+        if (DEBUG) print("looking for string file on -> " + inputFilePath);
         
 		String message = "";
 		
+		File file = new File(inputFilePath);
 	    try {
-	    	FileInputStream stream = new FileInputStream(new File(inputFilePath));
+	    	FileInputStream stream = new FileInputStream(file);
 	    	message = getString(new BufferedReader(new InputStreamReader(stream,"UTF-8")));
 		} catch (UnsupportedEncodingException e1) {
 			if (DEBUG) e1.printStackTrace();
@@ -113,14 +142,13 @@ public class Core {
 			}
 	    }
 	    
-	    File xmlFile = new File(fingerFolder, "strings.xml");
-	    writeFile(xmlFile, xml);
+	    writeFile(file, xml);
 	}
 	
 	public static void writeFile(File file, String xml) {
 		
 		try {
-            writer = new BufferedWriter(new FileWriter(file, false));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath()),"UTF-8"));
             writer.write(xml);
         } catch (Exception e) {
         	if (DEBUG) e.printStackTrace();
@@ -204,7 +232,7 @@ public class Core {
 		try {
 			
 			String cmd = "";
-			if (System.getProperty("os.name").contains("windows")) {
+			if (System.getProperty("os.name").toLowerCase().contains("windows")) {
 				cmd = "gradlew.bat";
 			} else {
 				cmd = "gradlew";
@@ -217,7 +245,6 @@ public class Core {
 
 			String line;
 			while ((line = buff.readLine()) != null) {
-				
 				parseTrace(line);
 				
 				if (key != null) {
@@ -249,16 +276,18 @@ public class Core {
 			mustPrint = true;			
 		} else if (line.toLowerCase().contains("permissions")) {
 			mustPrint = true;			
-		} else if (line.toLowerCase().contains("sha")) {
-			if (variantLocated)
-				key = line.split(" ")[1];
-				
-		} else if (line.toLowerCase().contains("variant")) {
+		} else if (line.toLowerCase().contains("sha") && moduleLocated && variantLocated) {
+			key = line.split(" ")[1];
+		} else if (line.toLowerCase().contains("error")) {
+			error = line.split(": ")[1];
+		} else if (line.toLowerCase().contains("variant") && moduleLocated) {
 			String locV = line.split(" ")[1];
 			if (locV.equals(variant)) {
 				print(locV + " variant");
 				variantLocated = true;
 			}
+		} else if (line.toLowerCase().contains(":" + module)) {
+			moduleLocated = true;		
 		}
 		
 		if (mustPrint)
@@ -278,5 +307,42 @@ public class Core {
 		var += TAG;
 		
 		System.out.println(var + " - " + message);
+	}
+	
+	private static String getCurrentPath() {
+		String path = new File(".").getAbsolutePath().replace(".", "").replace(module + File.separator,"");
+		return path;
+	}
+	
+	private static boolean checkModule() {
+		
+		boolean ok = false;
+		
+		File thisRoot = new File(getCurrentPath());
+				
+		for (final File fileEntry : thisRoot.listFiles()) {
+	        if (fileEntry.isDirectory() && isModule(fileEntry)
+	         		&& fileEntry.getName().toLowerCase().equals(module.toLowerCase())) {
+	        	ok = true;
+	        	break;
+	        }
+	    }
+		
+		return ok; 
+	}
+	
+	private static boolean isModule(File folder) {
+		
+		boolean hasGradleFile 	= false;
+		boolean hasSrcFolder 	= false;
+		
+		for (final File file : folder.listFiles()) {
+	        if (file.getName().equals("build.gradle") && !file.isDirectory())
+	        	hasGradleFile = true;
+	        else if (file.getName().equals("src") && file.isDirectory())
+	        	hasSrcFolder = true;
+	    }
+		
+		return hasGradleFile && hasSrcFolder;
 	}
 }
