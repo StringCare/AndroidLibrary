@@ -75,7 +75,7 @@ Gradle Console Output Example
 ...
 ```
 
-## Possible errors
+### Possible errors
 Missing `~/.android/debug.keystore`. Run your app to generate that file.
 ```
 ...
