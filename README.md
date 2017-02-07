@@ -35,9 +35,15 @@ android.applicationVariants.all{ variant ->
 }
 ```
 
+Setup
+-----
+Init the library:
+```
+AndroidStringObfuscator.init(this);
+```
 
-Encrypt Strings
----------------
+
+#### Encrypt Strings
 The script will encrypt all string tags with `hidden="true"` as attribute.
 
 ```xml
@@ -50,13 +56,12 @@ The script will encrypt all string tags with `hidden="true"` as attribute.
 Or encrypt strings programmatically by doing:
 
 ```java
-String encrypted = AndroidStringObfuscator.simulateString(context, some_string_var);
+String encrypted = AndroidStringObfuscator.simulateString(some_string_var);
 ```
 
-Decrypt Strings
----------------
+#### Decrypt Strings
 ```java
-String decrypted = AndroidStringObfuscator.getString(context, R.string.app_name);
+String decrypted = AndroidStringObfuscator.getString(R.string.app_name);
 ```
 
 Gradle Console Output Example
@@ -75,7 +80,7 @@ Gradle Console Output Example
 ...
 ```
 
-### Possible errors
+#### Possible errors
 Missing `~/.android/debug.keystore`. Run your app to generate that file.
 ```
 ...
@@ -91,6 +96,15 @@ Missing `~/.android/debug.keystore`. Run your app to generate that file.
 ...
 ```
 
+#### More Info
+At first run, if you haven't installed Gradle:
+```
+...
+:sample:obfuscator-script - Downloading https://services.gradle.org/distributions/gradle-2.14.1-all.zip
+:sample:obfuscator-script - Unzipping /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv/gradle-2.14.1-all.zip to /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv
+:sample:obfuscator-script - Set executable permissions for: /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv/gradle-2.14.1/bin/gradle
+...
+```
 License
 -------
     Copyright 2017 Efraín Espada

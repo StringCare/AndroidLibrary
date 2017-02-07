@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -26,9 +27,17 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AndroidStringObfuscator {
 
-    private final String TAG = this.getClass().getSimpleName();
+    private static final String CODIFICATION = "UTF-8";
+    private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
+    private static final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+    private static final String TAG = AndroidStringObfuscator.class.getSimpleName();
+    private static Context context;
 
-    public static String getCertificateSHA1Fingerprint(Context context) {
+    public static void init(Context c) {
+        context = c;
+    }
+
+    private static String getCertificateSHA1Fingerprint() {
         PackageManager pm = context.getPackageManager();
         String packageName = context.getPackageName();
         int flags = PackageManager.GET_SIGNATURES;
@@ -77,40 +86,11 @@ public class AndroidStringObfuscator {
         return str.toString();
     }
 
-    private static String convertToHex(byte[] data) {
-        StringBuilder buf = new StringBuilder();
-        for (byte b : data) {
-            int halfbyte = (b >>> 4) & 0x0F;
-            int two_halfs = 0;
-            do {
-                buf.append((0 <= halfbyte) && (halfbyte <= 9) ? (char) ('0' + halfbyte) : (char) ('a' + (halfbyte - 10)));
-                halfbyte = b & 0x0F;
-            } while (two_halfs++ < 1);
-        }
-        return buf.toString();
-    }
-
-    private static String SHA1(String text){
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("SHA-1");
-            md.update(text.getBytes("iso-8859-1"), 0, text.length());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return null;
-        }
-        byte[] sha1hash = md.digest();
-        return convertToHex(sha1hash);
-    }
-
     private static SecretKey generateKey(String key) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-1");
         byte[] passphrase = null;
         try {
-            passphrase = digest.digest(key.getBytes("UTF-8"));
+            passphrase = digest.digest(key.getBytes(CODIFICATION));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -120,8 +100,8 @@ public class AndroidStringObfuscator {
     }
 
     private static String encrypt(String message, String key) throws Exception {
-        byte[] data = message.getBytes("UTF-8");
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        byte[] data = message.getBytes(CODIFICATION);
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.ENCRYPT_MODE, generateKey(key));
         byte[] encryptData = cipher.doFinal(data);
 
@@ -131,10 +111,10 @@ public class AndroidStringObfuscator {
     private static String decrypt(String v, String key) throws Exception {
         byte[] tmp = hexStringToByteArray(v);
         SecretKeySpec spec = new SecretKeySpec(generateKey(key).getEncoded(), "AES");
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, spec);
 
-        String result = new String(cipher.doFinal(tmp), "UTF-8");
+        String result = new String(cipher.doFinal(tmp), CODIFICATION);
         return result;
     }
 
@@ -149,7 +129,6 @@ public class AndroidStringObfuscator {
         return data;
     }
 
-    final private static char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
     private static String byteArrayToHexString(byte[] bytes) {
         char[] hexChars = new char[bytes.length*2];
         int v;
@@ -163,8 +142,13 @@ public class AndroidStringObfuscator {
         return new String(hexChars);
     }
 
-    public static String getString(Context context, int id) {
-        String hash = getCertificateSHA1Fingerprint(context);
+    public static String getString(int id) {
+        if (context == null) {
+            Log.e(TAG, "Library not initiated: AndroidStringObfuscator.init(Context)");
+            return null;
+        }
+
+        String hash = getCertificateSHA1Fingerprint();
         try {
             return decrypt(context.getString(id), hash);
         } catch (Exception e) {
@@ -173,8 +157,13 @@ public class AndroidStringObfuscator {
         return context.getString(id); // returns original value, maybe not encrypted
     }
 
-    public static String simulateString(Context context, String text) {
-        String hash = getCertificateSHA1Fingerprint(context);
+    public static String simulateString(String text) {
+        if (context == null) {
+            Log.e(TAG, "Library not initiated: AndroidStringObfuscator.init(Context)");
+            return null;
+        }
+
+        String hash = getCertificateSHA1Fingerprint();
         try {
             return encrypt(text, hash);
         } catch (Exception e) {

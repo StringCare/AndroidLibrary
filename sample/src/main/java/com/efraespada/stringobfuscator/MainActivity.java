@@ -13,7 +13,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String hello = AndroidStringObfuscator.getString(this, R.string.app_name);
+        AndroidStringObfuscator.init(this);
+
+        String hello = AndroidStringObfuscator.getString(R.string.app_name);
+
         ((TextView) findViewById(R.id.example)).setText(hello);
     }
 }
