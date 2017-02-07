@@ -38,12 +38,12 @@ android.applicationVariants.all{ variant ->
 Setup
 -----
 Init the library:
-```
+```java
 AndroidStringObfuscator.init(this);
 ```
 
 
-#### Encrypt Strings
+#### Encrypt
 The script will encrypt all string tags with `hidden="true"` as attribute.
 
 ```xml
@@ -59,7 +59,7 @@ Or encrypt strings programmatically by doing:
 String encrypted = AndroidStringObfuscator.simulateString(some_string_var);
 ```
 
-#### Decrypt Strings
+#### Decrypt
 ```java
 String decrypted = AndroidStringObfuscator.getString(R.string.app_name);
 ```
@@ -80,29 +80,23 @@ Gradle Console Output Example
 ...
 ```
 
-#### Possible errors
-Missing `~/.android/debug.keystore`. Run your app to generate that file.
-```
-...
-:sample:mergeDebugResources
-:sample:initStringObfuscator
-:sample:obfuscator-script - -----------------------------------------------------------------------------
-:sample:obfuscator-script - debug variant
-:sample:obfuscator-script - Missing keystore
-:sample:obfuscator-script - SHA1 fingerprint not detected; try params [module] [variant] [optional:sha1]
-:sample:obfuscator-script - -----------------------------------------------------------------------------
-:sample:obfuscator-script - v 0.5
-:sample:processDebugManifest
-...
-```
 
-#### More Info
+#### More information
 At first run, if you haven't installed Gradle:
 ```
 ...
 :sample:obfuscator-script - Downloading https://services.gradle.org/distributions/gradle-2.14.1-all.zip
 :sample:obfuscator-script - Unzipping /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv/gradle-2.14.1-all.zip to /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv
 :sample:obfuscator-script - Set executable permissions for: /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv/gradle-2.14.1/bin/gradle
+...
+```
+
+If `~/.android/debug.keystore` is missing, run your app to generate that file.
+```
+...
+:sample:obfuscator-script - debug variant
+:sample:obfuscator-script - Missing keystore
+:sample:obfuscator-script - SHA1 fingerprint not detected; try params [module] [variant] [optional:sha1]
 ...
 ```
 License
