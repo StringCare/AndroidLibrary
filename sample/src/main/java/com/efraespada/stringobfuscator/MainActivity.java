@@ -13,7 +13,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String hello = AndroidStringObfuscator.getString(this, R.string.app_name);
-        ((TextView) findViewById(R.id.example)).setText(hello);
+        AndroidStringObfuscator.init(this);
+
+        int stringId = R.string.hello;
+
+        String message = getString(stringId);
+        message += " is ";
+        message += AndroidStringObfuscator.getString(stringId);
+
+        // secret
+        String mySecret = "lalilulelo";
+
+        message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + AndroidStringObfuscator.encryptString(message)
+            + "\n\n.. or " + AndroidStringObfuscator.decryptString(AndroidStringObfuscator.encryptString(mySecret)) + "\"";
+
+        ((TextView) findViewById(R.id.example)).setText(message);
     }
 }

@@ -16,49 +16,78 @@ repositories {
 }
 
 dependencies {
-    compile 'efraespada:androidstringobfuscator:0.2'
+    compile 'efraespada:androidstringobfuscator:0.4'
 }
 
 android.applicationVariants.all{ variant ->
-
-      variant.mergeResources.doLast{
-          println  ":" + project.name + ":initStringObfuscator"
-          javaexec {
-              main = "-jar";
-              args = [
-                      "../AndroidStringObfuscator.jar",
-                      project.name,
-                      variant.dirName
-              ]
-          }
-      }
+    variant.mergeResources.doLast{
+        println  ":" + project.name + ":initStringObfuscator"
+        javaexec {
+            main = "-jar";
+            args = [
+                  "../AndroidStringObfuscator.jar",
+                  project.name,
+                  variant.dirName
+            ]
+        }
+    }
 }
 ```
 
+Setup
+-----
+Init the library:
+```java
+AndroidStringObfuscator.init(this);
+```
 
-Encrypt Strings
----------------
+
+#### Encrypt
 The script will encrypt all string tags with `hidden="true"` as attribute.
 
 ```xml
 <resources>
-	<string name="hello">hello world!</string>
-	<string name="app_name" hidden="true">StringObfuscator</string>
+	<string name="hello" hidden="true">hello world!</string>
+	<string name="app_name">StringObfuscator</string>
 </resources>
 ```
 
 Or encrypt strings programmatically by doing:
 
 ```java
-String encrypted = AndroidStringObfuscator.simulateString(context, some_string_var);
+String encrypted = AndroidStringObfuscator.encryptString(some_string_var);
 ```
 
-Decrypt Strings
----------------
+#### Decrypt
+From resources:
 ```java
-String decrypted = AndroidStringObfuscator.getString(context, R.string.app_name);
+String decrypted = AndroidStringObfuscator.getString(R.string.hello);
 ```
+Or from encrypted variables:
+```java
+String decrypted = AndroidStringObfuscator.decryptString(encrypted_var);
+```
+Sample
+------
 
+```java
+AndroidStringObfuscator.init(this);
+
+// getting encrypted string resources
+int stringId = R.string.hello;
+
+String message = getString(stringId);
+message += " is ";
+message += AndroidStringObfuscator.getString(stringId);
+
+// and secret
+String mySecret = "lalilulelo";
+
+message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + AndroidStringObfuscator.encryptString(mySecret)
+    + "\n\n.. or " + AndroidStringObfuscator.decryptString(AndroidStringObfuscator.encryptString(mySecret)) + "\"";
+
+((TextView) findViewById(R.id.example)).setText(message);
+```
 Gradle Console Output Example
 -----------------------------
 ```
@@ -68,29 +97,32 @@ Gradle Console Output Example
 :sample:obfuscator-script - -----------------------------------------------------------------------------
 :sample:obfuscator-script - debug variant
 :sample:obfuscator-script - SHA1 fingerprint: E1:28:0C:3E:65:91:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF
-:sample:obfuscator-script - [StringObfuscato..] - [7CFBFBEE31ABA92..]
+:sample:obfuscator-script - [hello world!] - [D1862D9B434D08E..]
 :sample:obfuscator-script - -----------------------------------------------------------------------------
 :sample:obfuscator-script - v 0.5
 :sample:processDebugManifest UP-TO-DATE
 ...
 ```
 
-### Possible errors
-Missing `~/.android/debug.keystore`. Run your app to generate that file.
+
+#### More information
+At first run, if you haven't installed Gradle:
 ```
 ...
-:sample:mergeDebugResources
-:sample:initStringObfuscator
-:sample:obfuscator-script - -----------------------------------------------------------------------------
-:sample:obfuscator-script - debug variant
-:sample:obfuscator-script - Missing keystore
-:sample:obfuscator-script - SHA1 fingerprint not detected; try params [module] [variant] [optional:sha1]
-:sample:obfuscator-script - -----------------------------------------------------------------------------
-:sample:obfuscator-script - v 0.5
-:sample:processDebugManifest
+:sample:obfuscator-script - Downloading https://services.gradle.org/distributions/gradle-2.14.1-all.zip
+:sample:obfuscator-script - Unzipping /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv/gradle-2.14.1-all.zip to /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv
+:sample:obfuscator-script - Set executable permissions for: /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv/gradle-2.14.1/bin/gradle
 ...
 ```
 
+If `~/.android/debug.keystore` is missing, run your app to generate that file.
+```
+...
+:sample:obfuscator-script - debug variant
+:sample:obfuscator-script - Missing keystore
+:sample:obfuscator-script - SHA1 fingerprint not detected; try params [module] [variant] [optional:sha1]
+...
+```
 License
 -------
     Copyright 2017 Efraín Espada

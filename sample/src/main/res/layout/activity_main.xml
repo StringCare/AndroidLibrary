@@ -8,19 +8,16 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@android:color/background_light"
     tools:context="com.efraespada.stringobfuscator.MainActivity">
 
     <TextView
         android:id="@+id/example"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:textColor="@android:color/black"
         android:text="" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Texts with same origin"
-        android:layout_centerInParent="true"/>
+
 </RelativeLayout>
