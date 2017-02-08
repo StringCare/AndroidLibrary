@@ -63,7 +63,7 @@ From resources:
 ```java
 String decrypted = AndroidStringObfuscator.getString(R.string.hello);
 ```
-Or from some encrypted variable:
+Or from encrypted variables:
 ```java
 String decrypted = AndroidStringObfuscator.decryptString(encrypted_var);
 ```
@@ -80,10 +80,10 @@ String message = getString(stringId);
 message += " is ";
 message += AndroidStringObfuscator.getString(stringId);
 
-// and some secret
+// and secret
 String mySecret = "lalilulelo";
 
-message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + AndroidStringObfuscator.encryptString(message)
+message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + AndroidStringObfuscator.encryptString(mySecret)
     + "\n\n.. or " + AndroidStringObfuscator.decryptString(AndroidStringObfuscator.encryptString(mySecret)) + "\"";
 
 ((TextView) findViewById(R.id.example)).setText(message);
@@ -97,7 +97,7 @@ Gradle Console Output Example
 :sample:obfuscator-script - -----------------------------------------------------------------------------
 :sample:obfuscator-script - debug variant
 :sample:obfuscator-script - SHA1 fingerprint: E1:28:0C:3E:65:91:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF
-:sample:obfuscator-script - [StringObfuscato..] - [7CFBFBEE31ABA92..]
+:sample:obfuscator-script - [hello world!] - [D1862D9B434D08E..]
 :sample:obfuscator-script - -----------------------------------------------------------------------------
 :sample:obfuscator-script - v 0.5
 :sample:processDebugManifest UP-TO-DATE
