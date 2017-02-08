@@ -108,8 +108,8 @@ public class AndroidStringObfuscator {
         return byteArrayToHexString(encryptData);
     }
 
-    private static String decrypt(String v, String key) throws Exception {
-        byte[] tmp = hexStringToByteArray(v);
+    private static String decrypt(String message, String key) throws Exception {
+        byte[] tmp = hexStringToByteArray(message);
         SecretKeySpec spec = new SecretKeySpec(generateKey(key).getEncoded(), "AES");
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, spec);

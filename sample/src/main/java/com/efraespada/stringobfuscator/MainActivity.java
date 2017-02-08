@@ -15,8 +15,18 @@ public class MainActivity extends AppCompatActivity {
 
         AndroidStringObfuscator.init(this);
 
-        String hello = AndroidStringObfuscator.getString(R.string.app_name);
+        int stringId = R.string.hello;
 
-        ((TextView) findViewById(R.id.example)).setText(hello);
+        String message = getString(stringId);
+        message += " is ";
+        message += AndroidStringObfuscator.getString(stringId);
+
+        // secret
+        String mySecret = "lalilulelo";
+
+        message += "\n \n For Metal Gear lovers: Snake, the pass is " + AndroidStringObfuscator.simulateString(message)
+            + " or " + mySecret;
+
+        ((TextView) findViewById(R.id.example)).setText(message);
     }
 }

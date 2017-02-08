@@ -3,93 +3,21 @@
 
     <item
         is-multidex="true"
-        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-compat/25.1.0/jars/classes.jar"
+        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-fragment/25.1.1/jars/classes.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="ca3c7aa31e2726a400a6e552b93cb9f63c9a1e6d">
-        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-compat-25.1.0_c42c88e322ac3b88765b26189c8953ebd6dc21df/classes.dex" />
+        sha1="e2719c102dca3a7a5b02ce07f769362da6ddb4ab">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-fragment-25.1.1_d4c4697e2298504d503f9dba7fe13fb420fdae4d/classes.dex" />
     </item>
     <item
         is-multidex="true"
-        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-core-utils/25.1.0/jars/classes.jar"
+        jar="/Users/efraespada/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/25.1.1/support-annotations-25.1.1.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="0a0ef86b7fa568a52bf6214a0326ca1f1d618da7">
-        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-utils-25.1.0_e264706844a2372a19dd84f3ee0a6d7c36421de2/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-fragment/25.1.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="2a53c4f3518116b8c6aee0e477233f0f7da8616f">
-        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-fragment-25.1.0_ea5b72fbfeb71e48be05b0fc8e228c8ccee34fd5/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/25.1.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="6fb6ac3e8d3b9013819920d9ea11f3803c4c0033">
-        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-animated-vector-drawable-25.1.0_cc0567ef4f621201554c836df6653e2aab4f1c06/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.1.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="f02263e35e52668dd17b73bf961437e3d562b35f">
-        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-media-compat-25.1.0_0d5c62ef13894667b9a5126845b4970f8a2de7c0/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/efraespada/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/25.1.0/support-annotations-25.1.0.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="64cb6b229a8bdfd907bc8dd46839a0053e4c018d">
-        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-25.1.0_0e071d643e7a09b3e3ee2910520d929863cfa76b/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/25.1.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="e79aa3d9a16f8c9f16377c0608de70a8f31e5d80">
-        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-25.1.0_dd678d52aa6ff2f455176fcf7e911e8721c3bccd/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-core-ui/25.1.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="aee64634871d88a419d59eb743c1258a60f19700">
-        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-ui-25.1.0_078eabeca9f94b26bc23d049453df2ec99e85d07/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-v4/25.1.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
-        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-25.1.0_14f41bb9e9137bcfd68b39681fa0606e46b17399/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/appcompat-v7/25.1.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="1630658fbc2d222b988603c27b4a4249586fbfe7">
-        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-25.1.0_dd2608b8669d70a095f8cc233ddb74bcc716921c/classes.dex" />
+        sha1="b59b6ee8d6ecc03e672d253800430343493a6ed8">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-25.1.1_353fb878b7047645ab0aa95d76688b09a5ed48ba/classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -97,8 +25,26 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="47a44716171c36c5925cd1236143cf728cfe192f">
+        sha1="66a698776bf9c04fd385654c177cc79a97bafe78">
         <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_fc52976f1d2209d8b20e906d22e11747f5bb8009/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-v4/25.1.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-25.1.1_be622c2b0d233384ce911d63de802d5a24d4511f/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-compat/25.1.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="02741d05d4b697fba5e279e9881aaa1da0ca7c7f">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-compat-25.1.1_a8411e64bc71d193ca07cceefb2c860c90cd2faf/classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -106,8 +52,71 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="a444c8272a2c8807eef8192bfe0e246973ce12b8">
+        sha1="5c597d4dae19a7393c81e5ba3a7794d9dfa06cf4">
         <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_0e777c06790c06898f56c90fdbb9417acb334706/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/25.1.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="0d191c1a09e4892d059e5ce749e4ad4e08129e35">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-animated-vector-drawable-25.1.1_fd62352c2a6816ec000b987d688d2319b30c538e/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-core-utils/25.1.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="0fb891e8f0cfba0513043a7bb357513d229ca2cd">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-utils-25.1.1_637fb5872f790248daf38323b8acf59b2bb21ef8/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/25.1.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="c03bf57f358aa10d253f21989e93bcf6014b3b17">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-25.1.1_ec1dc61c4d10b478865970f348b67ff9b48d0d7a/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/efraespada/androidstringobfuscator/0.3/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="df3f6bfd3527b4e1887d54d29ab73a23dcee1f20">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/efraespada-androidstringobfuscator-0.3_dc0e69d3a233aa3fe6d3309a1c8ad2516d6e31bc/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/appcompat-v7/25.1.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="ecb496cc08dd52551fc5ec6db3bc0632e95a89bb">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-25.1.1_417dfbc81b6ff1fd49d860babef7d3d5fa3ad70c/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-core-ui/25.1.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="3e04ac8ca644ea7baddf6fdcf72e15c79e9df94a">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-ui-25.1.1_14494731ca288dda7552d32a465bc3dfbf3f508a/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.1.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="7bde4c34162092e0a77e7f12dc85ed77c484cf5c">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-media-compat-25.1.1_27684507d764daf6607492f5b47ce716414eace4/classes.dex" />
     </item>
 
 </items>
