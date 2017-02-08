@@ -47,22 +47,26 @@ The script will encrypt all string tags with `hidden="true"` as attribute.
 
 ```xml
 <resources>
-	<string name="hello">hello world!</string>
-	<string name="app_name" hidden="true">StringObfuscator</string>
+	<string name="hello" hidden="true">hello world!</string>
+	<string name="app_name">StringObfuscator</string>
 </resources>
 ```
 
 Or encrypt strings programmatically by doing:
 
 ```java
-String encrypted = AndroidStringObfuscator.simulateString(some_string_var);
+String encrypted = AndroidStringObfuscator.encryptString(some_string_var);
 ```
 
 #### Decrypt
+From resources:
 ```java
-String decrypted = AndroidStringObfuscator.getString(R.string.app_name);
+String decrypted = AndroidStringObfuscator.getString(R.string.hello);
 ```
-
+Or from some encrypted variable:
+```java
+String decrypted = AndroidStringObfuscator.decryptString(encrypted_var);
+```
 Sample
 ------
 
