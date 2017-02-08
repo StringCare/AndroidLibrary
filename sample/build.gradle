@@ -37,8 +37,8 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.1.1'
     testCompile 'junit:junit:4.12'
-    compile project(path: ':androidstringobfuscator')
-    // compile 'efraespada:androidstringobfuscator:0.3'
+    // compile project(path: ':androidstringobfuscator')
+    compile 'efraespada:androidstringobfuscator:0.4'
 
 }
 

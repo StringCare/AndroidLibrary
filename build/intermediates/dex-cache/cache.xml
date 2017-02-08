@@ -57,6 +57,15 @@
     </item>
     <item
         is-multidex="true"
+        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/efraespada/androidstringobfuscator/0.4/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="df49b9e0254bcffba0158ee5bb4bf72e78a39c35">
+        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/efraespada-androidstringobfuscator-0.4_a31a71087edb98b5a90f68e36e2f8ce896936185/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/25.1.1/jars/classes.jar"
         jumboMode="true"
         optimize="true"
@@ -81,15 +90,6 @@
         revision="25.0.2"
         sha1="c03bf57f358aa10d253f21989e93bcf6014b3b17">
         <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-25.1.1_ec1dc61c4d10b478865970f348b67ff9b48d0d7a/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/exploded-aar/efraespada/androidstringobfuscator/0.3/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="df3f6bfd3527b4e1887d54d29ab73a23dcee1f20">
-        <dex dex="/Users/efraespada/Documents/Github/AndroidStringObfuscator/sample/build/intermediates/transforms/dex/debug/folders/1000/10/efraespada-androidstringobfuscator-0.3_dc0e69d3a233aa3fe6d3309a1c8ad2516d6e31bc/classes.dex" />
     </item>
     <item
         is-multidex="true"

@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    compile 'efraespada:androidstringobfuscator:0.2'
+    compile 'efraespada:androidstringobfuscator:0.4'
 }
 
 android.applicationVariants.all{ variant ->
@@ -63,6 +63,27 @@ String encrypted = AndroidStringObfuscator.simulateString(some_string_var);
 String decrypted = AndroidStringObfuscator.getString(R.string.app_name);
 ```
 
+Sample
+------
+
+```java
+AndroidStringObfuscator.init(this);
+
+// getting encrypted string resources
+int stringId = R.string.hello;
+
+String message = getString(stringId);
+message += " is ";
+message += AndroidStringObfuscator.getString(stringId);
+
+// and some secret
+String mySecret = "lalilulelo";
+
+message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + AndroidStringObfuscator.encryptString(message)
+    + "\n\n.. or " + AndroidStringObfuscator.decryptString(AndroidStringObfuscator.encryptString(mySecret)) + "\"";
+
+((TextView) findViewById(R.id.example)).setText(message);
+```
 Gradle Console Output Example
 -----------------------------
 ```

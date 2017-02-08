@@ -142,6 +142,11 @@ public class AndroidStringObfuscator {
         return new String(hexChars);
     }
 
+    /**
+     * returns a decrypted value for the given string resource
+     * @param id
+     * @return String
+     */
     public static String getString(int id) {
         if (context == null) {
             Log.e(TAG, "Library not initiated: AndroidStringObfuscator.init(Context)");
@@ -157,7 +162,12 @@ public class AndroidStringObfuscator {
         return context.getString(id); // returns original value, maybe not encrypted
     }
 
-    public static String simulateString(String text) {
+    /**
+     * encrypts the given value
+     * @param value
+     * @return String
+     */
+    public static String encryptString(String value) {
         if (context == null) {
             Log.e(TAG, "Library not initiated: AndroidStringObfuscator.init(Context)");
             return null;
@@ -165,7 +175,27 @@ public class AndroidStringObfuscator {
 
         String hash = getCertificateSHA1Fingerprint();
         try {
-            return encrypt(text, hash);
+            return encrypt(value, hash);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * decrypts the given encrypted value
+     * @param value
+     * @return String
+     */
+    public static String decryptString(String value) {
+        if (context == null) {
+            Log.e(TAG, "Library not initiated: AndroidStringObfuscator.init(Context)");
+            return null;
+        }
+
+        String hash = getCertificateSHA1Fingerprint();
+        try {
+            return decrypt(value, hash);
         } catch (Exception e) {
             e.printStackTrace();
         }

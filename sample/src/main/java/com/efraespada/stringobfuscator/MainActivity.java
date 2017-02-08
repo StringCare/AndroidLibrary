@@ -24,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
         // secret
         String mySecret = "lalilulelo";
 
-        message += "\n \n For Metal Gear lovers: Snake, the pass is " + AndroidStringObfuscator.simulateString(message)
-            + " or " + mySecret;
+        message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + AndroidStringObfuscator.encryptString(message)
+            + "\n\n.. or " + AndroidStringObfuscator.decryptString(AndroidStringObfuscator.encryptString(mySecret)) + "\"";
 
         ((TextView) findViewById(R.id.example)).setText(message);
     }
