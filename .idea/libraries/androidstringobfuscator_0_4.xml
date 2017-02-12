@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="androidstringobfuscator-0.4">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/sample/build/intermediates/exploded-aar/efraespada/androidstringobfuscator/0.4/res" />
+      <root url="jar://$PROJECT_DIR$/sample/build/intermediates/exploded-aar/efraespada/androidstringobfuscator/0.4/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/efraespada/androidstringobfuscator/0.4/34ae5eb0e5e1a089d30d986bcddf0f648159889b/androidstringobfuscator-0.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

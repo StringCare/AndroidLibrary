@@ -149,7 +149,7 @@ public class AndroidStringObfuscator {
      */
     public static String getString(int id) {
         if (context == null) {
-            Log.e(TAG, "Library not initiated: AndroidStringObfuscator.init(Context)");
+            Log.e(TAG, "Library not initialized: AndroidStringObfuscator.init(Context)");
             return null;
         }
 
@@ -169,7 +169,7 @@ public class AndroidStringObfuscator {
      */
     public static String encryptString(String value) {
         if (context == null) {
-            Log.e(TAG, "Library not initiated: AndroidStringObfuscator.init(Context)");
+            Log.e(TAG, "Library not initialized: AndroidStringObfuscator.init(Context)");
             return null;
         }
 
@@ -189,7 +189,7 @@ public class AndroidStringObfuscator {
      */
     public static String decryptString(String value) {
         if (context == null) {
-            Log.e(TAG, "Library not initiated: AndroidStringObfuscator.init(Context)");
+            Log.e(TAG, "Library not initialized: AndroidStringObfuscator.init(Context)");
             return null;
         }
 
