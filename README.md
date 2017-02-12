@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    compile 'efraespada:androidstringobfuscator:0.5'
+    compile 'efraespada:androidstringobfuscator:0.4.1'
 }
 
 android.applicationVariants.all{ variant ->

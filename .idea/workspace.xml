@@ -2,26 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d479c2bd-a5a9-4b46-8480-0a65288b0ad1" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/markdown-navigator.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.1/taskArtifacts/cache.properties.lock" afterPath="$PROJECT_DIR$/.gradle/3.1/taskArtifacts/cache.properties.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.1/taskArtifacts/fileHashes.bin" afterPath="$PROJECT_DIR$/.gradle/3.1/taskArtifacts/fileHashes.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.1/taskArtifacts/fileSnapshots.bin" afterPath="$PROJECT_DIR$/.gradle/3.1/taskArtifacts/fileSnapshots.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.1/taskArtifacts/taskArtifacts.bin" afterPath="$PROJECT_DIR$/.gradle/3.1/taskArtifacts/taskArtifacts.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.1/tasks/_androidstringobfuscator_compileDebugJavaWithJavac/localClassSetAnalysis/localClassSetAnalysis.bin" afterPath="$PROJECT_DIR$/.gradle/3.1/tasks/_androidstringobfuscator_compileDebugJavaWithJavac/localClassSetAnalysis/localClassSetAnalysis.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.1/tasks/_androidstringobfuscator_compileDebugJavaWithJavac/localClassSetAnalysis/localClassSetAnalysis.lock" afterPath="$PROJECT_DIR$/.gradle/3.1/tasks/_androidstringobfuscator_compileDebugJavaWithJavac/localClassSetAnalysis/localClassSetAnalysis.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.1/tasks/_androidstringobfuscator_compileDebugJavaWithJavac/localJarClasspathSnapshot/localJarClasspathSnapshot.bin" afterPath="$PROJECT_DIR$/.gradle/3.1/tasks/_androidstringobfuscator_compileDebugJavaWithJavac/localJarClasspathSnapshot/localJarClasspathSnapshot.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.1/tasks/_androidstringobfuscator_compileDebugJavaWithJavac/localJarClasspathSnapshot/localJarClasspathSnapshot.lock" afterPath="$PROJECT_DIR$/.gradle/3.1/tasks/_androidstringobfuscator_compileDebugJavaWithJavac/localJarClasspathSnapshot/localJarClasspathSnapshot.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.1/tasks/_sample_compileDebugJavaWithJavac/localClassSetAnalysis/localClassSetAnalysis.lock" afterPath="$PROJECT_DIR$/.gradle/3.1/tasks/_sample_compileDebugJavaWithJavac/localClassSetAnalysis/localClassSetAnalysis.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.1/tasks/_sample_compileDebugJavaWithJavac/localJarClasspathSnapshot/localJarClasspathSnapshot.bin" afterPath="$PROJECT_DIR$/.gradle/3.1/tasks/_sample_compileDebugJavaWithJavac/localJarClasspathSnapshot/localJarClasspathSnapshot.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.1/tasks/_sample_compileDebugJavaWithJavac/localJarClasspathSnapshot/localJarClasspathSnapshot.lock" afterPath="$PROJECT_DIR$/.gradle/3.1/tasks/_sample_compileDebugJavaWithJavac/localJarClasspathSnapshot/localJarClasspathSnapshot.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AndroidStringObfuscator.iml" afterPath="$PROJECT_DIR$/AndroidStringObfuscator.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/androidstringobfuscator/androidstringobfuscator.iml" afterPath="$PROJECT_DIR$/androidstringobfuscator/androidstringobfuscator.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/androidstringobfuscator/build.gradle" afterPath="$PROJECT_DIR$/androidstringobfuscator/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/androidstringobfuscator/src/main/java/com/efraespada/androidstringobfuscator/AndroidStringObfuscator.java" afterPath="$PROJECT_DIR$/androidstringobfuscator/src/main/java/com/efraespada/androidstringobfuscator/AndroidStringObfuscator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sample/sample.iml" afterPath="$PROJECT_DIR$/sample/sample.iml" />
     </list>
     <ignored path="AndroidStringObfuscator.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -54,12 +37,52 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="AndroidStringObfuscator.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="AndroidStringObfuscator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/androidstringobfuscator/src/main/java/com/efraespada/androidstringobfuscator/AndroidStringObfuscator.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="793">
               <caret line="191" column="47" selection-start-line="191" selection-start-column="47" selection-end-line="191" selection-end-column="47" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="0">
+                <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+                <folding>
+                  <marker date="1486936294000" expanded="true" signature="420:426" ph="{" />
+                  <marker date="1486936294000" expanded="true" signature="435:437" ph="}" />
+                  <marker date="1486936294000" expanded="true" signature="452:458" ph="{" />
+                  <marker date="1486936294000" expanded="true" signature="508:510" ph="}" />
+                  <marker date="1486936294000" expanded="true" signature="543:869" ph="{...}" />
+                  <marker date="1486936294000" expanded="true" signature="589:867" ph="{...}" />
+                  <marker date="1486936294000" expanded="true" signature="670:861" ph="{...}" />
+                  <marker date="1486936294000" expanded="true" signature="1061:1183" ph="..." />
+                </folding>
+              </first_editor>
+              <second_editor />
+            </state>
+          </provider>
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="165">
+                <caret line="18" column="53" selection-start-line="18" selection-start-column="53" selection-end-line="18" selection-end-column="53" />
+                <folding>
+                  <marker date="1486936294000" expanded="true" signature="420:426" ph="{" />
+                  <marker date="1486936294000" expanded="true" signature="435:437" ph="}" />
+                  <marker date="1486936294000" expanded="true" signature="452:458" ph="{" />
+                  <marker date="1486936294000" expanded="true" signature="508:510" ph="}" />
+                  <marker date="1486936294000" expanded="true" signature="543:869" ph="{...}" />
+                  <marker date="1486936294000" expanded="true" signature="589:867" ph="{...}" />
+                  <marker date="1486936294000" expanded="true" signature="670:861" ph="{...}" />
+                  <marker date="1486936294000" expanded="true" signature="1061:1183" ph="..." />
+                </folding>
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -2939,7 +2962,7 @@
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="AndroidView" proportions="" version="1">
+    <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -3245,7 +3268,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -3320,44 +3343,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="0">
-            <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-            <folding>
-              <marker date="1486936040000" expanded="true" signature="420:426" ph="{" />
-              <marker date="1486936040000" expanded="true" signature="435:437" ph="}" />
-              <marker date="1486936040000" expanded="true" signature="452:458" ph="{" />
-              <marker date="1486936040000" expanded="true" signature="506:508" ph="}" />
-              <marker date="1486936040000" expanded="true" signature="541:867" ph="{...}" />
-              <marker date="1486936040000" expanded="true" signature="587:865" ph="{...}" />
-              <marker date="1486936040000" expanded="true" signature="668:859" ph="{...}" />
-              <marker date="1486936040000" expanded="true" signature="1059:1181" ph="..." />
-            </folding>
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="165">
-            <caret line="18" column="51" selection-start-line="18" selection-start-column="51" selection-end-line="18" selection-end-column="51" />
-            <folding>
-              <marker date="1486936040000" expanded="true" signature="420:426" ph="{" />
-              <marker date="1486936040000" expanded="true" signature="435:437" ph="}" />
-              <marker date="1486936040000" expanded="true" signature="452:458" ph="{" />
-              <marker date="1486936040000" expanded="true" signature="506:508" ph="}" />
-              <marker date="1486936040000" expanded="true" signature="541:867" ph="{...}" />
-              <marker date="1486936040000" expanded="true" signature="587:865" ph="{...}" />
-              <marker date="1486936040000" expanded="true" signature="668:859" ph="{...}" />
-              <marker date="1486936040000" expanded="true" signature="1059:1181" ph="..." />
-            </folding>
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/androidstringobfuscator/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-585">
@@ -3371,6 +3356,44 @@
         <state relative-caret-position="793">
           <caret line="191" column="47" selection-start-line="191" selection-start-column="47" selection-end-line="191" selection-end-column="47" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="0">
+            <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <folding>
+              <marker date="1486936294000" expanded="true" signature="420:426" ph="{" />
+              <marker date="1486936294000" expanded="true" signature="435:437" ph="}" />
+              <marker date="1486936294000" expanded="true" signature="452:458" ph="{" />
+              <marker date="1486936294000" expanded="true" signature="508:510" ph="}" />
+              <marker date="1486936294000" expanded="true" signature="543:869" ph="{...}" />
+              <marker date="1486936294000" expanded="true" signature="589:867" ph="{...}" />
+              <marker date="1486936294000" expanded="true" signature="670:861" ph="{...}" />
+              <marker date="1486936294000" expanded="true" signature="1061:1183" ph="..." />
+            </folding>
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="165">
+            <caret line="18" column="53" selection-start-line="18" selection-start-column="53" selection-end-line="18" selection-end-column="53" />
+            <folding>
+              <marker date="1486936294000" expanded="true" signature="420:426" ph="{" />
+              <marker date="1486936294000" expanded="true" signature="435:437" ph="}" />
+              <marker date="1486936294000" expanded="true" signature="452:458" ph="{" />
+              <marker date="1486936294000" expanded="true" signature="508:510" ph="}" />
+              <marker date="1486936294000" expanded="true" signature="543:869" ph="{...}" />
+              <marker date="1486936294000" expanded="true" signature="589:867" ph="{...}" />
+              <marker date="1486936294000" expanded="true" signature="670:861" ph="{...}" />
+              <marker date="1486936294000" expanded="true" signature="1061:1183" ph="..." />
+            </folding>
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
