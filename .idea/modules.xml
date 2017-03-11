@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/AndroidStringObfuscator.iml" filepath="$PROJECT_DIR$/AndroidStringObfuscator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/androidstringobfuscator/androidstringobfuscator.iml" filepath="$PROJECT_DIR$/androidstringobfuscator/androidstringobfuscator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
+    </modules>
+  </component>
+</project>
