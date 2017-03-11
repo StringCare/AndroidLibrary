@@ -83,8 +83,11 @@ message += AndroidStringObfuscator.getString(stringId);
 // and secret
 String mySecret = "lalilulelo";
 
-message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + AndroidStringObfuscator.encryptString(mySecret)
-    + "\n\n.. or " + AndroidStringObfuscator.decryptString(AndroidStringObfuscator.encryptString(mySecret)) + "\"";
+message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " +
+    AndroidStringObfuscator.encryptString(mySecret) +
+    "\n\n.. or " +
+    AndroidStringObfuscator.decryptString(AndroidStringObfuscator.encryptString(mySecret)) +
+    "\"";
 
 ((TextView) findViewById(R.id.example)).setText(message);
 ```
