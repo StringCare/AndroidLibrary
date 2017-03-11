@@ -88,6 +88,9 @@ message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + AndroidSt
 
 ((TextView) findViewById(R.id.example)).setText(message);
 ```
+
+<p align="center"><img width="90%" vspace="20" src="https://raw.githubusercontent.com/efraespada/AndroidStringObfuscator/develop/sample.png"></p>
+
 Gradle Console Output Example
 -----------------------------
 ```
