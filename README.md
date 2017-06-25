@@ -112,7 +112,7 @@ Gradle Console Output Example
 
 
 #### More information
-At first run, if you haven't installed Gradle:
+Ensure to have installed Gradle before you compile:
 ```
 ...
 :sample:obfuscator-script - Downloading https://services.gradle.org/distributions/gradle-2.14.1-all.zip
