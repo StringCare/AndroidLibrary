@@ -20,6 +20,7 @@ public class Core {
 	static BufferedWriter writer = null;
 	static String key = null;
 	static String variant = null;
+	static String variantO = null;
 	static String module = null;
 	static String file = null;
 	static String error = null;
@@ -30,7 +31,7 @@ public class Core {
 	final static boolean DEBUG = false;
 	final static String TAG = "obfuscator-script";
 	final static String SEPARATOR = "-----------------------------------------------------------------------------";
-	final static String VERSION = "0.5";
+	final static String VERSION = "0.6";
 	final static int maxToShow = 15;
 	final static String FOLDER = "string_obfuscation";
 	final static String PARAMS_ORDER = "params [module] [variant] [optional:sha1]";
@@ -47,9 +48,15 @@ public class Core {
 		for (int i = 0; i < args.length; i++) {
 			if (i == 0)
 				module = args[i];
-			else if (i == 1)
-				variant = args[i];
-			else if (i == 2)
+			else if (i == 1) {
+				variantO = args[i];
+
+				if (variantO.indexOf("/") > 1) {
+					String[] parts = variantO.split("/");
+					variant = parts[0] + parts[1].substring(0, 1).toUpperCase() + parts[1].substring(1);
+				}
+
+			} else if (i == 2)
 				key = args[i];
 		}
 		
@@ -93,7 +100,7 @@ public class Core {
 		if (variant != null)
 			stringPath = module + File.separator + "build" + File.separator + "intermediates" +
 					File.separator + "res" + File.separator + "merged" +
-					File.separator +  variant + File.separator + "values" +
+					File.separator +  variantO + File.separator + "values" +
 					File.separator + "values.xml";
 		
 		else {

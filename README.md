@@ -105,7 +105,7 @@ Gradle Console Output Example
 :sample:obfuscator-script - SHA1 fingerprint: E1:28:0C:3E:65:91:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF
 :sample:obfuscator-script - [hello world!] - [D1862D9B434D08E..]
 :sample:obfuscator-script - -----------------------------------------------------------------------------
-:sample:obfuscator-script - v 0.5
+:sample:obfuscator-script - v 0.6
 :sample:processDebugManifest UP-TO-DATE
 ...
 ```
