@@ -36,7 +36,7 @@ android.applicationVariants.all{ variant ->
 
 Setup
 -----
-Init the library:
+Initialize the library:
 ```java
 AndroidStringObfuscator.init(this);
 ```
@@ -112,7 +112,7 @@ Gradle Console Output Example
 
 
 #### More information
-Ensure to have installed Gradle before you compile:
+If you haven't installed Gradle before you compile:
 ```
 ...
 :sample:obfuscator-script - Downloading https://services.gradle.org/distributions/gradle-2.14.1-all.zip
@@ -121,7 +121,7 @@ Ensure to have installed Gradle before you compile:
 ...
 ```
 
-If `~/.android/debug.keystore` is missing, run your app to generate that file.
+If `~/.android/debug.keystore` is missing, run your app to generate that file. For non default keystore file, check your project configuration.
 ```
 ...
 :sample:obfuscator-script - debug variant
