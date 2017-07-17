@@ -36,7 +36,7 @@ android.applicationVariants.all{ variant ->
 
 Setup
 -----
-Init the library:
+Initialize the library:
 ```java
 AndroidStringObfuscator.init(this);
 ```
@@ -105,14 +105,14 @@ Gradle Console Output Example
 :sample:obfuscator-script - SHA1 fingerprint: E1:28:0C:3E:65:91:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF
 :sample:obfuscator-script - [hello world!] - [D1862D9B434D08E..]
 :sample:obfuscator-script - -----------------------------------------------------------------------------
-:sample:obfuscator-script - v 0.5
+:sample:obfuscator-script - v 0.6
 :sample:processDebugManifest UP-TO-DATE
 ...
 ```
 
 
 #### More information
-At first run, if you haven't installed Gradle:
+If you haven't installed Gradle before you compile:
 ```
 ...
 :sample:obfuscator-script - Downloading https://services.gradle.org/distributions/gradle-2.14.1-all.zip
@@ -121,7 +121,7 @@ At first run, if you haven't installed Gradle:
 ...
 ```
 
-If `~/.android/debug.keystore` is missing, run your app to generate that file.
+If `~/.android/debug.keystore` is missing, run your app to generate that file. For non default keystore file, check your project configuration.
 ```
 ...
 :sample:obfuscator-script - debug variant
