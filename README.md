@@ -21,7 +21,7 @@ dependencies {
 
 android.applicationVariants.all{ variant ->
     variant.mergeResources.doLast{
-        println  ":" + project.name + ":initStringObfuscator"
+        println  ":initStringObfuscator:" + project.name + ":" + variant.dirName
         javaexec {
             main = "-jar";
             args = [
@@ -38,7 +38,7 @@ Setup
 -----
 Initialize the library:
 ```java
-AndroidStringObfuscator.init(this);
+AndroidStringObfuscator.init(getApplicationContext());
 ```
 
 
@@ -105,7 +105,7 @@ Gradle Console Output Example
 :sample:obfuscator-script - SHA1 fingerprint: E1:28:0C:3E:65:91:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF
 :sample:obfuscator-script - [hello world!] - [D1862D9B434D08E..]
 :sample:obfuscator-script - -----------------------------------------------------------------------------
-:sample:obfuscator-script - v 0.6
+:sample:obfuscator-script - v 0.7
 :sample:processDebugManifest UP-TO-DATE
 ...
 ```
