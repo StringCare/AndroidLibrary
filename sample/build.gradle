@@ -47,7 +47,7 @@ dependencies {
 android.applicationVariants.all{ variant ->
 
     variant.mergeResources.doLast{
-        println  ":" + project.name + ":initStringObfuscator"
+        println  ":initStringObfuscator:" + project.name + ":" + variant.dirName
         javaexec {
             main = "-jar";
             args = [

@@ -31,7 +31,7 @@ public class Core {
 	final static boolean DEBUG = false;
 	final static String TAG = "obfuscator-script";
 	final static String SEPARATOR = "-----------------------------------------------------------------------------";
-	final static String VERSION = "0.6";
+	final static String VERSION = "0.7";
 	final static int maxToShow = 15;
 	final static String FOLDER = "string_obfuscation";
 	final static String PARAMS_ORDER = "params [module] [variant] [optional:sha1]";
@@ -54,6 +54,8 @@ public class Core {
 				if (variantO.indexOf("/") > 1) {
 					String[] parts = variantO.split("/");
 					variant = parts[0] + parts[1].substring(0, 1).toUpperCase() + parts[1].substring(1);
+				} else {
+					variant = variantO;
 				}
 
 			} else if (i == 2)
@@ -245,10 +247,14 @@ public class Core {
 				cmd = "gradlew";
 				Runtime.getRuntime().exec("chmod +x ../" + cmd);
 			}
-						
-			InputStream is = Runtime.getRuntime().exec("../" + cmd + " signingReport").getInputStream();
+			
+			String command = "../" + cmd + " signingReport";
+
+			InputStream is = Runtime.getRuntime().exec(command).getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader buff = new BufferedReader (isr);
+			
+			
 
 			String line;
 			while ((line = buff.readLine()) != null) {
@@ -276,7 +282,7 @@ public class Core {
 	public static void parseTrace(String line) {
 		
 		boolean mustPrint = false;
-		
+				
 		if (line.toLowerCase().contains("downloading")) {
 			mustPrint = true;
 		} else if (line.toLowerCase().contains("unzipping")) {
