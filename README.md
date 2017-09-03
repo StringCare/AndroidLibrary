@@ -71,7 +71,7 @@ Sample
 ------
 
 ```java
-AndroidStringObfuscator.init(this);
+AndroidStringObfuscator.init(getApplicationContext());
 
 // getting encrypted string resources
 int stringId = R.string.hello;
