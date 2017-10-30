@@ -11,14 +11,17 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
@@ -27,11 +30,13 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AndroidStringObfuscator {
 
+    private static final int LENGTH = 16;
     private static final String CODIFICATION = "UTF-8";
-    private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
+    private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
     private static final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
     private static final String TAG = AndroidStringObfuscator.class.getSimpleName();
     private static Context context;
+    private static byte[] iv = new byte[0];
 
     public static void init(Context c) {
         context = c;
@@ -100,19 +105,21 @@ public class AndroidStringObfuscator {
     }
 
     private static String encrypt(String message, String key) throws Exception {
+        buildIvParam(message, key);
         byte[] data = message.getBytes(CODIFICATION);
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-        cipher.init(Cipher.ENCRYPT_MODE, generateKey(key));
+        cipher.init(Cipher.ENCRYPT_MODE, generateKey(key), new IvParameterSpec(iv));
         byte[] encryptData = cipher.doFinal(data);
 
         return byteArrayToHexString(encryptData);
     }
 
     private static String decrypt(String message, String key) throws Exception {
+        buildIvParam(message, key);
         byte[] tmp = hexStringToByteArray(message);
         SecretKeySpec spec = new SecretKeySpec(generateKey(key).getEncoded(), "AES");
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-        cipher.init(Cipher.DECRYPT_MODE, spec);
+        cipher.init(Cipher.DECRYPT_MODE, spec, new IvParameterSpec(iv));
 
         String result = new String(cipher.doFinal(tmp), CODIFICATION);
         return result;
@@ -200,5 +207,24 @@ public class AndroidStringObfuscator {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static void buildIvParam(String message, String key) {
+        if (iv.length == 0) {
+            iv = new byte[LENGTH];
+            int index = randomNumber(key.length());
+            System.arraycopy(key.getBytes(), index, iv, 0, LENGTH);
+
+            try {
+                return decrypt(message, hash);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static int randomNumber(int length){
+        int value = new Random().nextInt(length) + length - 2 - length;
+        return value;
     }
 }
