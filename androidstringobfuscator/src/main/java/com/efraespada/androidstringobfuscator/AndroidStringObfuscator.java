@@ -36,7 +36,6 @@ public class AndroidStringObfuscator {
     private static final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
     private static final String TAG = AndroidStringObfuscator.class.getSimpleName();
     private static Context context;
-    private static byte[] iv = new byte[0];
 
     public static void init(Context c) {
         context = c;
@@ -105,21 +104,19 @@ public class AndroidStringObfuscator {
     }
 
     private static String encrypt(String message, String key) throws Exception {
-        buildIvParam(message, key);
         byte[] data = message.getBytes(CODIFICATION);
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-        cipher.init(Cipher.ENCRYPT_MODE, generateKey(key), new IvParameterSpec(iv));
+        cipher.init(Cipher.ENCRYPT_MODE, generateKey(key));
         byte[] encryptData = cipher.doFinal(data);
 
         return byteArrayToHexString(encryptData);
     }
 
     private static String decrypt(String message, String key) throws Exception {
-        buildIvParam(message, key);
         byte[] tmp = hexStringToByteArray(message);
         SecretKeySpec spec = new SecretKeySpec(generateKey(key).getEncoded(), "AES");
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-        cipher.init(Cipher.DECRYPT_MODE, spec, new IvParameterSpec(iv));
+        cipher.init(Cipher.DECRYPT_MODE, spec);
 
         String result = new String(cipher.doFinal(tmp), CODIFICATION);
         return result;
@@ -209,22 +206,4 @@ public class AndroidStringObfuscator {
         return null;
     }
 
-    private static void buildIvParam(String message, String key) {
-        if (iv.length == 0) {
-            iv = new byte[LENGTH];
-            int index = randomNumber(key.length());
-            System.arraycopy(key.getBytes(), index, iv, 0, LENGTH);
-
-            try {
-                return decrypt(message, hash);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static int randomNumber(int length){
-        int value = new Random().nextInt(length) + length - 2 - length;
-        return value;
-    }
 }
