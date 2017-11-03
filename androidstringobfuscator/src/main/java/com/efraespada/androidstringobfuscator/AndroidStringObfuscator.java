@@ -32,7 +32,7 @@ public class AndroidStringObfuscator {
 
     private static final int LENGTH = 16;
     private static final String CODIFICATION = "UTF-8";
-    private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
+    private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
     private static final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
     private static final String TAG = AndroidStringObfuscator.class.getSimpleName();
     private static Context context;
