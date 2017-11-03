@@ -99,13 +99,15 @@ public class Core {
 	public static void mainProcess() {
 		String xml = "";
 
-		if (variant != null)
+		if (variant != null) {
+			// TODO control intermediate folder for gradle 4
 			stringPath = module + File.separator + "build" + File.separator + "intermediates" +
 					File.separator + "res" + File.separator + "merged" +
 					File.separator +  variantO + File.separator + "values" +
 					File.separator + "values.xml";
 
-		else {
+			// /app/build/intermediates/incremental/mergeDevDebugResources/merged.dir/values/
+		} else {
 			print("variant not detected; try " + PARAMS_ORDER);
 			System.exit(0);
 		}
