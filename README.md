@@ -8,29 +8,34 @@ Installation
 
 Put [AndroidStringObfuscator.jar](https://github.com/efraespada/AndroidStringObfuscator/raw/master/AndroidStringObfuscator.jar) in the root of the project.
 
-#### Gradle 
+#### Gradle
 
+root_project/build.gradle
+```groovy
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        ...
+        classpath files('../AndroidObfuscatorPlugin/build/libs/stringobfuscatorplugin-1.0-SNAPSHOT.jar')
+        ...
+    }
+}
+
+// BOTTOM
+apply plugin: com.efraespada.stringobfuscatorplugin.StringObfuscatorPlugin
+```
+
+root_project/app/build.gradle
 ```groovy
 repositories {
     jcenter()
 }
 
 dependencies {
-    compile 'efraespada:androidstringobfuscator:0.4.1'
-}
-
-android.applicationVariants.all{ variant ->
-    variant.mergeResources.doLast{
-        println  ":initStringObfuscator:" + project.name + ":" + variant.dirName
-        javaexec {
-            main = "-jar";
-            args = [
-                  "../AndroidStringObfuscator.jar",
-                  project.name,
-                  variant.dirName
-            ]
-        }
-    }
+    implementation project(path: ':androidstringobfuscator')
+    // compile 'efraespada:androidstringobfuscator:0.4.1'
 }
 ```
 
