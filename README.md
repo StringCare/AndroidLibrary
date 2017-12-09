@@ -1,7 +1,7 @@
 Android String Obfuscator
 =========================
 
-Hide strings easily with that lib (and script)! It uses AES/ECB/PKCS5Padding transformation to convert strings with your app's SHA1 fingerprint.
+Hide strings easily with that lib and plugin! It uses AES/ECB/PKCS5Padding transformation to convert strings with your app's SHA1 fingerprint.
 
 Gradle implementation
 ------------
