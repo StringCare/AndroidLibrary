@@ -36,23 +36,8 @@ dependencies {
     })
     implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
-    implementation project(path: ':androidstringobfuscator')
-    //compile 'efraespada:androidstringobfuscator:0.4.1'
-
+    // implementation project(path: ':androidstringobfuscator')
+    implementation "efraespada:androidstringobfuscator:$aso_sop_version"
 }
-
-/* string obfuscation
-android.applicationVariants.all{ variant ->
-    variant.mergeResources.doLast{
-        javaexec {
-            main = "-jar";
-            args = [
-                    "../obfuscator-script.jar",
-                    project.name,
-                    variant.dirName
-            ]
-        }
-    }
-}*/
 
 

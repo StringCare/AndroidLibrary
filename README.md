@@ -3,27 +3,27 @@ Android String Obfuscator
 
 Hide strings easily with that lib (and script)! It uses AES/ECB/PKCS5Padding transformation to convert strings with your app's SHA1 fingerprint.
 
-Installation
+Gradle implementation
 ------------
-
-Put [AndroidStringObfuscator.jar](https://github.com/efraespada/AndroidStringObfuscator/raw/master/AndroidStringObfuscator.jar) in the root of the project.
-
-#### Gradle
 
 root_project/build.gradle
 ```groovy
-buildscript {
+buildscript { 
+ 
+    ext {
+        aso_sop_version = '0.4.1'
+    }
+    
     repositories {
-        mavenLocal()
+        jcenter()
     }
+    
     dependencies {
-        ...
-        classpath files('../AndroidObfuscatorPlugin/build/libs/stringobfuscatorplugin-1.0-SNAPSHOT.jar')
-        ...
+        classpath "com.efraespada:stringobfuscatorplugin:$aso_sop_version"
     }
+     
 }
-
-// BOTTOM
+ 
 apply plugin: com.efraespada.stringobfuscatorplugin.StringObfuscatorPlugin
 ```
 
@@ -31,11 +31,10 @@ root_project/app/build.gradle
 ```groovy
 repositories {
     jcenter()
-}
-
+} 
+ 
 dependencies {
-    implementation project(path: ':androidstringobfuscator')
-    // compile 'efraespada:androidstringobfuscator:0.4.1'
+    implementation "efraespada:androidstringobfuscator:$aso_sop_version"
 }
 ```
 
@@ -103,37 +102,22 @@ Gradle Console Output Example
 -----------------------------
 ```
 ...
+:sample:generateDebugResValues UP-TO-DATE
+:sample:generateDebugResources UP-TO-DATE
 :sample:mergeDebugResources
-:sample:initStringObfuscator
-:sample:obfuscator-script - -----------------------------------------------------------------------------
-:sample:obfuscator-script - debug variant
-:sample:obfuscator-script - SHA1 fingerprint: E1:28:0C:3E:65:91:2E:21:E9:98:2B:58:80:9A:25:3A:F6:88:7D:FF
-:sample:obfuscator-script - [hello world!] - [D1862D9B434D08E..]
-:sample:obfuscator-script - -----------------------------------------------------------------------------
-:sample:obfuscator-script - v 0.7
-:sample:processDebugManifest UP-TO-DATE
+:sample:debug:B8:DC:47:58:9B:5F:2C:21:45:C4:04:37:0E:56:53:DC:24:6B:2C:66
+:sample:backupStringResources
+	- values/strings.xml
+:sample:encryptStringResources
+	- values/strings.xml
+		[hello world!] - [A8590C43DA85D67..]
+:sample:mergeDebugResources UP-TO-DATE
+:sample:restoreStringResources
+	- values/strings.xml
+:sample:createDebugCompatibleScreenManifests UP-TO-DATE
 ...
 ```
 
-
-#### More information
-If you haven't installed Gradle before you compile:
-```
-...
-:sample:obfuscator-script - Downloading https://services.gradle.org/distributions/gradle-2.14.1-all.zip
-:sample:obfuscator-script - Unzipping /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv/gradle-2.14.1-all.zip to /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv
-:sample:obfuscator-script - Set executable permissions for: /Users/efraespada/.gradle/wrapper/dists/gradle-2.14.1-all/8bnwg5hd3w55iofp58khbp6yv/gradle-2.14.1/bin/gradle
-...
-```
-
-If `~/.android/debug.keystore` is missing, run your app to generate that file. For non default keystore file, check your project configuration.
-```
-...
-:sample:obfuscator-script - debug variant
-:sample:obfuscator-script - Missing keystore
-:sample:obfuscator-script - SHA1 fingerprint not detected; try params [module] [variant] [optional:sha1]
-...
-```
 License
 -------
     Copyright 2017 Efraín Espada
