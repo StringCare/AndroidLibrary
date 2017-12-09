@@ -11,14 +11,17 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
@@ -27,6 +30,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AndroidStringObfuscator {
 
+    private static final int LENGTH = 16;
     private static final String CODIFICATION = "UTF-8";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
     private static final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
@@ -201,4 +205,5 @@ public class AndroidStringObfuscator {
         }
         return null;
     }
+
 }
