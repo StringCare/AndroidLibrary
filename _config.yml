@@ -1,0 +1,8 @@
+title: Android String Obfuscator
+description: Android library to obfuscate Strings
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-minimal
+
+gems:
+  - jekyll-mentions
