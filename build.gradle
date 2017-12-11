@@ -16,7 +16,7 @@ buildscript {
     }
 
     dependencies {
-        classpath files('../StringObfuscatorPlugin/build/libs/stringobfuscatorplugin-0.4.1.jar')
+        classpath files('../StringObfuscatorPlugin/build/libs/stringobfuscatorplugin-0.5.0.jar')
         // classpath "com.efraespada:stringobfuscatorplugin:$aso_sop_version"
         classpath 'com.android.tools.build:gradle:3.0.1'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1"
@@ -39,8 +39,8 @@ task clean(type: Delete) {
 stringobfuscator {
     modules {
         sample {
-            stringFiles = ['strings.xml',"other_file.xml"]
-            srcFolders = ['src/main', "other_folder"]
+            stringFiles = ['strings.xml']
+            srcFolders = ['src/main']
         }
     }
 }

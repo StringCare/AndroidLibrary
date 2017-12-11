@@ -14,7 +14,7 @@ apply plugin: com.efraespada.stringobfuscatorplugin.StringObfuscatorPlugin
 buildscript { 
  
     ext {
-        aso_sop_version = '0.4.2'
+        aso_sop_version = '0.5.0'
     }
     
     repositories {
