@@ -119,8 +119,8 @@ stringobfuscator {
         
         // root_folder/sample/src/main/res/.../strings.xml
         // root_folder/sample/src/main/res/.../other_file.xml
-        // root_folder/other_folder/res/.../strings.xml
-        // root_folder/other_folder/res/.../other_file.xml
+        // root_folder/sample/other_folder/res/.../strings.xml
+        // root_folder/sample/other_folder/res/.../other_file.xml
         
         other_module {
             srcFolders = ['src/moduleB']
