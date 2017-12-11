@@ -6,12 +6,15 @@ Hide strings easily with that lib and plugin! It uses AES/ECB/PKCS5Padding trans
 Gradle implementation
 ------------
 
-root_project/build.gradle
 ```groovy
+// root_project/build.gradle
+ 
+apply plugin: com.efraespada.stringobfuscatorplugin.StringObfuscatorPlugin
+ 
 buildscript { 
  
     ext {
-        aso_sop_version = '0.4.1'
+        aso_sop_version = '0.5.0'
     }
     
     repositories {
@@ -23,12 +26,11 @@ buildscript {
     }
      
 }
- 
-apply plugin: com.efraespada.stringobfuscatorplugin.StringObfuscatorPlugin
 ```
 
-root_project/app/build.gradle
 ```groovy
+// root_project/your_module/build.gradle
+
 repositories {
     jcenter()
 } 
@@ -97,6 +99,43 @@ message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " +
 ```
 
 <p align="center"><img width="40%" vspace="20" src="https://raw.githubusercontent.com/efraespada/AndroidStringObfuscator/master/sample.png"></p>
+
+
+Configuration
+-----------------------------
+By default the plugin will encrypt every `strings.xml` file inside `src/main`folder but you can choose a different configuration.
+```groovy
+// root_folder/build.gradle
+apply plugin: com.efraespada.stringobfuscatorplugin.StringObfuscatorPlugin
+ 
+stringobfuscator {
+ 
+    modules {
+     
+        sample {
+            stringFiles = ['strings.xml',"other_file.xml"]
+            srcFolders = ['src/main', "other_folder"]
+        }
+        
+        // root_folder/sample/src/main/res/.../strings.xml
+        // root_folder/sample/src/main/res/.../other_file.xml
+        // root_folder/sample/other_folder/res/.../strings.xml
+        // root_folder/sample/other_folder/res/.../other_file.xml
+        
+        other_module {
+            srcFolders = ['src/moduleB']
+        }
+        
+        // root_folder/other_module/src/moduleB/res/.../strings.xml
+        
+        other_module_ {} // 
+        
+        // root_folder/other_module_/src/main/res/.../strings.xml
+        
+    }
+     
+}
+```
 
 Gradle Console Output Example
 -----------------------------
