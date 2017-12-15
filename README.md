@@ -14,7 +14,7 @@ apply plugin: com.efraespada.stringobfuscatorplugin.StringObfuscatorPlugin
 buildscript { 
  
     ext {
-        aso_sop_version = '0.5.0'
+        stringcare_version = '0.1'
     }
     
     repositories {
@@ -22,7 +22,7 @@ buildscript {
     }
     
     dependencies {
-        classpath "com.efraespada:stringobfuscatorplugin:$aso_sop_version"
+        classpath "com.efraespada:stringcare:androidplugin:$stringcare_version"
     }
      
 }
@@ -36,7 +36,7 @@ repositories {
 } 
  
 dependencies {
-    implementation "efraespada:androidstringobfuscator:$aso_sop_version"
+    implementation "com.efraespada:stringcare:androidlibrary:$stringcare_version"
 }
 ```
 
@@ -44,7 +44,7 @@ Setup
 -----
 Initialize the library:
 ```java
-AndroidStringObfuscator.init(getApplicationContext());
+SC.init(getApplicationContext());
 ```
 
 
@@ -61,38 +61,38 @@ The script will encrypt all string tags with `hidden="true"` as attribute.
 Or encrypt strings programmatically by doing:
 
 ```java
-String encrypted = AndroidStringObfuscator.encryptString(some_string_var);
+String encrypted = SC.encryptString(some_string_var);
 ```
 
 #### Decrypt
 From resources:
 ```java
-String decrypted = AndroidStringObfuscator.getString(R.string.hello);
+String decrypted = SC.getString(R.string.hello);
 ```
 Or from encrypted variables:
 ```java
-String decrypted = AndroidStringObfuscator.decryptString(encrypted_var);
+String decrypted = SC.decryptString(encrypted_var);
 ```
 Sample
 ------
 
 ```java
-AndroidStringObfuscator.init(getApplicationContext());
+SC.init(getApplicationContext());
 
 // getting encrypted string resources
 int stringId = R.string.hello;
 
 String message = getString(stringId);
 message += " is ";
-message += AndroidStringObfuscator.getString(stringId);
+message += SC.getString(stringId);
 
 // and secret
 String mySecret = "lalilulelo";
 
 message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " +
-    AndroidStringObfuscator.encryptString(mySecret) +
+    SC.encryptString(mySecret) +
     "\n\n.. or " +
-    AndroidStringObfuscator.decryptString(AndroidStringObfuscator.encryptString(mySecret)) +
+    SC.decryptString(SC.encryptString(mySecret)) +
     "\"";
 
 ((TextView) findViewById(R.id.example)).setText(message);
@@ -108,7 +108,7 @@ By default the plugin will encrypt every `strings.xml` file inside `src/main`fol
 // root_folder/build.gradle
 apply plugin: com.efraespada.stringobfuscatorplugin.StringObfuscatorPlugin
  
-stringobfuscator {
+stringcare {
  
     modules {
      
