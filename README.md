@@ -1,3 +1,5 @@
+repo under construction, sorry
+
 Android String Obfuscator
 =========================
 
@@ -9,7 +11,7 @@ Gradle implementation
 ```groovy
 // root_project/build.gradle
  
-apply plugin: com.efraespada.stringobfuscatorplugin.StringObfuscatorPlugin
+apply plugin: com.efraespada.stringcare.StringCarePlugin
  
 buildscript { 
  
