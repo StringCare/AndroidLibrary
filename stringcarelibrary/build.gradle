@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "0.5.0"
+version = "0.1"
 
 android {
     compileSdkVersion 25
@@ -12,7 +12,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 25
         versionCode 1
-        versionName "0.5.0"
+        versionName version
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -38,9 +38,9 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-def siteUrl = 'https://github.com/efraespada/AndroidStringObfuscator'
-def gitUrl = 'https://github.com/efraespada/AndroidStringObfuscator.git'
-group = "efraespada"
+def siteUrl = 'https://github.com/efraespada/SC'
+def gitUrl = 'https://github.com/efraespada/SC.git'
+group = "com.efraespada"
 
 
 install {
@@ -103,7 +103,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "AndroidStringObfuscator"
+        name = "stringcare:library"
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ["Apache-2.0"]

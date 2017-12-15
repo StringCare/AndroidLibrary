@@ -1,4 +1,4 @@
-package com.efraespada.androidstringobfuscator;
+package com.efraespada.stringcarelibrary;
 
 import org.junit.Test;
 

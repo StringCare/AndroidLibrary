@@ -1,4 +1,4 @@
-package com.efraespada.androidstringobfuscator;
+package com.efraespada.stringcarelibrary;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

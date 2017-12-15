@@ -1,4 +1,4 @@
-package com.efraespada.androidstringobfuscator;
+package com.efraespada.stringcarelibrary;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -11,30 +11,27 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created by efrainespada on 02/10/2016.
  */
 
-public class AndroidStringObfuscator {
+public class SC {
 
     private static final int LENGTH = 16;
     private static final String CODIFICATION = "UTF-8";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
     private static final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-    private static final String TAG = AndroidStringObfuscator.class.getSimpleName();
+    private static final String TAG = SC.class.getSimpleName();
     private static Context context;
 
     public static void init(Context c) {
@@ -153,7 +150,7 @@ public class AndroidStringObfuscator {
      */
     public static String getString(int id) {
         if (context == null) {
-            Log.e(TAG, "Library not initialized: AndroidStringObfuscator.init(Context)");
+            Log.e(TAG, "Library not initialized: SC.init(Context)");
             return null;
         }
 
@@ -173,7 +170,7 @@ public class AndroidStringObfuscator {
      */
     public static String encryptString(String value) {
         if (context == null) {
-            Log.e(TAG, "Library not initialized: AndroidStringObfuscator.init(Context)");
+            Log.e(TAG, "Library not initialized: SC.init(Context)");
             return null;
         }
 
@@ -193,7 +190,7 @@ public class AndroidStringObfuscator {
      */
     public static String decryptString(String value) {
         if (context == null) {
-            Log.e(TAG, "Library not initialized: AndroidStringObfuscator.init(Context)");
+            Log.e(TAG, "Library not initialized: SC.init(Context)");
             return null;
         }
 

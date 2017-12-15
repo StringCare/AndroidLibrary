@@ -1,1 +1,1 @@
-include ':sample', ':androidstringobfuscator'
+include ':sample', ':stringcarelibrary'

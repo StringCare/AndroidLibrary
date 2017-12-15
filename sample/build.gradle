@@ -36,8 +36,8 @@ dependencies {
     })
     implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
-    // implementation project(path: ':androidstringobfuscator')
-    implementation "efraespada:androidstringobfuscator:$aso_sop_version"
+    implementation project(path: ':stringcarelibrary')
+    // implementation "efraespada:androidstringobfuscator:$aso_sop_version"
 }
 
 
