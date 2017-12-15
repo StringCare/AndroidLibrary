@@ -1,6 +1,4 @@
-repo under construction, sorry
-
-Android String Obfuscator
+String Care Android Library
 =========================
 
 Hide strings easily with that lib and plugin! It uses AES/ECB/PKCS5Padding transformation to convert strings with your app's SHA1 fingerprint.
@@ -11,7 +9,7 @@ Gradle implementation
 ```groovy
 // root_project/build.gradle
  
-apply plugin: com.efraespada.stringcare.StringCarePlugin
+apply plugin: com.stringcare.SCPlugin
  
 buildscript { 
  
@@ -24,7 +22,7 @@ buildscript {
     }
     
     dependencies {
-        classpath "com.efraespada:stringcare:androidplugin:$stringcare_version"
+        classpath "com.stringcare:plugin:$stringcare_version"
     }
      
 }
@@ -38,7 +36,7 @@ repositories {
 } 
  
 dependencies {
-    implementation "com.efraespada:stringcare:androidlibrary:$stringcare_version"
+    implementation "com.stringcare:library:$stringcare_version"
 }
 ```
 
@@ -108,7 +106,7 @@ Configuration
 By default the plugin will encrypt every `strings.xml` file inside `src/main`folder but you can choose a different configuration.
 ```groovy
 // root_folder/build.gradle
-apply plugin: com.efraespada.stringobfuscatorplugin.StringObfuscatorPlugin
+apply plugin: com.stringcare.SCPlugin
  
 stringcare {
  

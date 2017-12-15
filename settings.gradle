@@ -1,1 +1,1 @@
-include ':sample', ':stringcarelibrary'
+include ':sample', ':library'

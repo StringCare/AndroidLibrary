@@ -38,10 +38,10 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-def siteUrl = 'https://github.com/efraespada/SC'
-def gitUrl = 'https://github.com/efraespada/SC.git'
-group = "com.efraespada"
+def siteUrl = 'https://github.com/StringCare/AndroidLibrary'
+def gitUrl = 'https://github.com/StringCare/AndroidLibrary.git'
 
+group = "com.stringcare"
 
 install {
     repositories.mavenInstaller {
@@ -103,7 +103,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "stringcare:library"
+        name = "StringCareAndroidLibrary"
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ["Apache-2.0"]
