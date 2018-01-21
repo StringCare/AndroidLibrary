@@ -1,3 +1,7 @@
+<p align="center"><img width="20%" vspace="20" src="https://raw.githubusercontent.com/StringCare/AndroidLibrary/develop/sample/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
+
+
+
 String Care Android Library
 =========================
 
