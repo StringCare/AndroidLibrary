@@ -1,10 +1,8 @@
 
-apply plugin: com.stringcare.SCPlugin
-
 buildscript {
 
     ext {
-        stringcare_version = '0.1'
+        stringcare_version = '0.3'
     }
 
     repositories {
@@ -17,9 +15,7 @@ buildscript {
     }
 
     dependencies {
-        classpath files('../AndroidPlugin/build/libs/plugin-0.1.jar')
-        // classpath "com.efraespada:stringobfuscatorplugin:$aso_sop_version"
-        // classpath "com.stringcare:plugin:$stringcare_version"
+        classpath "com.stringcare:plugin:$stringcare_version"
         classpath 'com.android.tools.build:gradle:3.0.1'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
@@ -38,7 +34,12 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
+apply plugin: StringCare
+
+
 stringcare {
+
+    debug true
 
     modules {
 

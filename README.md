@@ -1,3 +1,7 @@
+<p align="center"><img width="10%" vspace="20" src="https://raw.githubusercontent.com/StringCare/AndroidLibrary/develop/sample/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
+
+
+
 String Care Android Library
 =========================
 
@@ -8,13 +12,11 @@ Gradle implementation
 
 ```groovy
 // root_project/build.gradle
- 
-apply plugin: com.stringcare.SCPlugin
- 
+  
 buildscript { 
  
     ext {
-        stringcare_version = '0.1'
+        stringcare_version = '0.3'
     }
     
     repositories {
@@ -26,6 +28,8 @@ buildscript {
     }
      
 }
+ 
+apply plugin: StringCare
 ```
 
 ```groovy
@@ -49,7 +53,7 @@ SC.init(getApplicationContext());
 
 
 #### Encrypt
-The script will encrypt all string tags with `hidden="true"` as attribute.
+The plugin will encrypt all string tags with `hidden="true"` as attribute.
 
 ```xml
 <resources>
@@ -106,9 +110,12 @@ Configuration
 By default the plugin will encrypt every `strings.xml` file inside `src/main`folder but you can choose a different configuration.
 ```groovy
 // root_folder/build.gradle
-apply plugin: com.stringcare.SCPlugin
+ 
+apply plugin: StringCare
  
 stringcare {
+ 
+    debug true  // prints detail build variant info
  
     modules {
      
