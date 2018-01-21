@@ -8,9 +8,7 @@ Gradle implementation
 
 ```groovy
 // root_project/build.gradle
- 
-apply plugin: com.stringcare.SCPlugin
- 
+  
 buildscript { 
  
     ext {
@@ -26,6 +24,8 @@ buildscript {
     }
      
 }
+ 
+apply plugin: StringCare
 ```
 
 ```groovy
@@ -106,7 +106,8 @@ Configuration
 By default the plugin will encrypt every `strings.xml` file inside `src/main`folder but you can choose a different configuration.
 ```groovy
 // root_folder/build.gradle
-apply plugin: com.stringcare.SCPlugin
+ 
+apply plugin: StringCare
  
 stringcare {
  
