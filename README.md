@@ -12,7 +12,7 @@ Gradle implementation
 buildscript { 
  
     ext {
-        stringcare_version = '0.1'
+        stringcare_version = '0.3'
     }
     
     repositories {
@@ -49,7 +49,7 @@ SC.init(getApplicationContext());
 
 
 #### Encrypt
-The script will encrypt all string tags with `hidden="true"` as attribute.
+The plugin will encrypt all string tags with `hidden="true"` as attribute.
 
 ```xml
 <resources>
@@ -110,6 +110,8 @@ By default the plugin will encrypt every `strings.xml` file inside `src/main`fol
 apply plugin: StringCare
  
 stringcare {
+ 
+    debug true  // prints detail build variant info
  
     modules {
      
