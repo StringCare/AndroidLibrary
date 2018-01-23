@@ -16,7 +16,7 @@ Gradle implementation
 buildscript { 
  
     ext {
-        stringcare_version = '0.3'
+        stringcare_version = '0.4'
     }
     
     repositories {
@@ -65,7 +65,7 @@ The plugin will encrypt all string tags with `hidden="true"` as attribute.
 Or encrypt strings programmatically by doing:
 
 ```java
-String encrypted = SC.encryptString(some_string_var);
+String encrypted = SC.encryptString(string_var);
 ```
 
 #### Decrypt
@@ -115,7 +115,7 @@ apply plugin: StringCare
  
 stringcare {
  
-    debug true  // prints detail build variant info
+    debug true  // prints details
  
     modules {
      
@@ -161,6 +161,15 @@ Gradle Console Output Example
 :sample:restoreStringResources
 	- values/strings.xml
 :sample:createDebugCompatibleScreenManifests UP-TO-DATE
+...
+```
+    
+Plugin won't work if there is no config defined for the selected variant:
+```bash
+...
+:sample:mergeReleaseResources
+    🤯 no config defined for variant release
+:sample:createReleaseCompatibleScreenManifests
 ...
 ```
 

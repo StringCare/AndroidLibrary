@@ -1,4 +1,4 @@
 <resources>
-	<string name="hello" hidden="true">hello world!</string>
-	<string name="app_name">String Obfuscator Sample</string>
+    <string name="hello" hidden="true">hello world!</string>
+    <string name="app_name">String Obfuscator Sample</string>
 </resources>
