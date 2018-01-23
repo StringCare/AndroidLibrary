@@ -1,5 +1,3 @@
-[![version](https://img.shields.io/badge/v%200.4.svg?style=flat)](https://bintray.com/efff/maven/StringCareAndroidLibrary)
-
 <p align="center"><img width="10%" vspace="20" src="https://raw.githubusercontent.com/StringCare/AndroidLibrary/develop/sample/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
 
 
