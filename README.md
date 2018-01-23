@@ -1,3 +1,5 @@
+[![version](https://img.shields.io/badge/v%200.4.svg?style=flat)](https://bintray.com/efff/maven/StringCareAndroidLibrary)
+
 <p align="center"><img width="10%" vspace="20" src="https://raw.githubusercontent.com/StringCare/AndroidLibrary/develop/sample/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
 
 
@@ -16,7 +18,7 @@ Gradle implementation
 buildscript { 
  
     ext {
-        stringcare_version = '0.3'
+        stringcare_version = '0.4'
     }
     
     repositories {
@@ -161,6 +163,15 @@ Gradle Console Output Example
 :sample:restoreStringResources
 	- values/strings.xml
 :sample:createDebugCompatibleScreenManifests UP-TO-DATE
+...
+```
+ 
+Plugin won't work if there is no config defined for the selected variant:
+```bash
+...
+:sample:mergeReleaseResources
+    🤯 no config defined for variant release
+:sample:createReleaseCompatibleScreenManifests
 ...
 ```
 
