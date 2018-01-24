@@ -2,7 +2,7 @@
 buildscript {
 
     ext {
-        stringcare_version = '0.4'
+        stringcare_version = '0.5'
     }
 
     repositories {
@@ -36,3 +36,7 @@ task clean(type: Delete) {
 }
 
 apply plugin: StringCare
+
+stringcare {
+    debug false
+}
