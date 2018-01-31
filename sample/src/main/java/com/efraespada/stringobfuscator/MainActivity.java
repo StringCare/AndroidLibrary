@@ -4,7 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.efraespada.stringcarelibrary.SC;
+import com.stringcare.library.SC;
 
 public class MainActivity extends AppCompatActivity {
 

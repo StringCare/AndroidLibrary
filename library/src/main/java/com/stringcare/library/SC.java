@@ -1,4 +1,4 @@
-package com.efraespada.stringcarelibrary;
+package com.stringcare.library;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
