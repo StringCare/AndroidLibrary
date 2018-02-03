@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
         ((TextView) findViewById(R.id.example_a)).setText(message);
 
-        String numbers = getString(R.string.test_a) + " is " + SC.getString(R.string.test_a);
+        String numbers = getString(R.string.test_a, "hi", 3) + " is " + SC.getString(R.string.test_a, "hi", 3);
         ((TextView) findViewById(R.id.example_b)).setText(numbers);
 
     }

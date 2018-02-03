@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.Resources;
+import android.os.Build;
+import android.support.annotation.StringRes;
 import android.util.Log;
 
 import java.io.ByteArrayInputStream;
@@ -16,6 +19,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Locale;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -148,7 +152,7 @@ public class SC {
      * @param id
      * @return String
      */
-    public static String getString(int id) {
+    public static String getString(@StringRes int id) {
         if (context == null) {
             Log.e(TAG, "Library not initialized: SC.init(Context)");
             return null;
@@ -161,6 +165,17 @@ public class SC {
             e.printStackTrace();
         }
         return context.getString(id); // returns original value, maybe not encrypted
+    }
+
+    public static String getString(@StringRes int id, Object... formatArgs) {
+        String value = getString(id);
+        Locale locale;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = Resources.getSystem().getConfiguration().getLocales().get(0);
+        } else {
+            locale = Resources.getSystem().getConfiguration().locale;
+        }
+        return String.format(locale, value, formatArgs);
     }
 
     /**

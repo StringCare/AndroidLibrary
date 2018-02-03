@@ -18,6 +18,7 @@
         android:layout_centerInParent="true">
 
         <TextView
+            android:padding="10dp"
             android:id="@+id/example_a"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,6 +27,7 @@
             android:text="" />
 
         <TextView
+            android:padding="10dp"
             android:id="@+id/example_b"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

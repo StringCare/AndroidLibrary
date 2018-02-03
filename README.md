@@ -16,7 +16,7 @@ Gradle implementation
 buildscript { 
  
     ext {
-        stringcare_version = '0.6'
+        stringcare_version = '0.7'
     }
     
     repositories {
@@ -59,6 +59,7 @@ The plugin will encrypt all string tags with `hidden="true"` as attribute.
 <resources>
 	<string name="hello" hidden="true">hello world!</string>
 	<string name="app_name">StringObfuscator</string>
+    <string name="test_a" hidden="true">%1$s (%2$d)</string>
 </resources>
 ```
 
@@ -72,6 +73,7 @@ String encrypted = SC.encryptString(string_var);
 From resources:
 ```java
 String decrypted = SC.getString(R.string.hello);
+String decrypted = SC.getString(R.string.test_a, "hi", 3); // hi (3) 
 ```
 Or from encrypted variables:
 ```java
