@@ -57,8 +57,8 @@ The plugin will encrypt all string tags with `hidden="true"` as attribute.
 
 ```xml
 <resources>
-	<string name="hello" hidden="true">hello world!</string>
-	<string name="app_name">StringObfuscator</string>
+    <string name="hello" hidden="true">hello world!</string>
+    <string name="app_name">StringObfuscator</string>
     <string name="test_a" hidden="true">%1$s (%2$d)</string>
 </resources>
 ```
