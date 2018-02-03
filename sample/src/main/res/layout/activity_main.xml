@@ -11,13 +11,29 @@
     android:background="@android:color/background_light"
     tools:context="com.efraespada.stringobfuscator.MainActivity">
 
-    <TextView
-        android:id="@+id/example"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:textColor="@android:color/black"
-        android:text="" />
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:id="@+id/example_a"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@android:color/black"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/example_b"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@android:color/black"
+            android:text="" />
+
+    </LinearLayout>
 
 
 </RelativeLayout>

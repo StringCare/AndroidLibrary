@@ -21,12 +21,16 @@ public class MainActivity extends AppCompatActivity {
         message += " is ";
         message += SC.getString(stringId);
 
-        // secret
+        // secret var
         String mySecret = "lalilulelo";
 
         message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + SC.encryptString(message)
             + "\n\n.. or " + SC.decryptString(SC.encryptString(mySecret)) + "\"";
 
-        ((TextView) findViewById(R.id.example)).setText(message);
+        ((TextView) findViewById(R.id.example_a)).setText(message);
+
+        String numbers = getString(R.string.test_a) + " is " + SC.getString(R.string.test_a);
+        ((TextView) findViewById(R.id.example_b)).setText(numbers);
+
     }
 }
