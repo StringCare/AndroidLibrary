@@ -114,7 +114,6 @@ message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " +
 
 Library Sample
 --------------
-If
 ```java
 public class YourApplication extends Application {
  
