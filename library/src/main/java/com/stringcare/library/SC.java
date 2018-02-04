@@ -32,6 +32,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class SC {
 
     private static final int LENGTH = 16;
+    private static String libPackage;
     private static final String CODIFICATION = "UTF-8";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
     private static final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
@@ -42,9 +43,18 @@ public class SC {
         context = c;
     }
 
+    public static void initForLib(Context c, Object object) {
+        context = c;
+        libPackage = object.getClass().getPackage().getName();
+    }
+
     private static String getCertificateSHA1Fingerprint() {
-        PackageManager pm = context.getPackageManager();
         String packageName = context.getPackageName();
+        return getCertificateSHA1Fingerprint(libPackage != null ? libPackage : packageName);
+    }
+
+    private static String getCertificateSHA1Fingerprint(String packageName) {
+        PackageManager pm = context.getPackageManager();
         int flags = PackageManager.GET_SIGNATURES;
         PackageInfo packageInfo = null;
         try {

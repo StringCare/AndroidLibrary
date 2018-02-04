@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         SC.init(getApplicationContext());
+        // SC.initForLib(getApplicationContext(), this);
 
         int stringId = R.string.hello;
 

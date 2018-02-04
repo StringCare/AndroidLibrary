@@ -16,7 +16,7 @@ Gradle implementation
 buildscript { 
  
     ext {
-        stringcare_version = '0.7'
+        stringcare_version = '0.8'
     }
     
     repositories {
@@ -46,9 +46,15 @@ dependencies {
 
 Setup
 -----
-Initialize the library:
+StringCare library needs the global application's `Context` for access to `PackageManager` and get signatures.
+In your `app` (or main) module the package name is obtained from `Context`:
 ```java
 SC.init(getApplicationContext());
+```
+
+In the rest of modules (or libraries) you must pass an `Object` in order to obtain its package name:
+```java
+SC.initForLib(getApplicationContext(), this);
 ```
 
 
@@ -106,6 +112,44 @@ message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " +
 
 <p align="center"><img width="40%" vspace="20" src="https://raw.githubusercontent.com/efraespada/AndroidStringObfuscator/master/sample.png"></p>
 
+Library Sample
+--------------
+If
+```java
+public class YourApplication extends Application {
+ 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Library.init(this);
+        String secretPass = Library.getPassword(); // should return -> =^UCrE4zR#}kpCu~
+    }
+ 
+}
+```
+In library package:
+```java
+public class Library {
+    
+    private Library() {
+        // ..
+    }
+    
+    public static void init(Context context) {
+        SC.initForLib(context, new Library());
+    }
+    
+    public static String getPassword() {
+        return SC.getString(your.lib.module.R.string.pass);
+    }
+ 
+}
+```
+```xml
+<resources>
+    <string name="pass" hidden="true">=^UCrE4zR#}kpCu~</string>
+</resources>
+```
 
 Configuration
 -----------------------------
