@@ -1,2 +1,2 @@
-<manifest package="com.stringcare.library">
-</manifest>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.stringcare.library" />

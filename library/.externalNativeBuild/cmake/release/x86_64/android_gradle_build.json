@@ -1,0 +1,41 @@
+
+{
+	"buildFiles" : 
+	[
+		"/Users/efraespada/Documents/Github/StringCare/AndroidLibrary/library/CMakeLists.txt"
+	],
+	"cleanCommands" : 
+	[
+		"/Users/efraespada/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/efraespada/Documents/Github/StringCare/AndroidLibrary/library/.externalNativeBuild/cmake/release/x86_64 --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"malacaton-lib-Release-x86_64" : 
+		{
+			"abi" : "x86_64",
+			"artifactName" : "malacaton-lib",
+			"buildCommand" : "/Users/efraespada/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/efraespada/Documents/Github/StringCare/AndroidLibrary/library/.externalNativeBuild/cmake/release/x86_64 --target malacaton-lib",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=x86_64-none-linux-android --gcc-toolchain=/Users/efraespada/Library/Android/sdk/ndk-bundle/toolchains/x86_64-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/efraespada/Library/Android/sdk/ndk-bundle/sysroot  -Dmalacaton_lib_EXPORTS -isystem /Users/efraespada/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include -isystem /Users/efraespada/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86_64/include -isystem /Users/efraespada/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/backward  -isystem /Users/efraespada/Library/Android/sdk/ndk-bundle/sysroot/usr/include/x86_64-linux-android -D__ANDROID_API__=21 -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -frtti -fexceptions -O2 -DNDEBUG  -fPIC    -c ",
+					"src" : "/Users/efraespada/Documents/Github/StringCare/AndroidLibrary/library/src/main/cpp/malacaton-lib.cpp",
+					"workingDirectory" : "/Users/efraespada/Documents/Github/StringCare/AndroidLibrary/library/.externalNativeBuild/cmake/release/x86_64"
+				}
+			],
+			"output" : "/Users/efraespada/Documents/Github/StringCare/AndroidLibrary/library/build/intermediates/cmake/release/obj/x86_64/libmalacaton-lib.so",
+			"toolchain" : "4861060576392714393"
+		}
+	},
+	"toolchains" : 
+	{
+		"4861060576392714393" : 
+		{
+			"cCompilerExecutable" : "/Users/efraespada/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+			"cppCompilerExecutable" : "/Users/efraespada/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+		}
+	}
+}

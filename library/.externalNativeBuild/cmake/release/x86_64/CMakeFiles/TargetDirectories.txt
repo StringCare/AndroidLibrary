@@ -1,0 +1,3 @@
+/Users/efraespada/Documents/Github/StringCare/AndroidLibrary/library/.externalNativeBuild/cmake/release/x86_64/CMakeFiles/edit_cache.dir
+/Users/efraespada/Documents/Github/StringCare/AndroidLibrary/library/.externalNativeBuild/cmake/release/x86_64/CMakeFiles/rebuild_cache.dir
+/Users/efraespada/Documents/Github/StringCare/AndroidLibrary/library/.externalNativeBuild/cmake/release/x86_64/CMakeFiles/malacaton-lib.dir

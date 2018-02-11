@@ -1,0 +1,3 @@
+/Users/efraespada/Documents/Github/StringCare/AndroidLibrary/app/.externalNativeBuild/cmake/release/x86/CMakeFiles/edit_cache.dir
+/Users/efraespada/Documents/Github/StringCare/AndroidLibrary/app/.externalNativeBuild/cmake/release/x86/CMakeFiles/rebuild_cache.dir
+/Users/efraespada/Documents/Github/StringCare/AndroidLibrary/app/.externalNativeBuild/cmake/release/x86/CMakeFiles/native-lib.dir

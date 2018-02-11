@@ -1,23 +1,14 @@
 package com.stringcare.library;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.annotation.StringRes;
 import android.util.Log;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -32,74 +23,23 @@ import javax.crypto.spec.SecretKeySpec;
 public class SC {
 
     private static final int LENGTH = 16;
-    private static String libPackage;
+    private static Class buildConfig;
     private static final String CODIFICATION = "UTF-8";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
     private static final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
     private static final String TAG = SC.class.getSimpleName();
     private static Context context;
 
-    public static void init(Context c) {
+    public static void initOnModule(Context c, Class bc) {
         context = c;
-    }
-
-    public static void initForLib(Context c, Object object) {
-        context = c;
-        libPackage = object.getClass().getPackage().getName();
+        buildConfig = bc;
     }
 
     private static String getCertificateSHA1Fingerprint() {
-        String packageName = context.getPackageName();
-        return getCertificateSHA1Fingerprint(libPackage != null ? libPackage : packageName);
+        return getKey(buildConfig);
     }
 
-    private static String getCertificateSHA1Fingerprint(String packageName) {
-        PackageManager pm = context.getPackageManager();
-        int flags = PackageManager.GET_SIGNATURES;
-        PackageInfo packageInfo = null;
-        try {
-            packageInfo = pm.getPackageInfo(packageName, flags);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        Signature[] signatures = packageInfo.signatures;
-        byte[] cert = signatures[0].toByteArray();
-        InputStream input = new ByteArrayInputStream(cert);
-        CertificateFactory cf = null;
-        try {
-            cf = CertificateFactory.getInstance("X509");
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        }
-        X509Certificate c = null;
-        try {
-            c = (X509Certificate) cf.generateCertificate(input);
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        }
-        String hexString = null;
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA1");
-            byte[] publicKey = md.digest(c.getEncoded());
-            hexString = byte2HexFormatted(publicKey);
-        } catch (NoSuchAlgorithmException | CertificateEncodingException e1) {
-            e1.printStackTrace();
-        }
-        return hexString;
-    }
-
-    private static String byte2HexFormatted(byte[] arr) {
-        StringBuilder str = new StringBuilder(arr.length * 2);
-        for (int i = 0; i < arr.length; i++) {
-            String h = Integer.toHexString(arr[i]);
-            int l = h.length();
-            if (l == 1) h = "0" + h;
-            if (l > 2) h = h.substring(l - 2, l);
-            str.append(h.toUpperCase());
-            if (i < (arr.length - 1)) str.append(':');
-        }
-        return str.toString();
-    }
+    private static native String getKey(Object buildConfig);
 
     private static SecretKey generateKey(String key) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-1");
@@ -226,6 +166,10 @@ public class SC {
             e.printStackTrace();
         }
         return null;
+    }
+
+    static {
+        System.loadLibrary("malacaton-lib");
     }
 
 }

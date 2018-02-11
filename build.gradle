@@ -1,42 +1,29 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-
-    ext {
-        stringcare_version = '0.7'
-    }
+    ext.kotlin_version = '1.1.51'
 
     repositories {
-        jcenter()
         google()
-        mavenLocal()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
+        jcenter()
     }
-
     dependencies {
-        classpath "com.stringcare:plugin:$stringcare_version"
-        // classpath files('../AndroidPlugin/build/libs/plugin-0.7.jar')
         classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
-        classpath files('better-connected-plugin-0.1.jar')
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
         google()
+        jcenter()
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-apply plugin: StringCare
-
-stringcare {
-    debug false
 }
