@@ -16,7 +16,7 @@ Gradle implementation
 buildscript { 
  
     ext {
-        stringcare_version = '0.8'
+        stringcare_version = '0.9'
     }
     
     repositories {
@@ -46,15 +46,14 @@ dependencies {
 
 Setup
 -----
-StringCare library needs the global application's `Context` for access to `PackageManager` and get signatures.
-In your `app` (or main) module the package name is obtained from `Context`:
+Java:
 ```java
-SC.init(getApplicationContext());
+SC.initForModule(getApplicationContext(), BuildConfig.class);
 ```
 
-In the rest of modules (or libraries) you must pass an `Object` in order to obtain its package name:
-```java
-SC.initForLib(getApplicationContext(), this);
+Kotlin:
+```kotlin
+SC.initForModule(applicationContext, BuildConfig::class.java)
 ```
 
 
