@@ -1,9 +1,0 @@
-# ninja log v5
-0	183	0	CMakeFiles/malacaton-lib.dir/src/main/cpp/malacaton-lib.cpp.o	97ccd9d1de3b7ace
-184	252	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libmalacaton-lib.so	9d587d9ff6132232
-1	189	0	CMakeFiles/malacaton-lib.dir/src/main/cpp/malacaton-lib.cpp.o	97ccd9d1de3b7ace
-189	252	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libmalacaton-lib.so	9d587d9ff6132232
-1	189	0	CMakeFiles/malacaton-lib.dir/src/main/cpp/malacaton-lib.cpp.o	97ccd9d1de3b7ace
-189	255	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libmalacaton-lib.so	9d587d9ff6132232
-1	349	0	CMakeFiles/malacaton-lib.dir/src/main/cpp/malacaton-lib.cpp.o	97ccd9d1de3b7ace
-349	506	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libmalacaton-lib.so	9d587d9ff6132232
