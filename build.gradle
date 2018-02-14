@@ -2,12 +2,15 @@
 
 buildscript {
     ext.kotlin_version = '1.1.51'
+    ext.stringcare_version = '0.7'
 
     repositories {
         google()
         jcenter()
     }
     dependencies {
+        // classpath "com.stringcare:plugin:$stringcare_version"
+        classpath files("../AndroidPlugin/build/libs/plugin-0.9.jar")
         classpath 'com.android.tools.build:gradle:3.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1"
@@ -16,6 +19,9 @@ buildscript {
         // in the individual module build.gradle files
     }
 }
+
+// apply plugin: StringCare
+
 
 allprojects {
     repositories {
