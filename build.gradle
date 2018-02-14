@@ -1,7 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.1.51'
+
+    ext.kotlin_version = '1.2.21'
     ext.stringcare_version = '0.7'
 
     repositories {
@@ -12,6 +13,7 @@ buildscript {
         // classpath "com.stringcare:plugin:$stringcare_version"
         classpath files("../AndroidPlugin/build/libs/plugin-0.9.jar")
         classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath files('../AndroidPlugin/build/libs/plugin-0.9.jar')
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
@@ -20,8 +22,7 @@ buildscript {
     }
 }
 
-// apply plugin: StringCare
-
+apply plugin: StringCare
 
 allprojects {
     repositories {
