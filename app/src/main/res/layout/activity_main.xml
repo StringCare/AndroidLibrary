@@ -17,6 +17,14 @@
         android:orientation="vertical"
         android:layout_centerInParent="true">
 
+        <com.stringcare.library.SCTextView
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@android:color/black"
+            android:text="@string/automatic_decrypt"/>
+
         <TextView
             android:padding="10dp"
             android:id="@+id/example_a"
