@@ -18,7 +18,9 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import javax.crypto.Cipher;
@@ -31,20 +33,36 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class SC {
 
-    private static final int LENGTH = 16;
     private static final String CODIFICATION = "UTF-8";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
     private static final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
     private static final String TAG = SC.class.getSimpleName();
     private static Context context;
+    private static List<ContextListener> listeners = new ArrayList<>();
 
+    private SC () {
+        // nothing to do here
+    }
     public static void init(Context c) {
         context = c;
+        if (!listeners.isEmpty()) {
+            for (ContextListener listener : listeners) {
+                listener.contextReady();
+            }
+        }
+    }
+
+    public static void onContextReady(ContextListener listener) {
+        listeners.add(listener);
     }
 
     private static String getCertificateSHA1Fingerprint() {
-        PackageManager pm = context.getPackageManager();
         String packageName = context.getPackageName();
+        return getCertificateSHA1Fingerprint(packageName);
+    }
+
+    private static String getCertificateSHA1Fingerprint(String packageName) {
+        PackageManager pm = context.getPackageManager();
         int flags = PackageManager.GET_SIGNATURES;
         PackageInfo packageInfo = null;
         try {
