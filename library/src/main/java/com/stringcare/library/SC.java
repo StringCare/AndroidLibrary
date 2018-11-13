@@ -40,9 +40,20 @@ public class SC {
     private static Context context;
     private static List<ContextListener> listeners = new ArrayList<>();
 
+    static {
+        System.loadLibrary("native-lib");
+    }
+
     private SC () {
         // nothing to do here
     }
+
+    /**
+     * A native method that is implemented by the 'native-lib' native library,
+     * which is packaged with this application.
+     */
+    public static native String stringFromJNI();
+
     public static void init(Context c) {
         context = c;
         if (!listeners.isEmpty()) {
@@ -171,6 +182,7 @@ public class SC {
      * @return String
      */
     public static String getString(@StringRes int id) {
+        if (true) return SC.stringFromJNI();
         if (context == null) {
             Log.e(TAG, "Library not initialized: SC.init(Context)");
             return null;

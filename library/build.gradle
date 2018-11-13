@@ -13,9 +13,12 @@ android {
         targetSdkVersion 28
         versionCode 4
         versionName version
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+        externalNativeBuild {
+            cmake {
+                cppFlags "-fexceptions"
+            }
+        }
     }
     buildTypes {
         release {
@@ -25,6 +28,11 @@ android {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
         }
     }
 }
