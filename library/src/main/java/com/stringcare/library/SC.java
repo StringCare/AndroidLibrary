@@ -52,7 +52,7 @@ public class SC {
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
-    public static native String stringFromJNI();
+    public static native String sign(String key);
 
     public static void init(Context c) {
         context = c;
@@ -69,7 +69,7 @@ public class SC {
 
     private static String getCertificateSHA1Fingerprint() {
         String packageName = context.getPackageName();
-        return getCertificateSHA1Fingerprint(packageName);
+        return sign(getCertificateSHA1Fingerprint(packageName));
     }
 
     private static String getCertificateSHA1Fingerprint(String packageName) {
@@ -182,7 +182,6 @@ public class SC {
      * @return String
      */
     public static String getString(@StringRes int id) {
-        if (true) return SC.stringFromJNI();
         if (context == null) {
             Log.e(TAG, "Library not initialized: SC.init(Context)");
             return null;
