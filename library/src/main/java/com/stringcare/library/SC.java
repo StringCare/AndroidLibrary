@@ -51,11 +51,11 @@ public class SC {
     /**
      * Resigns given key
      */
-    public static native String sign(String key);
+    private static native String sign(String key);
 
-    public static native String obfuscate(Context context, String key, String value);
+    private static native String jniObfuscate(Context context, String key, String value);
 
-    public static native String deobfuscate(Context context, String key, String value);
+    private static native String jniDeobfuscate(Context context, String key, String value);
 
     public static void init(Context c) {
         context = c;
@@ -72,7 +72,7 @@ public class SC {
 
     private static String getCertificateSHA1Fingerprint() {
         String packageName = context.getPackageName();
-        return sign(getCertificateSHA1Fingerprint(packageName));
+        return getCertificateSHA1Fingerprint(packageName);
     }
 
     private static String getCertificateSHA1Fingerprint(String packageName) {
@@ -184,6 +184,7 @@ public class SC {
      * @param id
      * @return String
      */
+    @Deprecated
     public static String getString(@StringRes int id) {
         if (context == null) {
             Log.e(TAG, "Library not initialized: SC.init(Context)");
@@ -199,6 +200,7 @@ public class SC {
         return context.getString(id); // returns original value, maybe not encrypted
     }
 
+    @Deprecated
     public static String getString(@StringRes int id, Object... formatArgs) {
         String value = getString(id);
         Locale locale;
@@ -211,10 +213,52 @@ public class SC {
     }
 
     /**
-     * encrypts the given value
+     * Obfuscates the given value
      * @param value
      * @return String
      */
+    public static String obfuscate(String value) {
+        if (context == null) {
+            Log.e(TAG, "Library not initialized: SC.init(Context)");
+            return null;
+        }
+
+        String hash = sign(getCertificateSHA1Fingerprint());
+        try {
+            return jniObfuscate(context, hash, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Deobfuscates the given value
+     * @param value
+     * @return String
+     */
+    public static String deobfuscate(String value) {
+        if (context == null) {
+            Log.e(TAG, "Library not initialized: SC.init(Context)");
+            return null;
+        }
+
+        String hash = sign(getCertificateSHA1Fingerprint());
+        try {
+            return jniDeobfuscate(context, hash, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Encrypts the given value
+     * @param value
+     * @return String
+     * @deprecated use {@link #obfuscate(String)}()} instead.
+     */
+    @Deprecated
     public static String encryptString(String value) {
         if (context == null) {
             Log.e(TAG, "Library not initialized: SC.init(Context)");
@@ -231,10 +275,12 @@ public class SC {
     }
 
     /**
-     * decrypts the given encrypted value
+     * Decrypts the given encrypted value
      * @param value
      * @return String
+     * @deprecated use {@link #deobfuscate(String)}()} instead.
      */
+    @Deprecated
     public static String decryptString(String value) {
         if (context == null) {
             Log.e(TAG, "Library not initialized: SC.init(Context)");

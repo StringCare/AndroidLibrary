@@ -1,7 +1,7 @@
 package com.efraespada.stringobfuscator;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.stringcare.library.SC;
@@ -23,10 +23,10 @@ public class MainActivity extends AppCompatActivity {
         message += SC.getString(stringId);
 
         // secret var
-        String mySecret = "lalilulelo";
+        String password = "lalilulelo";
 
-        message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + SC.encryptString(message)
-            + "\n\n.. or " + SC.decryptString(SC.encryptString(mySecret)) + "\"";
+        message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + SC.obfuscate(password)
+            + "\n\n.. or " + SC.deobfuscate(SC.obfuscate(password)) + "\"";
 
         ((TextView) findViewById(R.id.example_a)).setText(message);
 

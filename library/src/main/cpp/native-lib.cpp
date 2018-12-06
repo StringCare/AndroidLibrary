@@ -12,7 +12,7 @@ Java_com_stringcare_library_SC_sign(
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_stringcare_library_SC_obfuscate(
+Java_com_stringcare_library_SC_jniObfuscate(
         JNIEnv *env,
         jclass /* this */,
         jobject context,
@@ -20,11 +20,11 @@ Java_com_stringcare_library_SC_obfuscate(
         jstring value) {
     std::string hello = "Hello from C++";
     // return env->NewStringUTF(hello.c_str());
-    return key;
+    return value;
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_stringcare_library_SC_deobfuscate(
+Java_com_stringcare_library_SC_jniDeobfuscate(
         JNIEnv *env,
         jclass /* this */,
         jobject context,
@@ -32,5 +32,5 @@ Java_com_stringcare_library_SC_deobfuscate(
         jstring value) {
     std::string hello = "Hello from C++";
     // return env->NewStringUTF(hello.c_str());
-    return key;
+    return value;
 }
