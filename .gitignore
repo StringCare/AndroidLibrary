@@ -5,3 +5,6 @@ build/
 local.properties
 library/.externalNativeBuild
 *.iml
+*.DS_Store
+.cxx/
+library/src/main/cpp/native-lib.cpp
