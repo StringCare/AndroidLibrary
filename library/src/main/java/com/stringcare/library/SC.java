@@ -53,6 +53,10 @@ public class SC {
      */
     public static native String sign(String key);
 
+    public static native String obfuscate(Context context, String key, String value);
+
+    public static native String deobfuscate(Context context, String key, String value);
+
     public static void init(Context c) {
         context = c;
         if (!listeners.isEmpty()) {
