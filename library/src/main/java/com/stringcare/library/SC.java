@@ -223,7 +223,7 @@ public class SC {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return "error";
     }
 
     /**
@@ -241,7 +241,7 @@ public class SC {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return "error";
     }
 
     /**
