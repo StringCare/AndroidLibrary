@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
         String message = getString(stringId);
         message += " is ";
-        message += SC.getString(stringId);
+        message += SC.deobfuscate(stringId);
 
         // secret var
         String password = "lalilulelo";
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         ((TextView) findViewById(R.id.example_a)).setText(message);
 
-        String numbers = getString(R.string.test_a, "hi", 3) + " is " + SC.getString(R.string.test_a, "hi", 3);
+        String numbers = getString(R.string.test_a, "hi", 3) + " is " + SC.deobfuscate(R.string.test_a, "hi", 3);
         ((TextView) findViewById(R.id.example_b)).setText(numbers);
 
     }

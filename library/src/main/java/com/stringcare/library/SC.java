@@ -176,39 +176,6 @@ public class SC {
     }
 
     /**
-     * returns a decrypted value for the given string resource
-     * @param id
-     * @return String
-     */
-    @Deprecated
-    public static String getString(@StringRes int id) {
-        if (context == null) {
-            Log.e(TAG, "Library not initialized: SC.init(Context)");
-            return null;
-        }
-
-        String hash = getCertificateSHA1Fingerprint();
-        try {
-            return decrypt(context.getString(id), hash);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return context.getString(id); // returns original value, maybe not encrypted
-    }
-
-    @Deprecated
-    public static String getString(@StringRes int id, Object... formatArgs) {
-        String value = getString(id);
-        Locale locale;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            locale = Resources.getSystem().getConfiguration().getLocales().get(0);
-        } else {
-            locale = Resources.getSystem().getConfiguration().locale;
-        }
-        return String.format(locale, value, formatArgs);
-    }
-
-    /**
      * Obfuscates the given value
      * @param value
      * @return String
@@ -223,7 +190,25 @@ public class SC {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "error";
+        return value;
+    }
+
+    /**
+     * Deobfuscates the given value
+     * @param id
+     * @return String
+     */
+    public static String deobfuscate(@StringRes int id) {
+        if (context == null) {
+            Log.e(TAG, "Library not initialized: SC.init(Context)");
+            return null;
+        }
+        try {
+            return jniDeobfuscate(context, getCertificateSHA1Fingerprint(), context.getString(id));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return context.getString(id);
     }
 
     /**
@@ -241,7 +226,24 @@ public class SC {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "error";
+        return value;
+    }
+
+    /**
+     * Deobfuscates the given value
+     * @param id
+     * @param formatArgs
+     * @return
+     */
+    public static String deobfuscate(@StringRes int id, Object... formatArgs) {
+        String value = deobfuscate(id);
+        Locale locale;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = Resources.getSystem().getConfiguration().getLocales().get(0);
+        } else {
+            locale = Resources.getSystem().getConfiguration().locale;
+        }
+        return String.format(locale, value, formatArgs);
     }
 
     /**
@@ -267,7 +269,7 @@ public class SC {
     }
 
     /**
-     * Decrypts the given encrypted value
+     * Decrypts the given value
      * @param value
      * @return String
      * @deprecated use {@link #deobfuscate(String)}()} instead.
@@ -286,6 +288,46 @@ public class SC {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Decrypts the given ID
+     * @param id
+     * @return String
+     */
+    @Deprecated
+    public static String getString(@StringRes int id) {
+        if (context == null) {
+            Log.e(TAG, "Library not initialized: SC.init(Context)");
+            return null;
+        }
+
+        String hash = getCertificateSHA1Fingerprint();
+        try {
+            return decrypt(context.getString(id), hash);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return context.getString(id); // returns original value, maybe not encrypted
+    }
+
+    /**
+     * Decrypts the given ID
+     * @param id
+     * @param formatArgs
+     * @return String
+     * @deprecated use {@link #deobfuscate(int, Object...)}()} instead.
+     */
+    @Deprecated
+    public static String getString(@StringRes int id, Object... formatArgs) {
+        String value = getString(id);
+        Locale locale;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = Resources.getSystem().getConfiguration().getLocales().get(0);
+        } else {
+            locale = Resources.getSystem().getConfiguration().locale;
+        }
+        return String.format(locale, value, formatArgs);
     }
 
 }

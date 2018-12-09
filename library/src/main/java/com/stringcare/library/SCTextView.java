@@ -33,7 +33,7 @@ public class SCTextView extends AppCompatTextView {
                 SC.onContextReady(new ContextListener() {
                     @Override
                     public void contextReady() {
-                        setText(SC.getString(val));
+                        setText(SC.deobfuscate(val));
                     }
                 });
             } catch (NumberFormatException e) {
