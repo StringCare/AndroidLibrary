@@ -48,10 +48,6 @@ public class SC {
         // nothing to do here
     }
 
-    /**
-     * Resigns given key
-     */
-    private static native String sign(String key);
 
     private static native String jniObfuscate(Context context, String key, String value);
 
@@ -222,10 +218,8 @@ public class SC {
             Log.e(TAG, "Library not initialized: SC.init(Context)");
             return null;
         }
-
-        String hash = sign(getCertificateSHA1Fingerprint());
         try {
-            return jniObfuscate(context, hash, value);
+            return jniObfuscate(context, getCertificateSHA1Fingerprint(), value);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -242,10 +236,8 @@ public class SC {
             Log.e(TAG, "Library not initialized: SC.init(Context)");
             return null;
         }
-
-        String hash = sign(getCertificateSHA1Fingerprint());
         try {
-            return jniDeobfuscate(context, hash, value);
+            return jniDeobfuscate(context, getCertificateSHA1Fingerprint(), value);
         } catch (Exception e) {
             e.printStackTrace();
         }
