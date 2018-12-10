@@ -48,7 +48,6 @@ public class SC {
         // nothing to do here
     }
 
-
     private static native String jniObfuscate(Context context, String key, String value);
 
     private static native String jniDeobfuscate(Context context, String key, String value);
