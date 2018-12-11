@@ -2,6 +2,7 @@ package com.efraespada.stringobfuscator;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.widget.TextView;
 
 import com.stringcare.library.SC;
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + SC.obfuscate(password)
             + "\n\n.. or " + SC.deobfuscate(SC.obfuscate(password)) + "\"";
 
-        ((TextView) findViewById(R.id.example_a)).setText(message);
+        ((TextView) findViewById(R.id.example_a)).setText(Html.fromHtml(message));
 
         String numbers = getString(R.string.test_a, "hi", 3) + " is " + SC.deobfuscate(R.string.test_a, "hi", 3);
         ((TextView) findViewById(R.id.example_b)).setText(numbers);

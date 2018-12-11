@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:textColor="@android:color/black"
+            android:layout_marginTop="15dp"
             android:text="@string/automatic_decrypt"/>
 
         <TextView
@@ -32,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:textColor="@android:color/black"
-            android:text="" />
+            android:layout_marginTop="15dp" />
 
         <TextView
             android:padding="10dp"
@@ -41,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:textColor="@android:color/black"
-            android:text="" />
+            android:layout_marginTop="15dp" />
 
     </LinearLayout>
 
