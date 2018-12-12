@@ -6,6 +6,7 @@ import android.text.Html;
 import android.widget.TextView;
 
 import com.stringcare.library.SC;
+import com.stringcare.library.SCTextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         String numbers = getString(R.string.test_a, "hi", 3) + " is " + SC.deobfuscate(R.string.test_a, "hi", 3);
         ((TextView) findViewById(R.id.example_b)).setText(numbers);
+        ((SCTextView) findViewById(R.id.auto_tv)).visible(false);
 
     }
 }

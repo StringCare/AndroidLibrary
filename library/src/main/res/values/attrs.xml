@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="com_stringcare_library_SCTextView">
+        <attr name="html" format="boolean" />
+    </declare-styleable>
+</resources>
