@@ -38,21 +38,23 @@ public class SCTextView extends AppCompatTextView {
 
     private void loadText(final AttributeSet attrs) {
         text = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "text");
-        visible = true;
         if (isHTML == null) {
             isHTML = !"false".equalsIgnoreCase(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "html"));
+        }
+        if (visible == null) {
+            visible = !"false".equalsIgnoreCase(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "visible"));
         }
         reloadText();
     }
 
     private void reloadText() {
         if (text != null) {
-            if (!visible) {
-                setText(text);
-                return;
-            }
             try {
                 final Integer val = Integer.parseInt(text.substring(1));
+                if (!visible) {
+                    setText(getContext().getString(val));
+                    return;
+                }
                 SC.onContextReady(new ContextListener() {
                     @Override
                     public void contextReady() {
@@ -84,6 +86,10 @@ public class SCTextView extends AppCompatTextView {
 
     public boolean isHtmlEnabled() {
         return isHTML;
+    }
+
+    public boolean isVisible() {
+        return visible;
     }
 
 }

@@ -62,6 +62,10 @@ public class SC {
     }
 
     public static void onContextReady(ContextListener listener) {
+        if (context != null) {
+            listener.contextReady();
+            return;
+        }
         listeners.add(listener);
     }
 
