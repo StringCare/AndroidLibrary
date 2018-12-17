@@ -36,6 +36,10 @@ public class SCTextView extends AppCompatTextView {
         loadText(attrs);
     }
 
+    /**
+     * Defines initial vars
+     * @param attrs {AttributeSet}
+     */
     private void loadText(final AttributeSet attrs) {
         text = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "text");
         if (isHTML == null) {
@@ -47,6 +51,9 @@ public class SCTextView extends AppCompatTextView {
         reloadText();
     }
 
+    /**
+     * Prints text with the given conditions
+     */
     private void reloadText() {
         if (text != null) {
             try {
@@ -71,23 +78,36 @@ public class SCTextView extends AppCompatTextView {
         }
     }
 
+    /**
+     * Enables de-obfuscation before print the value
+     * @param visible {true|false}
+     */
     public void visible(boolean visible) {
         this.visible = visible;
         reloadText();
     }
 
+    /**
+     * Enables HTML printing
+     * @param enabled {true|false}
+     */
     public void htmlEnabled(boolean enabled) {
         isHTML = enabled;
-        if (visible == null) {
-            visible = true;
-        }
         reloadText();
     }
 
+    /**
+     * Returns true if is the value must be print as HTML or plain text
+     * @return Boolean
+     */
     public boolean isHtmlEnabled() {
         return isHTML;
     }
 
+    /**
+     * Returns true if is de-obfuscating the value before print it
+     * @return Boolean
+     */
     public boolean isVisible() {
         return visible;
     }
