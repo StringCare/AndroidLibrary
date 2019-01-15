@@ -1,10 +1,13 @@
 package com.efraespada.stringobfuscator;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.view.View;
 import android.widget.TextView;
 
 import com.stringcare.library.SC;
+import com.stringcare.library.SCTextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,24 +17,31 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         SC.init(getApplicationContext());
-        // SC.initForLib(getApplicationContext(), this);
-
-        int stringId = R.string.hello;
-
-        String message = getString(stringId);
-        message += " is ";
-        message += SC.getString(stringId);
 
         // secret var
-        String mySecret = "lalilulelo";
+        String password = "lalilulelo";
 
-        message += "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + SC.encryptString(message)
-            + "\n\n.. or " + SC.decryptString(SC.encryptString(mySecret)) + "\"";
+        String message = "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + SC.obfuscate(password)
+            + "\n\n.. or " + SC.deobfuscate(SC.obfuscate(password)) + "\"";
 
-        ((TextView) findViewById(R.id.example_a)).setText(message);
+        ((TextView) findViewById(R.id.example_a)).setText(Html.fromHtml(message));
 
-        String numbers = getString(R.string.test_a, "hi", 3) + " is " + SC.getString(R.string.test_a, "hi", 3);
+        String numbers = getString(R.string.test_a, "hi", 3) + " is " + SC.deobfuscate(R.string.test_a, "hi", 3);
         ((TextView) findViewById(R.id.example_b)).setText(numbers);
+        final SCTextView tvAuto = findViewById(R.id.auto_tv);
+        findViewById(R.id.btn_change).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (tvAuto.isHtmlEnabled()) {
+                    tvAuto.htmlEnabled(!tvAuto.isHtmlEnabled());
+                } else if (tvAuto.isVisible()){
+                    tvAuto.visible(!tvAuto.isVisible());
+                } else if (!tvAuto.isVisible()){
+                    tvAuto.visible(!tvAuto.isVisible());
+                    tvAuto.htmlEnabled(!tvAuto.isHtmlEnabled());
+                }
+            }
+        });
 
     }
 }

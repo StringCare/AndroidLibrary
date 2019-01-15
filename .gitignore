@@ -3,4 +3,8 @@
 .gradle/
 build/
 local.properties
+library/.externalNativeBuild
 *.iml
+*.DS_Store
+.cxx/
+*.cpp

@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "0.9"
+version = "1.2"
 
 android {
     compileSdkVersion 28
@@ -13,9 +13,12 @@ android {
         targetSdkVersion 28
         versionCode 4
         versionName version
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+        externalNativeBuild {
+            cmake {
+                cppFlags "-fexceptions"
+            }
+        }
     }
     buildTypes {
         release {
@@ -25,6 +28,12 @@ android {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            version "3.13.2"
+            path "CMakeLists.txt"
         }
     }
 }
@@ -49,7 +58,7 @@ install {
         pom {
             project {
                 packaging 'aar'
-                name 'Simple Android library to hide strings'
+                name 'StringCareAndroidLibrary'
                 url siteUrl
                 // Set your license
                 licenses {
@@ -76,8 +85,8 @@ install {
 }
 
 task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
 }
 
 task javadoc(type: Javadoc) {
@@ -89,7 +98,6 @@ task javadoc(type: Javadoc) {
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
-
 }
 
 artifacts {

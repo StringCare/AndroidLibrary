@@ -16,11 +16,15 @@
 
 #### [Limitations](https://github.com/StringCare/AndroidLibrary/wiki/Limitations)
 
+#### [Migrate From 0.x To 1.x](https://github.com/StringCare/AndroidLibrary/wiki/Migrate-From-0.x-To-1.x)
+
+#### [Compatibility](https://github.com/StringCare/GradlePlugin/wiki/Compatibility)
+
 #### [Wiki Plugin](https://github.com/StringCare/GradlePlugin/wiki)
 
 License
 -------
-    Copyright 2018 StringCare [🐒 SpaceMonkeys]
+    Copyright 2019 StringCare [🐒 SpaceMonkeys]
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

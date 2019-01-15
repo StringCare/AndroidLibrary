@@ -2,7 +2,7 @@
 buildscript {
 
     ext {
-        stringcare_version = '0.9'
+        stringcare_version = '1.2'
     }
 
     repositories {
@@ -17,6 +17,7 @@ buildscript {
     dependencies {
         classpath "com.stringcare:plugin:$stringcare_version"
         // classpath files('../GradlePlugin/build/libs/plugin-0.9.jar')
+        // classpath files('..\\GradlePlugin\\build\\libs\\plugin-0.9.jar')
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
@@ -28,6 +29,9 @@ allprojects {
         mavenCentral()
         jcenter()
         google()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 }
 
@@ -38,5 +42,5 @@ task clean(type: Delete) {
 apply plugin: StringCare
 
 stringcare {
-    debug false
+    debug true
 }
