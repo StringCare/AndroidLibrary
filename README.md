@@ -18,6 +18,8 @@
 
 #### [Migrate From 0.x To 1.x](https://github.com/StringCare/AndroidLibrary/wiki/Migrate-From-0.x-To-1.x)
 
+#### [Compatibility](https://github.com/StringCare/GradlePlugin/wiki/Compatibility)
+
 #### [Wiki Plugin](https://github.com/StringCare/GradlePlugin/wiki)
 
 License
