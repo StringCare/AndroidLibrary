@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "0.9"
+version = "1.2"
 
 android {
     compileSdkVersion 28
@@ -22,11 +22,11 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -58,7 +58,7 @@ install {
         pom {
             project {
                 packaging 'aar'
-                name 'Simple Android library to hide strings'
+                name 'StringCareAndroidLibrary'
                 url siteUrl
                 // Set your license
                 licenses {
