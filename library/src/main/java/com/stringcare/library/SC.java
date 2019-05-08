@@ -201,7 +201,7 @@ public class SC {
      * @param id
      * @return String
      */
-    public static String deobfuscate(@StringRes int id) {
+    public static String reveal(@StringRes int id) {
         if (context == null) {
             Log.e(TAG, "Library not initialized: SC.init(Context)");
             return null;
@@ -219,7 +219,7 @@ public class SC {
      * @param value
      * @return String
      */
-    public static String deobfuscate(String value) {
+    public static String reveal(String value) {
         if (context == null) {
             Log.e(TAG, "Library not initialized: SC.init(Context)");
             return null;
@@ -238,8 +238,8 @@ public class SC {
      * @param formatArgs
      * @return
      */
-    public static String deobfuscate(@StringRes int id, Object... formatArgs) {
-        String value = deobfuscate(id);
+    public static String reveal(@StringRes int id, Object... formatArgs) {
+        String value = reveal(id);
         Locale locale;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             locale = Resources.getSystem().getConfiguration().getLocales().get(0);
@@ -275,7 +275,7 @@ public class SC {
      * Decrypts the given value
      * @param value
      * @return String
-     * @deprecated use {@link #deobfuscate(String)}()} instead.
+     * @deprecated use {@link #reveal(String)}()} instead.
      */
     @Deprecated
     public static String decryptString(String value) {
@@ -319,7 +319,7 @@ public class SC {
      * @param id
      * @param formatArgs
      * @return String
-     * @deprecated use {@link #deobfuscate(int, Object...)}()} instead.
+     * @deprecated use {@link #reveal(int, Object...)}()} instead.
      */
     @Deprecated
     public static String getString(@StringRes int id, Object... formatArgs) {
