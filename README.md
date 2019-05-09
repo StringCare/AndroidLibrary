@@ -1,26 +1,29 @@
+[![version][badge]][link]
+
 <p align="center"><img width="10%" vspace="10" src="https://github.com/StringCare/AndroidLibrary/raw/develop/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
 
 <h3 align="center" style="margin-bottom:30px" vspace="20">StringCare Android Library</h3>
 
 <p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
 
-#### [Wiki Library](https://github.com/StringCare/AndroidLibrary/wiki)
+#### [What Is StringCare](https://github.com/StringCare/AndroidLibrary/wiki/What-is-StringCare)
 
-#### [What is StringCare](https://github.com/StringCare/AndroidLibrary/wiki/What-is-StringCare)
+#### [Implementation](https://github.com/StringCare/AndroidLibrary/wiki/Implementation)
 
-#### [Library Implementation](https://github.com/StringCare/AndroidLibrary/wiki/Library-Implementation)
+#### [Usage](https://github.com/StringCare/AndroidLibrary/wiki/Usage)
 
-#### [Library Usage](https://github.com/StringCare/AndroidLibrary/wiki/Library-Usage)
+#### [Configuration](https://github.com/StringCare/AndroidLibrary/wiki/Configuration)
 
 #### [Publish APK](https://github.com/StringCare/AndroidLibrary/wiki/Publish-APK)
 
 #### [Limitations](https://github.com/StringCare/AndroidLibrary/wiki/Limitations)
 
+#### [Compatibility](https://github.com/StringCare/AndroidLibrary/wiki/Compatibility)
+
 #### [Migrate From 0.x To 1.x](https://github.com/StringCare/AndroidLibrary/wiki/Migrate-From-0.x-To-1.x)
 
-#### [Compatibility](https://github.com/StringCare/GradlePlugin/wiki/Compatibility)
-
-#### [Wiki Plugin](https://github.com/StringCare/GradlePlugin/wiki)
+[link]: https://github.com/StringCare/AndroidLibrary
+[badge]: https://img.shields.io/bintray/v/efff/maven/StringCareAndroidPlugin.svg
 
 License
 -------
@@ -39,3 +42,5 @@ License
     limitations under the License.
 
 
+[link]: https://github.com/StringCare/AndroidLibrary
+[badge]: https://img.shields.io/bintray/v/efff/maven/StringCareAndroidLibrary.svg

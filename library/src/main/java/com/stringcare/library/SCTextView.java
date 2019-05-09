@@ -66,9 +66,9 @@ public class SCTextView extends AppCompatTextView {
                     @Override
                     public void contextReady() {
                         if (isHTML) {
-                            setText(Html.fromHtml(SC.deobfuscate(val)));
+                            setText(Html.fromHtml(SC.reveal(val)));
                         } else {
-                            setText(SC.deobfuscate(val));
+                            setText(SC.reveal(val));
                         }
                     }
                 });

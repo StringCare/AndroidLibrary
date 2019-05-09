@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "1.2"
+version = "1.5"
 
 android {
     compileSdkVersion 28
@@ -32,7 +32,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-            version "3.13.2"
+            version "3.14.3"
             path "CMakeLists.txt"
         }
     }

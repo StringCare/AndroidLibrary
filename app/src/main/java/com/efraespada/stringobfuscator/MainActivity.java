@@ -22,11 +22,11 @@ public class MainActivity extends AppCompatActivity {
         String password = "lalilulelo";
 
         String message = "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + SC.obfuscate(password)
-            + "\n\n.. or " + SC.deobfuscate(SC.obfuscate(password)) + "\"";
+            + "\n\n.. or " + SC.reveal(SC.obfuscate(password)) + "\"";
 
         ((TextView) findViewById(R.id.example_a)).setText(Html.fromHtml(message));
 
-        String numbers = getString(R.string.test_a, "hi", 3) + " is " + SC.deobfuscate(R.string.test_a, "hi", 3);
+        String numbers = getString(R.string.test_a, "hi", 3) + " is " + SC.reveal(R.string.test_a, "hi", 3);
         ((TextView) findViewById(R.id.example_b)).setText(numbers);
         final SCTextView tvAuto = findViewById(R.id.auto_tv);
         findViewById(R.id.btn_change).setOnClickListener(new View.OnClickListener() {
