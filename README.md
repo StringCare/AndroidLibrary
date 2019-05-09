@@ -6,8 +6,6 @@
 
 <p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
 
-#### [Wiki Library](https://github.com/StringCare/AndroidLibrary/wiki)
-
 #### [What Is StringCare](https://github.com/StringCare/AndroidLibrary/wiki/What-is-StringCare)
 
 #### [Implementation](https://github.com/StringCare/AndroidLibrary/wiki/Implementation)
@@ -23,6 +21,9 @@
 #### [Compatibility](https://github.com/StringCare/AndroidLibrary/wiki/Compatibility)
 
 #### [Migrate From 0.x To 1.x](https://github.com/StringCare/AndroidLibrary/wiki/Migrate-From-0.x-To-1.x)
+
+[link]: https://github.com/StringCare/AndroidLibrary
+[badge]: https://img.shields.io/bintray/v/efff/maven/StringCareAndroidPlugin.svg
 
 License
 -------
