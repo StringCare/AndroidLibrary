@@ -21,11 +21,12 @@ public class MainActivity extends AppCompatActivity {
         // secret var
         String password = "lalilulelo";
 
-        String message = "\n\nFor Metal Gear lovers:\n\n\"Snake, the password is " + SC.obfuscate(password)
-            + "\n\n.. or " + SC.reveal(SC.obfuscate(password)) + "\"";
+        String message = "Snake, the password is " + SC.obfuscate(password)
+            + " (" + SC.reveal(SC.obfuscate(password)) + ")";
 
         ((TextView) findViewById(R.id.example_a)).setText(Html.fromHtml(message));
 
+        /*
         String numbers = getString(R.string.test_a, "hi", 3) + " is " + SC.reveal(R.string.test_a, "hi", 3);
         ((TextView) findViewById(R.id.example_b)).setText(numbers);
         final SCTextView tvAuto = findViewById(R.id.auto_tv);
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+         */
 
     }
 }
