@@ -80,14 +80,17 @@ class JavaLogic {
          * @param formatArgs
          * @return String
          */
-        internal fun getString(context: Context, @StringRes id: Int, vararg formatArgs: Any): String {
+        internal fun getString(context: Context, @StringRes id: Int, formatArgs: Array<out Any>): String ? {
             val value = getString(context, id)
-            val locale: Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Resources.getSystem().configuration.locales.get(0)
-            } else {
-                Resources.getSystem().configuration.locale
+            value?.let {
+                val locale: Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Resources.getSystem().configuration.locales.get(0)
+                } else {
+                    Resources.getSystem().configuration.locale
+                }
+                return java.lang.String.format(locale, it, *formatArgs)
             }
-            return String.format(locale, value!!, *formatArgs)
+            return null
         }
 
     }

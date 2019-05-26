@@ -14,6 +14,7 @@ import java.util.ArrayList
 class SC {
 
     companion object {
+
         init {
             System.loadLibrary("native-lib")
         }
@@ -59,7 +60,7 @@ class SC {
             } else when (version) {
                 Version.V0 -> JavaLogic.encryptString(context!!, value)
                 Version.V1 -> CPlusLogic.obfuscateV1(context!!, value)
-                else -> null
+                Version.V2 -> CPlusLogic.obfuscateV2(context!!, value)
             }
         }
 
@@ -81,7 +82,7 @@ class SC {
             } else when (version) {
                 Version.V0 -> JavaLogic.getString(context!!, id)
                 Version.V1 -> CPlusLogic.revealV1(context!!, id)
-                else -> null
+                Version.V2 -> CPlusLogic.revealV2(context!!, id)
             }
         }
 
@@ -103,13 +104,13 @@ class SC {
             } else when (version) {
                 Version.V0 -> JavaLogic.decryptString(context!!, value)
                 Version.V1 -> CPlusLogic.revealV1(context!!, value)
-                else -> null
+                Version.V2 -> CPlusLogic.revealV2(context!!, value)
             }
         }
 
         @JvmStatic
-        fun reveal(@StringRes id: Int, vararg formatArgs: Any): String {
-            return reveal(id, formatArgs, defaultVersion)
+        fun reveal(@StringRes id: Int, vararg formatArgs: Any): String? {
+            return reveal(id, defaultVersion, formatArgs)
         }
 
         /**
@@ -119,14 +120,14 @@ class SC {
          * @return
          */
         @JvmStatic
-        fun reveal(@StringRes id: Int, vararg formatArgs: Any, version: Version = defaultVersion): String? {
+        fun reveal(@StringRes id: Int, version: Version, vararg formatArgs: Any): String? {
             return if (context == null) {
                 Log.e(tag, "Library not initialized: SC.init(Context)")
                 null
             } else return when (version) {
-                Version.V0 -> JavaLogic.getString(context!!, id, formatArgs)
-                Version.V1 -> CPlusLogic.revealV1(context!!, id, formatArgs)
-                else -> null
+                Version.V0 -> JavaLogic.getString(context!!, id, formatArgs[0] as Array<out Any>)
+                Version.V1 -> CPlusLogic.revealV1(context!!, id, formatArgs[0] as Array<out Any>)
+                Version.V2 -> CPlusLogic.revealV2(context!!, id, formatArgs[0] as Array<out Any>)
             }
         }
 
@@ -136,5 +137,9 @@ class SC {
     external fun jniObfuscateV1(context: Context, key: String?, value: String): String
 
     external fun jniRevealV1(context: Context, key: String?, value: String): String
+
+    external fun jniObfuscateV2(context: Context, key: String?, value: ByteArray): ByteArray
+
+    external fun jniRevealV2(context: Context, key: String?, value: ByteArray): ByteArray
 
 }
