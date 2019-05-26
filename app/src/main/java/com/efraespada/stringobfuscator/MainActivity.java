@@ -2,6 +2,7 @@ package com.efraespada.stringobfuscator;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
         String numbers = getString(R.string.test_a, "hi", 3) + " is " + SC.reveal(R.string.test_a, "hi", 3);
         ((TextView) findViewById(R.id.example_b)).setText(numbers);
+
+        Log.e("test", String.valueOf(getString(R.string.snake2).equals(SC.reveal(R.string.snake))));
 
         final SCTextView tvAuto = findViewById(R.id.auto_tv);
         findViewById(R.id.btn_change).setOnClickListener(new View.OnClickListener() {
