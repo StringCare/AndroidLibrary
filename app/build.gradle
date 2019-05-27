@@ -42,7 +42,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     // implementation project(path: ':library')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.stringcare:library:2.1"
+    implementation "com.stringcare:library:$stringcare_version"
 }
 
 
