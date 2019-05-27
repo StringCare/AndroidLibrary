@@ -10,6 +10,9 @@ import android.support.v7.widget.AppCompatTextView;
 import android.text.Html;
 import android.util.AttributeSet;
 
+import java.nio.charset.Charset;
+import java.util.Formatter;
+
 public class SCTextView extends AppCompatTextView {
 
     private String text;
@@ -110,6 +113,19 @@ public class SCTextView extends AppCompatTextView {
      */
     public boolean isVisible() {
         return visible;
+    }
+
+    public String escapeUnicode(String input) {
+        StringBuilder b = new StringBuilder(input.length());
+        Formatter f = new Formatter(b);
+        for (char c : input.toCharArray()) {
+            if (c < 128) {
+                b.append(c);
+            } else {
+                f.format("\\u%04x", (int) c);
+            }
+        }
+        return b.toString();
     }
 
 }

@@ -20,7 +20,7 @@
 
 #### [Compatibility](https://github.com/StringCare/AndroidLibrary/wiki/Compatibility)
 
-#### [Migrate From 0.x To 1.x](https://github.com/StringCare/AndroidLibrary/wiki/Migrate-From-0.x-To-1.x)
+#### [Migrations](https://github.com/StringCare/AndroidLibrary/wiki/Migrations)
 
 [link]: https://github.com/StringCare/AndroidLibrary
 [badge]: https://img.shields.io/bintray/v/efff/maven/StringCareAndroidPlugin.svg
