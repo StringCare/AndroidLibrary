@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "1.6"
+version = "2.1"
 
 android {
     compileSdkVersion 28
@@ -94,6 +94,7 @@ task sourcesJar(type: Jar) {
 
 task javadoc(type: Javadoc) {
     exclude '**/**.java'
+    exclude '**/**.kt'
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
