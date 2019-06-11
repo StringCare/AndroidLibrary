@@ -50,5 +50,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        ((TextView) findViewById(R.id.same_value)).setText(
+                "same keys?" + SC.reveal(R.string.c3po).equals(getString(R.string.c3po_)));
     }
 }

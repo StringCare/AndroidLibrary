@@ -16,8 +16,9 @@ buildscript {
     }
 
     dependencies {
-        //classpath "com.stringcare:plugin:2.2"
-        classpath files('../GradlePlugin/build/libs/plugin-2.2.jar')
+        // classpath "com.stringcare:plugin:2.2"
+        // classpath files('../GradlePlugin/build/libs/plugin-2.2.jar')
+        classpath files('../KotlinGradlePlugin/build/libs/plugin-2.3-SNAPSHOT.jar')
         // classpath files('..\\GradlePlugin\\build\\libs\\plugin-0.9.jar')
         classpath 'com.android.tools.build:gradle:3.4.1'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1"

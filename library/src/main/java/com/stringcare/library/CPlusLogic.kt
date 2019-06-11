@@ -117,6 +117,76 @@ class CPlusLogic {
             return null
         }
 
+        /**
+         * Obfuscates the given value
+         * @param value
+         * @return String
+         */
+        @JvmStatic
+        fun obfuscateV3(context: Context, value: String, androidTreatment: Boolean): String? {
+            val bytes = Charset.forName("UTF-8").encode(when(androidTreatment) {
+                true -> value.androidTreatment()
+                false -> value.unescape()
+            })
+            val arrO = ByteArray(bytes.remaining())
+            bytes.get(arrO)
+            val arr: ByteArray = SC().jniObfuscateV3(context, getCertificateSHA1Fingerprint(context), arrO)
+            return arr.map { it.toInt() }.toString().replace("[","").replace("]","")
+        }
+
+        /**
+         * Reveals the given value
+         * @param id
+         * @return String
+         */
+        @JvmStatic
+        fun revealV3(context: Context, @StringRes id: Int, androidTreatment: Boolean): String? {
+            val arr: ByteArray = context.getString(id).split(", ").map { it.toInt().toByte() }.toByteArray()
+            val reveal = String(SC().jniRevealV3(context, getCertificateSHA1Fingerprint(context), arr))
+            return when(androidTreatment) {
+                true -> reveal.unescape()
+                false -> reveal
+            }
+        }
+
+        /**
+         * Reveals the given value
+         * @param value
+         * @return String
+         */
+        @JvmStatic
+        fun revealV3(context: Context, value: String, androidTreatment: Boolean): String? {
+            val arr: ByteArray = when(androidTreatment) {
+                true -> value.unescape()
+                false -> value
+            }.split(", ").map { it.toInt().toByte() }.toByteArray()
+            val reveal = String(SC().jniRevealV3(context, getCertificateSHA1Fingerprint(context), arr))
+            return when(androidTreatment) {
+                true -> reveal.unescape()
+                false -> reveal
+            }
+        }
+
+        /**
+         * Reveals the given value
+         * @param id
+         * @param formatArgs
+         * @return
+         */
+        @JvmStatic
+        fun revealV3(context: Context, @StringRes id: Int, androidTreatment: Boolean, formatArgs: Array<out Any>): String? {
+            val value = revealV3(context, id, androidTreatment)
+            value?.let {
+                val locale: Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Resources.getSystem().configuration.locales.get(0)
+                } else {
+                    Resources.getSystem().configuration.locale
+                }
+                return java.lang.String.format(locale, it, *formatArgs)
+            }
+            return null
+        }
+
     }
 
 }

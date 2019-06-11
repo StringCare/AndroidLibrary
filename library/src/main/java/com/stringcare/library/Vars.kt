@@ -1,6 +1,6 @@
 package com.stringcare.library
 
-internal val defaultVersion = Version.V2
+internal val defaultVersion = Version.V3
 internal val tag = SC::class.java.simpleName
 internal const val codification = "UTF-8"
 internal const val transformation = "AES/ECB/PKCS5Padding"

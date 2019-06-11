@@ -30,7 +30,7 @@
                 android:padding="10dp"
                 android:text="@string/hello"
                 android:textColor="@android:color/black"
-                app:html="false"
+                app:html="true"
                 app:visible="false" />
 
             <Button
@@ -51,11 +51,50 @@
                 android:textColor="@android:color/black" />
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:padding="10dp"
+                android:text="@string/snake2"
+                android:textColor="@android:color/black" />
+
+            <TextView
                 android:id="@+id/example_b"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="15dp"
+                android:padding="10dp"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/same_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:text="@string/c3po_"
+                android:padding="10dp"
+                android:textColor="@android:color/black" />
+
+            <com.stringcare.library.SCTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:padding="10dp"
+                android:text="@string/c3po"
+                android:textColor="@android:color/black"
+                app:html="false"
+                app:visible="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:text="@string/c3po_"
                 android:padding="10dp"
                 android:textColor="@android:color/black" />
 
