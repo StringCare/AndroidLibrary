@@ -93,6 +93,26 @@ class SC {
          * @return String
          */
         @JvmStatic
+        fun reveal(@StringRes id: Int, androidTreatment: Boolean = defaultAndroidTreatment): String {
+            return reveal(id, androidTreatment, defaultVersion)
+        }
+
+        /**
+         * Deobfuscates the given value
+         * @param id
+         * @return String
+         */
+        @JvmStatic
+        fun reveal(@StringRes id: Int, version: Version = defaultVersion): String {
+            return reveal(id, defaultAndroidTreatment, version)
+        }
+
+        /**
+         * Deobfuscates the given value
+         * @param id
+         * @return String
+         */
+        @JvmStatic
         fun reveal(@StringRes id: Int, androidTreatment: Boolean = defaultAndroidTreatment, version: Version = defaultVersion): String {
             return if (contextFun == null) {
                 Log.e(tag, initializationNeeded)
