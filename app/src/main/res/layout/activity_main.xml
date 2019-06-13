@@ -112,9 +112,8 @@
                 android:id="@+id/same_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="start"
                 android:layout_marginTop="15dp"
-                android:text="@string/c3po_"
                 android:padding="10dp"
                 android:textColor="@android:color/black" />
 

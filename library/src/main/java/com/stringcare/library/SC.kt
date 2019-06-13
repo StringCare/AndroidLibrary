@@ -61,7 +61,7 @@ class SC {
 
         @JvmStatic
         fun obfuscate(value: String): String {
-            return obfuscate(value, true, defaultVersion)
+            return obfuscate(value, defaultAndroidTreatment, defaultVersion)
         }
 
         /**
@@ -70,7 +70,7 @@ class SC {
          * @return String
          */
         @JvmStatic
-        fun obfuscate(value: String, androidTreatment: Boolean = true, version: Version = defaultVersion): String {
+        fun obfuscate(value: String, androidTreatment: Boolean = defaultAndroidTreatment, version: Version = defaultVersion): String {
             return if (contextFun == null) {
                 Log.e(tag, initializationNeeded)
                 value
@@ -93,7 +93,7 @@ class SC {
          * @return String
          */
         @JvmStatic
-        fun reveal(@StringRes id: Int, androidTreatment: Boolean = true, version: Version = defaultVersion): String {
+        fun reveal(@StringRes id: Int, androidTreatment: Boolean = defaultAndroidTreatment, version: Version = defaultVersion): String {
             return if (contextFun == null) {
                 Log.e(tag, initializationNeeded)
                 ""

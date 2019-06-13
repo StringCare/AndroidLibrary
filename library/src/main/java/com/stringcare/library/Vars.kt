@@ -9,4 +9,3 @@ internal const val aes = "AES"
 internal const val certificate = "X509"
 internal const val transformation = "AES/ECB/PKCS5Padding"
 internal const val initializationNeeded = "Library not initialized: SC.init(Context)"
-internal val hexArray = charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F')
