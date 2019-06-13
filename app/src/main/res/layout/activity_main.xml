@@ -21,6 +21,16 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="15dp"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:text="@string/html_treatment"
+                android:padding="10dp"
+                android:textColor="@android:color/black" />
+
             <com.stringcare.library.SCTextView
                 android:id="@+id/auto_tv"
                 android:layout_width="wrap_content"
@@ -42,7 +52,17 @@
                 android:text="Change" />
 
             <TextView
-                android:id="@+id/example_a"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="15dp"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:text="@string/programmatically_obfuscation"
+                android:padding="10dp"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/programmatically_obfuscation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -56,15 +76,35 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="15dp"
                 android:padding="10dp"
-                android:text="@string/snake2"
+                android:text="@string/snake_msg_original"
                 android:textColor="@android:color/black" />
 
             <TextView
-                android:id="@+id/example_b"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="15dp"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:text="@string/patterns"
+                android:padding="10dp"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/pattern"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="15dp"
+                android:padding="10dp"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="15dp"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:text="@string/long_new_line_comparison"
                 android:padding="10dp"
                 android:textColor="@android:color/black" />
 
