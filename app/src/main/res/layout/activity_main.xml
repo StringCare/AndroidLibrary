@@ -106,7 +106,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:layout_marginTop="15dp"
-                android:padding="25dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
                 android:textColor="@android:color/black" />
 
             <com.stringcare.library.SCTextView
@@ -114,7 +115,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="15dp"
-                android:padding="25dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                android:textSize="12sp"
                 android:text="@string/c3po"
                 android:textColor="@android:color/black"
                 app:html="false"
@@ -126,7 +129,9 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="15dp"
                 android:text="@string/c3po_"
-                android:padding="25dp"
+                android:textSize="12sp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
                 android:textColor="@android:color/darker_gray" />
 
             <TextView
@@ -134,7 +139,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:layout_marginTop="15dp"
-                android:padding="20dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
                 android:text="@string/string_resource_disabling_android_treatment"
                 android:textColor="@android:color/black" />
 
@@ -142,7 +148,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:padding="25dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                android:textSize="12sp"
                 android:text="@string/c3po_no_android_treatment"
                 android:textColor="@android:color/black"
                 app:html="false"
