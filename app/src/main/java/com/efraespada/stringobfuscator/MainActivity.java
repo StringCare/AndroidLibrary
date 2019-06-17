@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        boolean equals = SC.reveal(R.string.c3po).equals(getString(R.string.c3po_));
+        boolean equals = SC.reveal(R.string.hello_world_b).equals(getString(R.string.hello_world_a));
         String areEquals = "Same result: " +  equals;
         ((TextView) findViewById(R.id.same_value)).setText(areEquals);
     }
