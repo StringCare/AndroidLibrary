@@ -3,5 +3,6 @@
     <declare-styleable name="com_stringcare_library_SCTextView">
         <attr name="html" format="boolean" />
         <attr name="visible" format="boolean" />
+        <attr name="androidTreatment" format="boolean" />
     </declare-styleable>
 </resources>

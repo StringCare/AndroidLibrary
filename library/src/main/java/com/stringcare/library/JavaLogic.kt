@@ -2,10 +2,8 @@ package com.stringcare.library
 
 import android.content.Context
 import android.content.res.Resources
-import android.os.Build
 import android.support.annotation.StringRes
 import java.nio.charset.Charset
-import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
@@ -14,19 +12,18 @@ class JavaLogic {
     companion object  {
 
         @Throws(Exception::class)
-        private fun encrypt(message: String, key: String?): String {
+        private fun encrypt(message: String, key: String): String {
             val data = message.toByteArray(charset(codification))
             val cipher = Cipher.getInstance(transformation)
-            cipher.init(Cipher.ENCRYPT_MODE, generateKey(key!!))
+            cipher.init(Cipher.ENCRYPT_MODE, generateKey(key))
             val encryptData = cipher.doFinal(data)
             return encryptData.asHexUpper
         }
 
         @Throws(Exception::class)
-        private fun decrypt(message: String, key: String?): String {
-            val spec = SecretKeySpec(generateKey(key!!).encoded, "AES")
+        private fun decrypt(message: String, key: String): String {
             val cipher = Cipher.getInstance(transformation)
-            cipher.init(Cipher.DECRYPT_MODE, spec)
+            cipher.init(Cipher.DECRYPT_MODE, SecretKeySpec(generateKey(key).encoded, aes))
             return String(cipher.doFinal(message.hexAsByteArray), Charset.forName(codification))
         }
         /**
@@ -34,14 +31,13 @@ class JavaLogic {
          * @param value
          * @return String
          */
-        internal fun encryptString(context: Context, value: String): String? {
-            val hash = getCertificateSHA1Fingerprint(context)
-            try {
-                return encrypt(value, hash)
+        internal fun encryptString(context: Context, value: String): String {
+            return try {
+                encrypt(value, getCertificateSHA1Fingerprint(context))
             } catch (e: Exception) {
                 e.printStackTrace()
+                value
             }
-            return null
         }
 
         /**
@@ -49,14 +45,13 @@ class JavaLogic {
          * @param value
          * @return String
          */
-        internal fun decryptString(context: Context, value: String): String? {
-            val hash = getCertificateSHA1Fingerprint(context)
-            try {
-                return decrypt(value, hash)
+        internal fun decryptString(context: Context, value: String): String {
+            return try {
+                decrypt(value, getCertificateSHA1Fingerprint(context))
             } catch (e: Exception) {
                 e.printStackTrace()
+                value
             }
-            return null
         }
 
         /**
@@ -64,14 +59,13 @@ class JavaLogic {
          * @param id
          * @return String
          */
-        internal fun getString(context: Context, @StringRes id: Int): String? {
-            val hash = getCertificateSHA1Fingerprint(context)
-            try {
-                return decrypt(context.getString(id), hash)
+        internal fun getString(context: Context, @StringRes id: Int): String {
+            return try {
+                decrypt(context.getString(id), getCertificateSHA1Fingerprint(context))
             } catch (e: Exception) {
                 e.printStackTrace()
+                context.getString(id) // returns original value, maybe not encrypted
             }
-            return context.getString(id) // returns original value, maybe not encrypted
         }
 
         /**
@@ -80,17 +74,13 @@ class JavaLogic {
          * @param formatArgs
          * @return String
          */
-        internal fun getString(context: Context, @StringRes id: Int, formatArgs: Array<out Any>): String ? {
-            val value = getString(context, id)
-            value?.let {
-                val locale: Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Resources.getSystem().configuration.locales.get(0)
-                } else {
-                    Resources.getSystem().configuration.locale
-                }
-                return java.lang.String.format(locale, it, *formatArgs)
-            }
-            return null
+        internal fun getString(context: Context,
+                               @StringRes id: Int,
+                               formatArgs: Array<out Any>): String {
+            return java.lang.String.format(
+                    Resources.getSystem().locale(),
+                    getString(context, id),
+                    *formatArgs)
         }
 
     }

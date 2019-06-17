@@ -10,25 +10,27 @@ import android.support.v7.widget.AppCompatTextView;
 import android.text.Html;
 import android.util.AttributeSet;
 
-import java.nio.charset.Charset;
 import java.util.Formatter;
 
 public class SCTextView extends AppCompatTextView {
 
     private String text;
     private Boolean isHTML;
+    private Boolean androidTreatment;
     private Boolean visible;
 
     public SCTextView(Context context) {
         super(context);
         isHTML = null;
         visible = null;
+        androidTreatment = null;
     }
 
     public SCTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         isHTML = null;
         visible = null;
+        androidTreatment = null;
         loadText(attrs);
     }
 
@@ -36,11 +38,13 @@ public class SCTextView extends AppCompatTextView {
         super(context, attrs, defStyleAttr);
         isHTML = null;
         visible = null;
+        androidTreatment = null;
         loadText(attrs);
     }
 
     /**
      * Defines initial vars
+     *
      * @param attrs {AttributeSet}
      */
     private void loadText(final AttributeSet attrs) {
@@ -51,6 +55,10 @@ public class SCTextView extends AppCompatTextView {
         if (visible == null) {
             visible = !"false".equalsIgnoreCase(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "visible"));
         }
+        if (androidTreatment == null) {
+            androidTreatment = !"false".equalsIgnoreCase(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "androidTreatment"));
+        }
+
         reloadText();
     }
 
@@ -68,10 +76,11 @@ public class SCTextView extends AppCompatTextView {
                 SC.onContextReady(new ContextListener() {
                     @Override
                     public void contextReady() {
+                        String value = SC.reveal(val, androidTreatment);
                         if (isHTML) {
-                            setText(Html.fromHtml(SC.reveal(val)));
+                            setText(Html.fromHtml(value));
                         } else {
-                            setText(SC.reveal(val));
+                            setText(value);
                         }
                     }
                 });
@@ -83,6 +92,7 @@ public class SCTextView extends AppCompatTextView {
 
     /**
      * Enables de-obfuscation before print the value
+     *
      * @param visible {true|false}
      */
     public void visible(boolean visible) {
@@ -92,6 +102,7 @@ public class SCTextView extends AppCompatTextView {
 
     /**
      * Enables HTML printing
+     *
      * @param enabled {true|false}
      */
     public void htmlEnabled(boolean enabled) {
@@ -101,6 +112,7 @@ public class SCTextView extends AppCompatTextView {
 
     /**
      * Returns true if is the value must be print as HTML or plain text
+     *
      * @return Boolean
      */
     public boolean isHtmlEnabled() {
@@ -109,6 +121,7 @@ public class SCTextView extends AppCompatTextView {
 
     /**
      * Returns true if is de-obfuscating the value before print it
+     *
      * @return Boolean
      */
     public boolean isVisible() {
