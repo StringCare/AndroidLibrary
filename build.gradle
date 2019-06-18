@@ -16,9 +16,9 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.stringcare:plugin:$stringcare_version"
-        // classpath files('../GradlePlugin/build/libs/plugin-2.2.jar')
-        // classpath files('../KotlinGradlePlugin/build/libs/plugin-2.2.jar')
+        // classpath "com.stringcare:plugin:$stringcare_version"
+        // classpath files('../GradlePlugin/build/libs/plugin-3.0.jar')
+        classpath files('../KotlinGradlePlugin/build/libs/plugin-3.0.jar')
         // classpath files('..\\GradlePlugin\\build\\libs\\plugin-0.9.jar')
         classpath 'com.android.tools.build:gradle:3.4.1'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1"
@@ -43,7 +43,3 @@ task clean(type: Delete) {
 }
 
 apply plugin: StringCare
-
-stringcare {
-    debug true
-}
