@@ -43,3 +43,10 @@ task clean(type: Delete) {
 }
 
 apply plugin: StringCare
+
+stringcare {
+    debug true
+    modules {
+        app {}
+    }
+}

@@ -22,6 +22,10 @@
 
 #### [Migrations](https://github.com/StringCare/AndroidLibrary/wiki/Migrations)
 
+#### [Tasks](https://github.com/StringCare/AndroidLibrary/wiki/Tasks)
+
+#### [Resource Tips](https://github.com/StringCare/AndroidLibrary/wiki/Resource-Tips)
+
 [link]: https://github.com/StringCare/AndroidLibrary
 [badge]: https://img.shields.io/bintray/v/efff/maven/StringCareAndroidPlugin.svg
 
