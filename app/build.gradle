@@ -16,6 +16,9 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    flavorDimensions 'default'
+
     buildTypes {
         release {
             minifyEnabled false
@@ -24,6 +27,16 @@ android {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    productFlavors {
+        primary {
+            dimension = 'default'
+        }
+        secondary {
+            dimension = 'default'
+            applicationId = 'com.efraespada.otherobfuscator'
         }
     }
 

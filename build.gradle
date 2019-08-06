@@ -16,11 +16,11 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.stringcare:plugin:$stringcare_version"
-        // classpath files('../GradlePlugin/build/libs/plugin-3.0.jar')
-        // classpath files('../KotlinGradlePlugin/build/libs/plugin-3.0.jar')
+        // classpath "com.stringcare:plugin:$stringcare_version"
+        // classpath files('../GradlePlugin/build/libs/plugin-3.1.jar')
+        classpath files('../KotlinGradlePlugin/build/libs/plugin-3.1.jar')
         // classpath files('..\\GradlePlugin\\build\\libs\\plugin-0.9.jar')
-        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath 'com.android.tools.build:gradle:3.4.2'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -47,6 +47,22 @@ apply plugin: StringCare
 stringcare {
     debug true
     modules {
-        app {}
+        app {
+        }
+    }
+    buildVariants {
+        primaryDebug {
+            applicationId = "com.efraespada.stringobfuscator"
+        }
+        primaryRelease {
+            exclude = true
+            applicationId = "com.efraespada.stringobfuscator"
+        }
+        secondaryDebug {
+            applicationId = "com.efraespada.otherobfuscator"
+        }
+        secondaryRelease {
+            applicationId = "com.efraespada.otherobfuscator"
+        }
     }
 }
