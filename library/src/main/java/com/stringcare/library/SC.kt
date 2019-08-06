@@ -1,12 +1,8 @@
 package com.stringcare.library
 
 import android.content.Context
-
 import android.support.annotation.StringRes
 import android.util.Log
-import java.lang.Exception
-
-import java.util.ArrayList
 
 /**
  * Created by efrainespada on 02/10/2016.
@@ -20,36 +16,45 @@ class SC {
             System.loadLibrary("native-lib")
         }
 
-        private val context: Context
+        val context: Context
             get() = when (contextFun) {
-                null -> throw Exception("Context not defined yet.")
-                else -> contextFun!!.invoke()
+                null -> throw StringcareException("Context not defined yet.")
+                else -> contextFun!!()
             }
 
         private var contextFun: (() -> Context)? = null
 
-        private val listeners = ArrayList<ContextListener>()
+        private val listeners = mutableListOf<ContextListener>()
 
+        /**
+         * Context getter. Common implementation
+         */
         @JvmStatic
         fun init(c: Context) {
             contextFun = { c }
-            if (listeners.isNotEmpty()) {
-                for (listener in listeners) {
-                    listener.contextReady()
-                }
-            }
+            processPendingContextListener()
         }
 
+        /**
+         * Context getter. Lambda implementation
+         */
         @JvmStatic
-        fun init(lambda: () -> Context) {
-            contextFun = lambda
-            if (listeners.isNotEmpty()) {
-                for (listener in listeners) {
-                    listener.contextReady()
-                }
-            }
+        fun init(context: () -> Context) {
+            contextFun = context
+            processPendingContextListener()
         }
 
+        /**
+         * Process pending context listeners
+         */
+        private fun processPendingContextListener() {
+            if (listeners.isNotEmpty())
+                listeners.forEach { it.contextReady() }
+        }
+
+        /**
+         * Holds all context listeners.
+         */
         @JvmStatic
         fun onContextReady(listener: ContextListener) {
             if (contextFun != null) {
@@ -59,6 +64,11 @@ class SC {
             listeners.add(listener)
         }
 
+        /**
+         * Obfuscates the string value
+         * @param value
+         * @return String
+         */
         @JvmStatic
         fun obfuscate(value: String): String {
             return obfuscate(value, defaultAndroidTreatment, defaultVersion)
@@ -67,10 +77,16 @@ class SC {
         /**
          * Obfuscates the given value
          * @param value
+         * @param androidTreatment
+         * @param version
          * @return String
          */
         @JvmStatic
-        fun obfuscate(value: String, androidTreatment: Boolean = defaultAndroidTreatment, version: Version = defaultVersion): String {
+        fun obfuscate(
+                value: String,
+                androidTreatment: Boolean = defaultAndroidTreatment,
+                version: Version = defaultVersion
+        ): String {
             return if (contextFun == null) {
                 Log.e(tag, initializationNeeded)
                 value
@@ -82,24 +98,34 @@ class SC {
             }
         }
 
+        /**
+         * Reveals the Int (@StringRes) value
+         * @param id
+         * @return String
+         */
         @JvmStatic
         fun reveal(@StringRes id: Int): String {
             return reveal(id, defaultVersion)
         }
 
         /**
-         * Deobfuscates the given value
+         * Reveals the Int (@StringRes) value
          * @param id
+         * @param androidTreatment
          * @return String
          */
         @JvmStatic
-        fun reveal(@StringRes id: Int, androidTreatment: Boolean = defaultAndroidTreatment): String {
+        fun reveal(
+                @StringRes id: Int,
+                androidTreatment: Boolean = defaultAndroidTreatment
+        ): String {
             return reveal(id, androidTreatment, defaultVersion)
         }
 
         /**
-         * Deobfuscates the given value
+         * Reveals the Int (@StringRes) value
          * @param id
+         * @param version
          * @return String
          */
         @JvmStatic
@@ -108,12 +134,18 @@ class SC {
         }
 
         /**
-         * Deobfuscates the given value
+         * Reveals the Int (@StringRes) value
          * @param id
+         * @param androidTreatment
+         * @param version
          * @return String
          */
         @JvmStatic
-        fun reveal(@StringRes id: Int, androidTreatment: Boolean = defaultAndroidTreatment, version: Version = defaultVersion): String {
+        fun reveal(
+                @StringRes id: Int,
+                androidTreatment: Boolean = defaultAndroidTreatment,
+                version: Version = defaultVersion
+        ): String {
             return if (contextFun == null) {
                 Log.e(tag, initializationNeeded)
                 ""
@@ -125,28 +157,51 @@ class SC {
             }
         }
 
+        /**
+         * Reveals the String value
+         * @param value
+         * @return String
+         */
         @JvmStatic
         fun reveal(value: String): String {
             return reveal(value, defaultAndroidTreatment, defaultVersion)
         }
 
+        /**
+         * Reveals the String value
+         * @param value
+         * @param version
+         * @return String
+         */
         @JvmStatic
         fun reveal(value: String, version: Version = defaultVersion): String {
             return reveal(value, defaultAndroidTreatment, version)
         }
 
+        /**
+         * Reveals the String value
+         * @param value
+         * @param androidTreatment
+         * @return String
+         */
         @JvmStatic
         fun reveal(value: String, androidTreatment: Boolean): String {
             return reveal(value, androidTreatment, defaultVersion)
         }
 
         /**
-         * Deobfuscates the given value
+         * Reveals the String value
          * @param value
+         * @param androidTreatment
+         * @param version
          * @return String
          */
         @JvmStatic
-        fun reveal(value: String, androidTreatment: Boolean = defaultAndroidTreatment, version: Version = defaultVersion): String {
+        fun reveal(
+                value: String,
+                androidTreatment: Boolean = defaultAndroidTreatment,
+                version: Version = defaultVersion
+        ): String {
             return if (contextFun == null) {
                 Log.e(tag, initializationNeeded)
                 value
@@ -158,37 +213,80 @@ class SC {
             }
         }
 
+        /**
+         * Reveals the Int (@StringRes) value with vararg
+         * @param id
+         * @param formatArgs
+         * @return String
+         */
         @JvmStatic
         fun reveal(@StringRes id: Int, vararg formatArgs: Any): String {
             return reveal(id, defaultAndroidTreatment, defaultVersion, formatArgs)
         }
 
+        /**
+         * Reveals the Int (@StringRes) value with vararg
+         * @param id
+         * @param version
+         * @param formatArgs
+         * @return String
+         */
         @JvmStatic
-        fun reveal(@StringRes id: Int, version: Version = defaultVersion, vararg formatArgs: Any): String {
+        fun reveal(
+                @StringRes id: Int,
+                version: Version = defaultVersion,
+                vararg formatArgs: Any
+        ): String {
             return reveal(id, defaultAndroidTreatment, version, formatArgs)
         }
 
+        /**
+         * Reveals the Int (@StringRes) value with vararg
+         * @param id
+         * @param androidTreatment
+         * @param formatArgs
+         * @return String
+         */
         @JvmStatic
-        fun reveal(@StringRes id: Int, androidTreatment: Boolean, vararg formatArgs: Any): String {
+        fun reveal(
+                @StringRes id: Int,
+                androidTreatment: Boolean = defaultAndroidTreatment,
+                vararg formatArgs: Any
+        ): String {
             return reveal(id, androidTreatment, defaultVersion, formatArgs)
         }
 
         /**
-         * Deobfuscates the given value
+         * Reveals the Int (@StringRes) value with vararg
          * @param id
+         * @param androidTreatment
+         * @param version
          * @param formatArgs
-         * @return
+         * @return String
          */
         @JvmStatic
-        fun reveal(@StringRes id: Int, androidTreatment: Boolean, version: Version, vararg formatArgs: Any): String {
-            return if (contextFun == null) {
-                Log.e(tag, initializationNeeded)
-                ""
-            } else return when (version) {
-                Version.V0 -> JavaLogic.getString(context, id, formatArgs[0] as Array<out Any>)
-                Version.V1 -> CPlusLogic.revealV1(context, id, formatArgs[0] as Array<out Any>)
-                Version.V2 -> CPlusLogic.revealV2(context, id, formatArgs[0] as Array<out Any>)
-                Version.V3 -> CPlusLogic.revealV3(context, id, androidTreatment, formatArgs[0] as Array<out Any>)
+        fun reveal(
+                @StringRes id: Int,
+                androidTreatment: Boolean = defaultAndroidTreatment,
+                version: Version = defaultVersion,
+                vararg formatArgs: Any
+        ): String {
+            return when (contextFun) {
+                null -> {
+                    Log.e(tag, initializationNeeded)
+                    ""
+                }
+                else -> return when (version) {
+                    Version.V0 -> JavaLogic.getString(context, id, formatArgs[0] as Array<out Any>)
+                    Version.V1 -> CPlusLogic.revealV1(context, id, formatArgs[0] as Array<out Any>)
+                    Version.V2 -> CPlusLogic.revealV2(context, id, formatArgs[0] as Array<out Any>)
+                    Version.V3 -> CPlusLogic.revealV3(
+                            context,
+                            id,
+                            androidTreatment,
+                            formatArgs[0] as Array<out Any>
+                    )
+                }
             }
         }
 
