@@ -17,6 +17,7 @@ buildscript {
 
     dependencies {
         // classpath "com.stringcare:plugin:$stringcare_version"
+        // classpath files('../GradlePlugin/build/libs/plugin-3.1.jar')
         // classpath files('../GradlePlugin/build/libs/plugin-3.0.jar')
         classpath files('../KotlinGradlePlugin/build/libs/plugin-3.1.jar')
         // classpath files('..\\GradlePlugin\\build\\libs\\plugin-0.9.jar')
@@ -46,6 +47,7 @@ apply plugin: StringCare
 
 stringcare {
     debug true
+
     variants {
         prod {
             skip = true
