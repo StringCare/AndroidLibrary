@@ -6,7 +6,7 @@
         General <strong>Kenobi</strong>.
     </string>
     <string name="pattern" hidden="true">%1$s (%2$d)</string>
-    <string name="snake_msg_hidden" hidden="true">\n\nla-li-lu-le-lo\n\n🐍😄🍉</string>
+    <string name="snake_msg_hidden" hidden="true">\n\nla-li-lu-le-lo\n\n🐍😄🍉 \n\n áéíóú ?</string>
     <string name="hello_world_a">Hello
         World
     </string>

@@ -18,6 +18,7 @@ buildscript {
     dependencies {
         // classpath "com.stringcare:plugin:$stringcare_version"
         // classpath files('../GradlePlugin/build/libs/plugin-3.1.jar')
+        // classpath files('../GradlePlugin/build/libs/plugin-3.0.jar')
         classpath files('../KotlinGradlePlugin/build/libs/plugin-3.1.jar')
         // classpath files('..\\GradlePlugin\\build\\libs\\plugin-0.9.jar')
         classpath 'com.android.tools.build:gradle:3.4.2'
@@ -46,22 +47,13 @@ apply plugin: StringCare
 
 stringcare {
     debug true
-    modules {
-        app {
-        }
-    }
-    buildVariants {
-        primaryDebug {
+
+    variants {
+        prod {
+            skip = true
             applicationId = "com.efraespada.stringobfuscator"
         }
-        primaryRelease {
-            exclude = true
-            applicationId = "com.efraespada.stringobfuscator"
-        }
-        secondaryDebug {
-            applicationId = "com.efraespada.otherobfuscator"
-        }
-        secondaryRelease {
+        dev {
             applicationId = "com.efraespada.otherobfuscator"
         }
     }
