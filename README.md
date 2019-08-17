@@ -10,10 +10,6 @@
 
 #### [Implementation](https://github.com/StringCare/AndroidLibrary/wiki/Implementation)
 
-#### [What Is StringCare](https://github.com/StringCare/AndroidLibrary/wiki/What-is-StringCare)
-
-#### [Implementation](https://github.com/StringCare/AndroidLibrary/wiki/Implementation)
-
 #### [Strings Usage](https://github.com/StringCare/AndroidLibrary/wiki/Strings-Usage)
 
 #### [Assets Usage](https://github.com/StringCare/AndroidLibrary/wiki/Assets-Usage)
