@@ -16,9 +16,13 @@
     <string name="hello_world_c" hidden="true" androidTreatment="false">Hello
 World
     </string>
+    <string name="asset_json_file" hidden="true">test.json</string>
+    <string name="asset_json_raw_file" hidden="true">raw/test_array.json</string>
     <string name="long_new_line_comparison">Long New Line Comparison</string>
     <string name="html_treatment">HTML treatment</string>
     <string name="programmatically_obfuscation">Programmatically Obfuscation</string>
     <string name="patterns">Patterns</string>
     <string name="string_resource_disabling_android_treatment">String resource disabling Android treatment:</string>
+    <string name="json_object_asset">JSON Asset</string>
+    <string name="json_array_asset">JSON Array Raw Asset</string>
 </resources>

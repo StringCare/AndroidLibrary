@@ -51,7 +51,6 @@ stringcare {
     }
     variants {
         prod {
-            skip = true
             applicationId = "com.efraespada.stringobfuscator"
         }
         dev {

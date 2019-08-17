@@ -2,15 +2,11 @@ package com.efraespada.stringobfuscator;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.stringcare.library.SC;
 import com.stringcare.library.SCTextView;
 import com.stringcare.library.Version;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,14 +43,13 @@ public class MainActivity extends AppCompatActivity {
         String areEquals = "Same result: " +  equals;
         ((TextView) findViewById(R.id.same_value)).setText(areEquals);
 
-        JSONObject jsonObject = SC.jsonObjectAsset("test.json");
-        SC.jsonObjectAssetAsync("test.json", json -> {
-            String value = json.toString();
-        });
+        String jsonObjectName = SC.reveal(R.string.asset_json_file);
+        SC.asset().asyncJson(jsonObjectName, json -> ((TextView) findViewById(R.id.json_object)).setText(json.toString()));
+        SC.asset().asyncBytes(jsonObjectName, bytes -> ((TextView) findViewById(R.id.json_object_original)).setText(new String(bytes)), false);
 
-        JSONArray jsonArray = SC.jsonArrayAsset("raw/test_array.json");
-        SC.jsonArrayAssetAsync("raw/test_array.json", json -> {
-            String value = json.toString();
-        });
+        String jsonArrayName = SC.reveal(R.string.asset_json_raw_file);
+        SC.asset().asyncJsonArray(jsonArrayName, json -> ((TextView) findViewById(R.id.json_array)).setText(json.toString()));
+        SC.asset().asyncBytes(jsonArrayName, bytes -> ((TextView) findViewById(R.id.json_array_original)).setText(new String(bytes)), false);
+
     }
 }

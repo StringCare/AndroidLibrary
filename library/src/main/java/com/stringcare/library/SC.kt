@@ -303,75 +303,103 @@ class SC {
             return bytes
         }
 
-        fun jsonObjectAsset(path: String, predicate: () -> Boolean): JSONObject {
+        @JvmStatic
+        fun asset(): Assets {
+            return Assets()
+        }
+
+    }
+
+    class Assets {
+        fun json(path: String, predicate: () -> Boolean): JSONObject {
             val bytes = assetByteArray(path, predicate)
             return JSONObject(String(bytes, Charset.forName("UTF-8")))
         }
 
-        fun jsonObjectAssetAsync(path: String, json: (json: JSONObject) -> Unit, predicate: () -> Boolean) {
+        fun asyncJson(path: String,
+                      predicate: () -> Boolean = { true },
+                      json: (json: JSONObject) -> Unit) {
             doAsync {
-                val j = jsonObjectAsset(path, predicate)
+                val j = json(path, predicate)
                 json(j)
             }
         }
 
-        fun jsonArrayAsset(path: String, predicate: () -> Boolean): JSONArray {
+        fun jsonArray(path: String, predicate: () -> Boolean): JSONArray {
             val bytes = assetByteArray(path, predicate)
             return JSONArray(String(bytes, Charset.forName("UTF-8")))
         }
 
-        fun jsonArrayAssetAsync(path: String, json: (json: JSONArray) -> Unit, predicate: () -> Boolean) {
+        fun asyncJsonArray(path: String,
+                           predicate: () -> Boolean = { true },
+                           json: (json: JSONArray) -> Unit) {
             doAsync {
-                val j = jsonArrayAsset(path, predicate)
+                val j = jsonArray(path, predicate)
                 json(j)
             }
         }
 
-        @JvmStatic
-        fun jsonObjectAsset(path: String): JSONObject {
-            return jsonObjectAsset(path) { true }
+        fun json(path: String): JSONObject {
+            return json(path) { true }
         }
 
-        @JvmStatic
-        fun jsonObjectAsset(path: String, predicate: Boolean): JSONObject {
-            return jsonObjectAsset(path) { predicate }
+        fun json(path: String, predicate: Boolean): JSONObject {
+            return json(path) { predicate }
         }
 
-        @JvmStatic
-        fun jsonObjectAssetAsync(path: String, jsonObjectListener: JSONObjectListener) {
-            jsonObjectAssetAsync(path, jsonObjectListener, true)
+        fun asyncJson(path: String, jsonObjectListener: JSONObjectListener) {
+            asyncJson(path, jsonObjectListener, true)
         }
 
-        @JvmStatic
-        fun jsonObjectAssetAsync(path: String, jsonObjectListener: JSONObjectListener, predicate: Boolean) {
-            jsonObjectAssetAsync(path, { file ->
-                jsonObjectListener.assetReady(file)
-            }) { predicate }
+        fun asyncJson(path: String, jsonObjectListener: JSONObjectListener, predicate: Boolean) {
+            asyncJson(path, { predicate }, jsonObjectListener::assetReady)
         }
 
-
-        @JvmStatic
-        fun jsonArrayAsset(path: String): JSONArray {
-            return jsonArrayAsset(path) { true }
+        fun jsonArray(path: String): JSONArray {
+            return jsonArray(path) { true }
         }
 
-        @JvmStatic
-        fun jsonArrayAsset(path: String, predicate: Boolean): JSONArray {
-            return jsonArrayAsset(path) { predicate }
+        fun jsonArray(path: String, predicate: Boolean): JSONArray {
+            return jsonArray(path) { predicate }
         }
 
-        @JvmStatic
-        fun jsonArrayAssetAsync(path: String, jsonArrayListener: JSONArrayListener) {
-            jsonArrayAssetAsync(path, jsonArrayListener, true)
+        fun asyncJsonArray(path: String, jsonArrayListener: JSONArrayListener) {
+            asyncJsonArray(path, jsonArrayListener, true)
         }
 
-        @JvmStatic
-        fun jsonArrayAssetAsync(path: String, jsonArrayListener: JSONArrayListener, predicate: Boolean) {
-            jsonArrayAssetAsync(path, { file ->
-                jsonArrayListener.assetReady(file)
-            }) { predicate }
+        fun asyncJsonArray(path: String, jsonArrayListener: JSONArrayListener, predicate: Boolean) {
+            asyncJsonArray(path, { predicate }, jsonArrayListener::assetReady)
         }
 
+        fun bytes(path: String, predicate: () -> Boolean): ByteArray {
+            return assetByteArray(path, predicate)
+        }
+
+        fun asyncBytes(path: String,
+                       predicate: () -> Boolean = { true },
+                       bytes: (bytes: ByteArray) -> Unit) {
+            doAsync {
+                bytes(assetByteArray(path, predicate))
+            }
+        }
+
+        fun bytes(path: String): ByteArray {
+            return bytes(path, true)
+        }
+
+        fun bytes(path: String, predicate: Boolean): ByteArray {
+            return bytes(path) { predicate }
+        }
+
+        fun asyncBytes(path: String, byteArrayListener: AssetByteArrayListener) {
+            asyncBytes(path, byteArrayListener, true)
+        }
+
+        fun asyncBytes(path: String, byteArrayListener: AssetByteArrayListener, predicate: Boolean) {
+            doAsync {
+                asyncBytes(path, { predicate }, byteArrayListener::assetReady)
+            }
+        }
 
     }
 
