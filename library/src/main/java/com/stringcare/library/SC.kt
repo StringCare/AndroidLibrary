@@ -3,6 +3,10 @@ package com.stringcare.library
 import android.content.Context
 import android.support.annotation.StringRes
 import android.util.Log
+import org.jetbrains.anko.doAsync
+import org.json.JSONArray
+import org.json.JSONObject
+import java.nio.charset.Charset
 
 /**
  * Created by efrainespada on 02/10/2016.
@@ -288,6 +292,84 @@ class SC {
                     )
                 }
             }
+        }
+
+        private fun assetByteArray(path: String, predicate: () -> Boolean = { true }): ByteArray {
+            val inputStream = context.assets.openFd(path)
+            var bytes = inputStream.createInputStream().readBytes()
+            if (predicate()) {
+                bytes = CPlusLogic.revealByteArray(context, bytes)
+            }
+            return bytes
+        }
+
+        fun jsonObjectAsset(path: String, predicate: () -> Boolean): JSONObject {
+            val bytes = assetByteArray(path, predicate)
+            return JSONObject(String(bytes, Charset.forName("UTF-8")))
+        }
+
+        fun jsonObjectAssetAsync(path: String, json: (json: JSONObject) -> Unit, predicate: () -> Boolean) {
+            doAsync {
+                val j = jsonObjectAsset(path, predicate)
+                json(j)
+            }
+        }
+
+        fun jsonArrayAsset(path: String, predicate: () -> Boolean): JSONArray {
+            val bytes = assetByteArray(path, predicate)
+            return JSONArray(String(bytes, Charset.forName("UTF-8")))
+        }
+
+        fun jsonArrayAssetAsync(path: String, json: (json: JSONArray) -> Unit, predicate: () -> Boolean) {
+            doAsync {
+                val j = jsonArrayAsset(path, predicate)
+                json(j)
+            }
+        }
+
+        @JvmStatic
+        fun jsonObjectAsset(path: String): JSONObject {
+            return jsonObjectAsset(path) { true }
+        }
+
+        @JvmStatic
+        fun jsonObjectAsset(path: String, predicate: Boolean): JSONObject {
+            return jsonObjectAsset(path) { predicate }
+        }
+
+        @JvmStatic
+        fun jsonObjectAssetAsync(path: String, jsonObjectListener: JSONObjectListener) {
+            jsonObjectAssetAsync(path, jsonObjectListener, true)
+        }
+
+        @JvmStatic
+        fun jsonObjectAssetAsync(path: String, jsonObjectListener: JSONObjectListener, predicate: Boolean) {
+            jsonObjectAssetAsync(path, { file ->
+                jsonObjectListener.assetReady(file)
+            }) { predicate }
+        }
+
+
+        @JvmStatic
+        fun jsonArrayAsset(path: String): JSONArray {
+            return jsonArrayAsset(path) { true }
+        }
+
+        @JvmStatic
+        fun jsonArrayAsset(path: String, predicate: Boolean): JSONArray {
+            return jsonArrayAsset(path) { predicate }
+        }
+
+        @JvmStatic
+        fun jsonArrayAssetAsync(path: String, jsonArrayListener: JSONArrayListener) {
+            jsonArrayAssetAsync(path, jsonArrayListener, true)
+        }
+
+        @JvmStatic
+        fun jsonArrayAssetAsync(path: String, jsonArrayListener: JSONArrayListener, predicate: Boolean) {
+            jsonArrayAssetAsync(path, { file ->
+                jsonArrayListener.assetReady(file)
+            }) { predicate }
         }
 
 

@@ -179,6 +179,20 @@ class CPlusLogic {
             return java.lang.String.format(Resources.getSystem().locale(), revealV3(context, id, androidTreatment), *formatArgs)
         }
 
+        /**
+         * Reveals the given ByteArray
+         * @param value
+         * @return String
+         */
+        @JvmStatic
+        fun revealByteArray(context: Context, value: ByteArray): ByteArray {
+            return try {
+                SC().jniRevealV3(context, getCertificateSHA1Fingerprint(context), value)
+            } catch (e: Exception) {
+                value
+            }
+        }
+
     }
 
 }

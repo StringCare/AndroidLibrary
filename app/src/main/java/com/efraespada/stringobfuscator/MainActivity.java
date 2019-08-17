@@ -2,11 +2,15 @@ package com.efraespada.stringobfuscator;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.stringcare.library.SC;
 import com.stringcare.library.SCTextView;
 import com.stringcare.library.Version;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,5 +46,15 @@ public class MainActivity extends AppCompatActivity {
         boolean equals = SC.reveal(R.string.hello_world_b).equals(getString(R.string.hello_world_a));
         String areEquals = "Same result: " +  equals;
         ((TextView) findViewById(R.id.same_value)).setText(areEquals);
+
+        JSONObject jsonObject = SC.jsonObjectAsset("test.json");
+        SC.jsonObjectAssetAsync("test.json", json -> {
+            String value = json.toString();
+        });
+
+        JSONArray jsonArray = SC.jsonArrayAsset("raw/test_array.json");
+        SC.jsonArrayAssetAsync("raw/test_array.json", json -> {
+            String value = json.toString();
+        });
     }
 }
