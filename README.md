@@ -10,7 +10,9 @@
 
 #### [Implementation](https://github.com/StringCare/AndroidLibrary/wiki/Implementation)
 
-#### [Usage](https://github.com/StringCare/AndroidLibrary/wiki/Usage)
+#### [Strings Usage](https://github.com/StringCare/AndroidLibrary/wiki/Strings-Usage)
+
+#### [Assets Usage](https://github.com/StringCare/AndroidLibrary/wiki/Assets-Usage)
 
 #### [Configuration](https://github.com/StringCare/AndroidLibrary/wiki/Configuration)
 

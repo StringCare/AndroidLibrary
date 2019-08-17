@@ -3,6 +3,10 @@ package com.stringcare.library
 import android.content.Context
 import android.support.annotation.StringRes
 import android.util.Log
+import org.jetbrains.anko.doAsync
+import org.json.JSONArray
+import org.json.JSONObject
+import java.nio.charset.Charset
 
 /**
  * Created by efrainespada on 02/10/2016.
@@ -290,6 +294,112 @@ class SC {
             }
         }
 
+        private fun assetByteArray(path: String, predicate: () -> Boolean = { true }): ByteArray {
+            val inputStream = context.assets.openFd(path)
+            var bytes = inputStream.createInputStream().readBytes()
+            if (predicate()) {
+                bytes = CPlusLogic.revealByteArray(context, bytes)
+            }
+            return bytes
+        }
+
+        @JvmStatic
+        fun asset(): Assets {
+            return Assets()
+        }
+
+    }
+
+    class Assets {
+        fun json(path: String, predicate: () -> Boolean): JSONObject {
+            val bytes = assetByteArray(path, predicate)
+            return JSONObject(String(bytes, Charset.forName("UTF-8")))
+        }
+
+        fun asyncJson(path: String,
+                      predicate: () -> Boolean = { true },
+                      json: (json: JSONObject) -> Unit) {
+            doAsync {
+                val j = json(path, predicate)
+                json(j)
+            }
+        }
+
+        fun jsonArray(path: String, predicate: () -> Boolean): JSONArray {
+            val bytes = assetByteArray(path, predicate)
+            return JSONArray(String(bytes, Charset.forName("UTF-8")))
+        }
+
+        fun asyncJsonArray(path: String,
+                           predicate: () -> Boolean = { true },
+                           json: (json: JSONArray) -> Unit) {
+            doAsync {
+                val j = jsonArray(path, predicate)
+                json(j)
+            }
+        }
+
+        fun json(path: String): JSONObject {
+            return json(path) { true }
+        }
+
+        fun json(path: String, predicate: Boolean): JSONObject {
+            return json(path) { predicate }
+        }
+
+        fun asyncJson(path: String, jsonObjectListener: JSONObjectListener) {
+            asyncJson(path, jsonObjectListener, true)
+        }
+
+        fun asyncJson(path: String, jsonObjectListener: JSONObjectListener, predicate: Boolean) {
+            asyncJson(path, { predicate }, jsonObjectListener::assetReady)
+        }
+
+        fun jsonArray(path: String): JSONArray {
+            return jsonArray(path) { true }
+        }
+
+        fun jsonArray(path: String, predicate: Boolean): JSONArray {
+            return jsonArray(path) { predicate }
+        }
+
+        fun asyncJsonArray(path: String, jsonArrayListener: JSONArrayListener) {
+            asyncJsonArray(path, jsonArrayListener, true)
+        }
+
+        fun asyncJsonArray(path: String, jsonArrayListener: JSONArrayListener, predicate: Boolean) {
+            asyncJsonArray(path, { predicate }, jsonArrayListener::assetReady)
+        }
+
+        fun bytes(path: String, predicate: () -> Boolean): ByteArray {
+            return assetByteArray(path, predicate)
+        }
+
+        fun asyncBytes(path: String,
+                       predicate: () -> Boolean = { true },
+                       bytes: (bytes: ByteArray) -> Unit) {
+            doAsync {
+                bytes(assetByteArray(path, predicate))
+            }
+        }
+
+        fun bytes(path: String): ByteArray {
+            return bytes(path, true)
+        }
+
+        fun bytes(path: String, predicate: Boolean): ByteArray {
+            return bytes(path) { predicate }
+        }
+
+        fun asyncBytes(path: String, byteArrayListener: AssetByteArrayListener) {
+            asyncBytes(path, byteArrayListener, true)
+        }
+
+        fun asyncBytes(path: String, byteArrayListener: AssetByteArrayListener, predicate: Boolean) {
+            doAsync {
+                asyncBytes(path, { predicate }, byteArrayListener::assetReady)
+            }
+        }
 
     }
 

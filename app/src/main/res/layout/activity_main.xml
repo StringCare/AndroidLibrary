@@ -158,6 +158,70 @@
                 app:androidTreatment="false"
                 app:visible="true" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="15dp"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:text="@string/json_object_asset"
+                android:padding="25dp"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/json_object_original"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                android:textSize="12sp"
+                android:textColor="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/json_object"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="15dp"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:text="@string/json_array_asset"
+                android:padding="25dp"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/json_array_original"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                android:paddingBottom="25dp"
+                android:textSize="12sp"
+                android:textColor="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/json_array"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                android:paddingBottom="25dp"
+                android:textColor="@android:color/black" />
+
         </LinearLayout>
 
     </ScrollView>

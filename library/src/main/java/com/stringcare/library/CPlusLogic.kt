@@ -2,10 +2,9 @@ package com.stringcare.library
 
 import android.content.Context
 import android.content.res.Resources
-import android.os.Build
 import android.support.annotation.StringRes
 import java.nio.charset.Charset
-import java.util.*
+import kotlin.Exception
 
 class CPlusLogic {
 
@@ -75,8 +74,13 @@ class CPlusLogic {
          */
         @JvmStatic
         fun revealV2(context: Context, @StringRes id: Int): String {
-            val arr: ByteArray = context.getString(id).split(", ").map { it.toInt().toByte() }.toByteArray()
-            return String(SC().jniRevealV2(context, getCertificateSHA1Fingerprint(context), arr))
+            val value = context.getString(id)
+            return try {
+                val arr: ByteArray = value.split(", ").map { it.toInt().toByte() }.toByteArray()
+                String(SC().jniRevealV2(context, getCertificateSHA1Fingerprint(context), arr))
+            } catch (e: Exception) {
+                value
+            }
         }
 
         /**
@@ -86,8 +90,12 @@ class CPlusLogic {
          */
         @JvmStatic
         fun revealV2(context: Context, value: String): String {
-            val arr: ByteArray = value.split(", ").map { it.toInt().toByte() }.toByteArray()
-            return String(SC().jniRevealV2(context, getCertificateSHA1Fingerprint(context), arr))
+            return try {
+                val arr: ByteArray = value.split(", ").map { it.toInt().toByte() }.toByteArray()
+                return String(SC().jniRevealV2(context, getCertificateSHA1Fingerprint(context), arr))
+            } catch (e: Exception) {
+                value
+            }
         }
 
         /**
@@ -125,11 +133,16 @@ class CPlusLogic {
          */
         @JvmStatic
         fun revealV3(context: Context, @StringRes id: Int, androidTreatment: Boolean): String {
-            val arr: ByteArray = context.getString(id).split(", ").map { it.toInt().toByte() }.toByteArray()
-            val reveal = String(SC().jniRevealV3(context, getCertificateSHA1Fingerprint(context), arr))
-            return when (androidTreatment) {
-                true -> reveal.unescape()
-                false -> reveal
+            val value = context.getString(id)
+            return try {
+                val arr: ByteArray = value.split(", ").map { it.toInt().toByte() }.toByteArray()
+                val reveal = String(SC().jniRevealV3(context, getCertificateSHA1Fingerprint(context), arr))
+                when (androidTreatment) {
+                    true -> reveal.unescape()
+                    false -> reveal
+                }
+            } catch (e: Exception) {
+                value
             }
         }
 
@@ -140,14 +153,18 @@ class CPlusLogic {
          */
         @JvmStatic
         fun revealV3(context: Context, value: String, androidTreatment: Boolean): String {
-            val arr: ByteArray = when (androidTreatment) {
-                true -> value.unescape()
-                false -> value
-            }.split(", ").map { it.toInt().toByte() }.toByteArray()
-            val reveal = String(SC().jniRevealV3(context, getCertificateSHA1Fingerprint(context), arr))
-            return when (androidTreatment) {
-                true -> reveal.unescape()
-                false -> reveal
+            return try {
+                val arr: ByteArray = when (androidTreatment) {
+                    true -> value.unescape()
+                    false -> value
+                }.split(", ").map { it.toInt().toByte() }.toByteArray()
+                val reveal = String(SC().jniRevealV3(context, getCertificateSHA1Fingerprint(context), arr))
+                when (androidTreatment) {
+                    true -> reveal.unescape()
+                    false -> reveal
+                }
+            } catch (e: Exception) {
+                value
             }
         }
 
@@ -160,6 +177,20 @@ class CPlusLogic {
         @JvmStatic
         fun revealV3(context: Context, @StringRes id: Int, androidTreatment: Boolean, formatArgs: Array<out Any>): String {
             return java.lang.String.format(Resources.getSystem().locale(), revealV3(context, id, androidTreatment), *formatArgs)
+        }
+
+        /**
+         * Reveals the given ByteArray
+         * @param value
+         * @return String
+         */
+        @JvmStatic
+        fun revealByteArray(context: Context, value: ByteArray): ByteArray {
+            return try {
+                SC().jniRevealV3(context, getCertificateSHA1Fingerprint(context), value)
+            } catch (e: Exception) {
+                value
+            }
         }
 
     }
