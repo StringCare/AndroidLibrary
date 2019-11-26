@@ -28,8 +28,9 @@
 
 #### [Resource Tips](https://github.com/StringCare/AndroidLibrary/wiki/Resource-Tips)
 
-[link]: https://github.com/StringCare/AndroidLibrary
-[badge]: https://img.shields.io/bintray/v/efff/maven/StringCareAndroidPlugin.svg
+<p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
+
+Collaborate with this project by doing any PR or [donation](https://paypal.me/pools/c/8khTcL25Qw) you want.
 
 License
 -------
