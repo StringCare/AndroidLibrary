@@ -35,10 +35,6 @@
 
 <p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
 
-Collaborate with this project by doing any PR or [donation](https://www.paypal.me/efraespada) you want.
-
-<p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
-
 License
 -------
     Copyright 2019 StringCare [🐒 SpaceMonkeys]
