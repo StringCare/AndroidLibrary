@@ -17,7 +17,7 @@ class SC {
     companion object {
 
         init {
-            System.loadLibrary("native-lib")
+            System.loadLibrary("sc-native-lib")
         }
 
         val context: Context

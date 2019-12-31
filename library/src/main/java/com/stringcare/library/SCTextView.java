@@ -1,35 +1,33 @@
 package com.stringcare.library;
 
-/*
- * Credits to Narvelan:
- * https://github.com/StringCare/AndroidLibrary/issues/34
- */
-
 import android.content.Context;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.Html;
 import android.util.AttributeSet;
 
-import java.util.Formatter;
+/*
+ * Credits to Narvelan:
+ * https://github.com/StringCare/AndroidLibrary/issues/34
+ */
 
 public class SCTextView extends AppCompatTextView {
 
     private String text;
     private Boolean isHTML;
     private Boolean androidTreatment;
-    private Boolean visible;
+    private Boolean revealed;
 
     public SCTextView(Context context) {
         super(context);
         isHTML = null;
-        visible = null;
+        revealed = null;
         androidTreatment = null;
     }
 
     public SCTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         isHTML = null;
-        visible = null;
+        revealed = null;
         androidTreatment = null;
         loadText(attrs);
     }
@@ -37,26 +35,36 @@ public class SCTextView extends AppCompatTextView {
     public SCTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         isHTML = null;
-        visible = null;
+        revealed = null;
         androidTreatment = null;
         loadText(attrs);
     }
 
     /**
-     * Defines initial vars
+     * Sets the initial parameters
      *
      * @param attrs {AttributeSet}
      */
     private void loadText(final AttributeSet attrs) {
-        text = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "text");
+        String mFalse = "false";
+
+        String mResourceAndroidSchema = "http://schemas.android.com/apk/res/android";
+        String textName = "text";
+
+        String mResourceSchema = "http://schemas.android.com/apk/res-auto";
+        String htmlName = "htmlSupport";
+        String revealValue = "reveal";
+        String androidTreatmentName = "androidTreatment";
+
+        text = attrs.getAttributeValue(mResourceAndroidSchema, textName);
         if (isHTML == null) {
-            isHTML = !"false".equalsIgnoreCase(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "html"));
+            isHTML = !mFalse.equalsIgnoreCase(attrs.getAttributeValue(mResourceSchema, htmlName));
         }
-        if (visible == null) {
-            visible = !"false".equalsIgnoreCase(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "visible"));
+        if (revealed == null) {
+            revealed = !mFalse.equalsIgnoreCase(attrs.getAttributeValue(mResourceSchema, revealValue));
         }
         if (androidTreatment == null) {
-            androidTreatment = !"false".equalsIgnoreCase(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "androidTreatment"));
+            androidTreatment = !mFalse.equalsIgnoreCase(attrs.getAttributeValue(mResourceSchema, androidTreatmentName));
         }
 
         reloadText();
@@ -68,16 +76,16 @@ public class SCTextView extends AppCompatTextView {
     private void reloadText() {
         if (text != null) {
             try {
-                final Integer val = Integer.parseInt(text.substring(1));
-                if (!visible) {
+                final int val = Integer.parseInt(text.substring(1));
+                if (!isRevealingValue()) {
                     setText(getContext().getString(val));
                     return;
                 }
                 SC.onContextReady(new ContextListener() {
                     @Override
                     public void contextReady() {
-                        String value = SC.reveal(val, androidTreatment);
-                        if (isHTML) {
+                        String value = SC.reveal(val, usesAndroidTreatment());
+                        if (isHtmlEnabled()) {
                             setText(Html.fromHtml(value));
                         } else {
                             setText(value);
@@ -91,12 +99,12 @@ public class SCTextView extends AppCompatTextView {
     }
 
     /**
-     * Enables de-obfuscation before print the value
+     * Reveals the value before print it
      *
-     * @param visible {true|false}
+     * @param revealed {true|false}
      */
-    public void visible(boolean visible) {
-        this.visible = visible;
+    public void setRevealed(boolean revealed) {
+        this.revealed = revealed;
         reloadText();
     }
 
@@ -105,40 +113,46 @@ public class SCTextView extends AppCompatTextView {
      *
      * @param enabled {true|false}
      */
-    public void htmlEnabled(boolean enabled) {
+    public void setHtmlSupport(boolean enabled) {
         isHTML = enabled;
         reloadText();
     }
 
     /**
-     * Returns true if is the value must be print as HTML or plain text
+     * Enables the Android treatment
+     *
+     * @param enabled {true|false}
+     */
+    public void setAndroidTreatment(boolean enabled) {
+        androidTreatment = enabled;
+        reloadText();
+    }
+
+    /**
+     * Returns true if is the value must be print as HTML
      *
      * @return Boolean
      */
     public boolean isHtmlEnabled() {
-        return isHTML;
+        return Boolean.TRUE.equals(isHTML);
     }
 
     /**
-     * Returns true if is de-obfuscating the value before print it
+     * Returns true if the value must be treated as the Android system does
      *
      * @return Boolean
      */
-    public boolean isVisible() {
-        return visible;
+    public boolean usesAndroidTreatment() {
+        return Boolean.TRUE.equals(androidTreatment);
     }
 
-    public String escapeUnicode(String input) {
-        StringBuilder b = new StringBuilder(input.length());
-        Formatter f = new Formatter(b);
-        for (char c : input.toCharArray()) {
-            if (c < 128) {
-                b.append(c);
-            } else {
-                f.format("\\u%04x", (int) c);
-            }
-        }
-        return b.toString();
+    /**
+     * Returns true if the value should be setRevealed before print it
+     *
+     * @return Boolean
+     */
+    public boolean isRevealingValue() {
+        return Boolean.TRUE.equals(revealed);
     }
 
 }

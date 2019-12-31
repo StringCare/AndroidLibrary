@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="com_stringcare_library_SCTextView">
-        <attr name="html" format="boolean" />
-        <attr name="visible" format="boolean" />
+        <attr name="htmlSupport" format="boolean" />
+        <attr name="reveal" format="boolean" />
         <attr name="androidTreatment" format="boolean" />
     </declare-styleable>
 </resources>
