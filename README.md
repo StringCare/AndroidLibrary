@@ -28,8 +28,12 @@
 
 #### [Resource Tips](https://github.com/StringCare/AndroidLibrary/wiki/Resource-Tips)
 
-[link]: https://github.com/StringCare/AndroidLibrary
-[badge]: https://img.shields.io/bintray/v/efff/maven/StringCareAndroidPlugin.svg
+<p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
+
+<p align="center"><img width="40%" vspace="20" src="https://raw.githubusercontent.com/efraespada/AndroidStringObfuscator/develop/sample.png"> <img width="40%" vspace="20" src="https://raw.githubusercontent.com/efraespada/AndroidStringObfuscator/develop/sample2.png"></p>
+
+
+<p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
 
 License
 -------
