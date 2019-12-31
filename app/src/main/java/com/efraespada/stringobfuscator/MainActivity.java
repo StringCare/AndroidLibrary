@@ -30,17 +30,17 @@ public class MainActivity extends AppCompatActivity {
         final SCTextView tvAuto = findViewById(R.id.auto_tv);
         findViewById(R.id.btn_change).setOnClickListener(v -> {
             if (tvAuto.isHtmlEnabled()) {
-                tvAuto.htmlEnabled(!tvAuto.isHtmlEnabled());
-            } else if (tvAuto.isVisible()){
-                tvAuto.visible(!tvAuto.isVisible());
-            } else if (!tvAuto.isVisible()){
-                tvAuto.visible(!tvAuto.isVisible());
-                tvAuto.htmlEnabled(!tvAuto.isHtmlEnabled());
+                tvAuto.setHtmlSupport(!tvAuto.isHtmlEnabled());
+            } else if (tvAuto.isRevealingValue()) {
+                tvAuto.setRevealed(!tvAuto.isRevealingValue());
+            } else if (!tvAuto.isRevealingValue()) {
+                tvAuto.setRevealed(!tvAuto.isRevealingValue());
+                tvAuto.setHtmlSupport(!tvAuto.isHtmlEnabled());
             }
         });
 
         boolean equals = SC.reveal(R.string.hello_world_b).equals(getString(R.string.hello_world_a));
-        String areEquals = "Same result: " +  equals;
+        String areEquals = "Same result: " + equals;
         ((TextView) findViewById(R.id.same_value)).setText(areEquals);
 
         String jsonObjectName = SC.reveal(R.string.asset_json_file);

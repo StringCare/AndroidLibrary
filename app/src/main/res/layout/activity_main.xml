@@ -38,8 +38,8 @@
                 android:padding="25dp"
                 android:text="@string/hello"
                 android:textColor="@android:color/black"
-                app:html="true"
-                app:visible="false" />
+                app:htmlSupport="true"
+                app:reveal="true" />
 
             <Button
                 android:id="@+id/btn_change"
@@ -120,8 +120,8 @@
                 android:textSize="12sp"
                 android:text="@string/hello_world_b"
                 android:textColor="@android:color/black"
-                app:html="false"
-                app:visible="true" />
+                app:htmlSupport="false"
+                app:reveal="true" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -154,9 +154,9 @@
                 android:textSize="12sp"
                 android:text="@string/hello_world_c"
                 android:textColor="@android:color/black"
-                app:html="false"
+                app:htmlSupport="false"
                 app:androidTreatment="false"
-                app:visible="true" />
+                app:reveal="true" />
 
             <TextView
                 android:layout_width="wrap_content"
