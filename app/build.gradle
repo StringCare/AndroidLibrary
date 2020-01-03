@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: StringCare
+
+stringcare {
+    debug true
+    assetsFiles = ["*.json"]
+    stringFiles = ['strings.xml']
+    srcFolders = ['src/main']
+}
 
 android {
     signingConfigs {
