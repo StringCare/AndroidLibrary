@@ -22,8 +22,6 @@
 
 #### [Compatibility](https://github.com/StringCare/AndroidLibrary/wiki/Compatibility)
 
-#### [Migrations](https://github.com/StringCare/AndroidLibrary/wiki/Migrations)
-
 #### [Tasks](https://github.com/StringCare/AndroidLibrary/wiki/Tasks)
 
 #### [Resource Tips](https://github.com/StringCare/AndroidLibrary/wiki/Resource-Tips)
