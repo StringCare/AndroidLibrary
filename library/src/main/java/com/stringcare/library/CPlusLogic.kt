@@ -2,7 +2,7 @@ package com.stringcare.library
 
 import android.content.Context
 import android.content.res.Resources
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import java.nio.charset.Charset
 import kotlin.Exception
 
