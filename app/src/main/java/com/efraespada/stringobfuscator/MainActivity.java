@@ -44,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.same_value)).setText(areEquals);
 
         String jsonObjectName = SC.reveal(R.string.asset_json_file);
-        SC.asset().asyncJson(jsonObjectName, json -> ((TextView) findViewById(R.id.json_object)).setText(json.toString()));
+        SC.asset().asyncJson(jsonObjectName, json ->
+                ((TextView) findViewById(R.id.json_object)).setText(json.toString())
+        );
         SC.asset().asyncBytes(jsonObjectName, bytes -> ((TextView) findViewById(R.id.json_object_original)).setText(new String(bytes)), false);
 
         String jsonArrayName = SC.reveal(R.string.asset_json_raw_file);

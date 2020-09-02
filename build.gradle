@@ -3,7 +3,7 @@ buildscript {
     ext.kotlin_version = '1.4.0'
 
     ext {
-        stringcare_version = '4.0.0'
+        stringcare_version = '4.0.1'
     }
 
     repositories {
@@ -16,13 +16,14 @@ buildscript {
     }
 
     dependencies {
-        // classpath "com.stringcare:plugin:$stringcare_version"
-        classpath files('../KotlinGradlePlugin/build/libs/plugin-4.0.0.jar')
+        classpath "com.stringcare:plugin:$stringcare_version"
+        // classpath files('../KotlinGradlePlugin/build/libs/plugin-4.0.0.jar')
         classpath 'com.android.tools.build:gradle:4.0.1'
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
+
 }
 
 allprojects {
