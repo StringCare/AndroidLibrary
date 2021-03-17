@@ -6,6 +6,8 @@
 
 <p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
 
+#### [Flutter Support](https://github.com/StringCare/stringcare)
+
 #### [What Is StringCare](https://github.com/StringCare/AndroidLibrary/wiki/What-is-StringCare)
 
 #### [Implementation](https://github.com/StringCare/AndroidLibrary/wiki/Implementation)
