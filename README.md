@@ -1,4 +1,3 @@
-[![version][badge]][link]
 
 <p align="center"><img width="10%" vspace="10" src="https://github.com/StringCare/AndroidLibrary/raw/develop/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
 
@@ -48,6 +47,3 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
-
-[link]: https://github.com/StringCare/AndroidLibrary
-[badge]: https://img.shields.io/bintray/v/efff/maven/StringCareAndroidLibrary.svg
