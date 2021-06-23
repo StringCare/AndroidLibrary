@@ -1,10 +1,9 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
-
-version = "4.0.1"
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'maven-publish'
+    id 'signing'
+}
 
 android {
     compileSdkVersion 30
@@ -45,8 +44,7 @@ dependencies {
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'org.jetbrains.anko:anko:0.10.8'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'org.apache.commons:commons-lang3:3.9'
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -55,39 +53,11 @@ dependencies {
 def siteUrl = 'https://github.com/StringCare/AndroidLibrary'
 def gitUrl = 'https://github.com/StringCare/AndroidLibrary.git'
 
-group = "com.stringcare"
+group = "io.github.stringcare"
+version = "4.2.1"
 
-install {
-    repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
-        pom {
-            project {
-                packaging 'aar'
-                name 'StringCareAndroidLibrary'
-                url siteUrl
-                // Set your license
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'efraespada'
-                        name 'efraespada'
-                        email 'efraespada@gmail.com'
-                    }
-                }
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
-                }
-            }
-        }
-    }
-}
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
@@ -106,26 +76,54 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
-
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-bintray {
-    user = properties.getProperty("bintrayUser")
-    key = properties.getProperty("bintrayApiKey")
-    configurations = ['archives']
-    pkg {
-        repo = "maven"
-        name = "StringCareAndroidLibrary"
-        websiteUrl = siteUrl
-        vcsUrl = gitUrl
-        licenses = ["Apache-2.0"]
-        publish = true
+afterEvaluate {
+    publishing {
+        publications {
+            library(MavenPublication) {
+                artifacts = [javadocJar, sourcesJar]
+                from components.release
+                artifactId = "library"
+                pom {
+                    packaging = 'aar'
+                    name = 'StringCareAndroidLibrary'
+                    description = "Stringcare Android library"
+                    url = siteUrl
+                    scm {
+                        connection = gitUrl
+                        developerConnection = gitUrl
+                        url = siteUrl
+                    }
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'efraespada'
+                            name = 'efraespada'
+                            email = 'efraespada@gmail.com'
+                        }
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                //def releaseRepo = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                // def snapshotRepo = "https://oss.sonatype.org/content/repositories/snapshots/"
+                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                credentials {
+                    username = properties["nexusUsername"]
+                    password = properties["nexusPassword"]
+                }
+            }
+        }
     }
-}
-repositories {
-    mavenCentral()
+
+    signing {
+        useGpgCmd()
+        sign publishing.publications.library
+    }
 }
