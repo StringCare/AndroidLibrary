@@ -1,3 +1,4 @@
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.stringcare/library.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.stringcare%22%20AND%20a:%22library%22)
 
 <p align="center"><img width="10%" vspace="10" src="https://github.com/StringCare/AndroidLibrary/raw/develop/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
 
