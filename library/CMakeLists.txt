@@ -1,44 +1,26 @@
 # For more information about using CMake with Android Studio, read the
 # documentation: https://d.android.com/studio/projects/add-native-code.html
 
-# Sets the minimum version of CMake required to build the native library.
+cmake_minimum_required(VERSION 3.22.1)
+project("stringcare-native" CXX)
 
-cmake_minimum_required(VERSION 3.10.2)
+# Prefer submodule path (stringcare-jni), fallback to sibling repo
+if(EXISTS "${CMAKE_SOURCE_DIR}/../stringcare-jni/lib/sc-native-lib.cpp")
+    set(JNI_SOURCE_DIR "${CMAKE_SOURCE_DIR}/../stringcare-jni/lib")
+else()
+    set(JNI_SOURCE_DIR "${CMAKE_SOURCE_DIR}/../../stringcare-jni-android-library/lib")
+endif()
 
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
-# Gradle automatically packages shared libraries with your APK.
+add_library(sc-native-lib SHARED
+    ${JNI_SOURCE_DIR}/sc-native-lib.cpp
+)
 
-add_library( # Sets the name of the library.
-        sc-native-lib
+find_library(log-lib log)
 
-        # Sets the library as a shared library.
-        SHARED
+target_link_libraries(sc-native-lib ${log-lib})
 
-        # Provides a relative path to your source file(s).
-        ../../stringcare-jni-android-library/lib/sc-native-lib.cpp)
-
-# Searches for a specified prebuilt library and stores the path as a
-# variable. Because CMake includes system libraries in the search path by
-# default, you only need to specify the name of the public NDK library
-# you want to add. CMake verifies that the library exists before
-# completing its build.
-
-find_library( # Sets the name of the path variable.
-        log-lib
-
-        # Specifies the name of the NDK library that
-        # you want CMake to locate.
-        log)
-
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in this
-# build script, prebuilt third-party libraries, or system libraries.
-
-target_link_libraries( # Specifies the target library.
-        sc-native-lib
-
-        # Links the target library to the log library
-        # included in the NDK.
-        ${log-lib})
+set_target_properties(sc-native-lib PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)

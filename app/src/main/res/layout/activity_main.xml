@@ -29,7 +29,7 @@
                 android:padding="25dp"
                 android:textColor="@android:color/black" />
 
-            <com.stringcare.library.SCTextView
+            <dev.vyp.stringcare.library.SCTextView
                 android:id="@+id/auto_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -110,7 +110,7 @@
                 android:paddingEnd="25dp"
                 android:textColor="@android:color/black" />
 
-            <com.stringcare.library.SCTextView
+            <dev.vyp.stringcare.library.SCTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -144,7 +144,7 @@
                 android:text="@string/string_resource_disabling_android_treatment"
                 android:textColor="@android:color/black" />
 
-            <com.stringcare.library.SCTextView
+            <dev.vyp.stringcare.library.SCTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

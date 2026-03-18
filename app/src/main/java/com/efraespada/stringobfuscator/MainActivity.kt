@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.stringcare.library.*
-import com.stringcare.library.SC.Companion.init
-import com.stringcare.library.SC.Companion.reveal
+import dev.vyp.stringcare.library.*
+import dev.vyp.stringcare.library.SC.Companion.init
+import dev.vyp.stringcare.library.SC.Companion.reveal
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,0 +1,5 @@
+# JNI native library (private repo). To init: git submodule update --init --recursive
+# If the repo URL is not accessible, place the JNI library at stringcare-jni/ (copy from ../stringcare-jni-android-library) or ensure library/CMakeLists.txt path is correct.
+[submodule "stringcare-jni"]
+	path = stringcare-jni
+	url = git@github.com:vypdev/stringcare-jni-android-library.git

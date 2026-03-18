@@ -28,6 +28,8 @@
 
 #### [Resource Tips](https://github.com/StringCare/AndroidLibrary/wiki/Resource-Tips)
 
+**Build / CI:** This project uses the JNI native library as a Git submodule (`stringcare-jni`). Clone with submodules: `git clone --recurse-submodules ...` or run `git submodule update --init --recursive` after clone. CI workflows must use `checkout` with `submodules: true`.
+
 <p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
 
 <p align="center"><img width="40%" vspace="20" src="https://raw.githubusercontent.com/efraespada/AndroidStringObfuscator/develop/sample.png"> <img width="40%" vspace="20" src="https://raw.githubusercontent.com/efraespada/AndroidStringObfuscator/develop/sample2.png"></p>
