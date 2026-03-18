@@ -1,0 +1,70 @@
+name: 🙋 Help Request
+description: Ask for help, guidance, or clarification about something in the project
+title: "<YOUR QUESTION OR TOPIC HERE>"
+labels: ["help", "question", "priority: medium"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Have you checked for existing help or discussions?
+      description: |
+        Please make sure no one else has already asked this question or opened a similar issue.
+      options:
+        - label: I have searched existing issues and discussions.
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: dropdown
+    id: help_area
+    attributes:
+      label: What area do you need help with?
+      multiple: false
+      options:
+        - Reveal
+        - Obfuscate
+        - Preview
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: textarea
+    attributes:
+      label: Describe your problem or question
+      description: |
+        Clearly describe what you need help with. Include context, what you've tried, and what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps or attempts you've already made
+      description: |
+        Describe what you’ve already tried to solve this problem. This helps others avoid suggesting the same things.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Environment or context
+      description: |
+        Provide details such as OS, version, branch, or any relevant environment information.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Additional context or screenshots
+      description: |
+        If applicable, add screenshots, logs, or any extra information that may help others understand the issue.
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Git-Flow
+    url: https://nvie.com/posts/a-successful-git-branching-model/
+    about: Check the original article by Vincent Driessen about git-flow before opening new issues.

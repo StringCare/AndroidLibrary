@@ -1,0 +1,51 @@
+name: 🚀 Release Issue
+description: Request a new release for stringcare (only team members)
+title: "<YOUR TITLE HERE>"
+labels: ["release", "branched", "priority: medium"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### ⚠️ Disclaimer
+        > **Only members of the stringcare team can create release issues.**
+        > Any release issue created by someone outside the team will be closed automatically.
+
+        ---
+
+  - type: dropdown
+    id: release_type
+    attributes:
+      label: Release Type
+      description: Indicate the type of release.
+      options:
+        - Patch
+        - Minor
+        - Major
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Release Version
+      description: The new version is generated from the release type and the most recent tag version. You can specify a different version number for the release (e.g., 1.2.3).
+      placeholder: "e.g., 1.2.3"
+      value: "Automatic"
+    validations:
+      required: false
+
+  - type: textarea
+    id: changelog
+    attributes:
+      label: Changelog
+      description: Provide a summary of the changes to be included in this release.
+      placeholder: "Add a concise changelog here."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Add any additional details or context about this release request.
+      placeholder: "Anything else to note?"

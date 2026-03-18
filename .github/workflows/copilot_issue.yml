@@ -1,0 +1,21 @@
+name: Copilot - Issue
+
+on:
+  issues:
+    types: [opened, reopened, edited, labeled, unlabeled, assigned, unassigned]
+
+jobs:
+  copilot-issues:
+    name: Copilot - Issue
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: vypdev/copilot@v2
+        with:
+          ai-ignore-files: build/*
+          debug: ${{ vars.DEBUG }}
+          opencode-model: ${{ vars.OPENCODE_MODEL }}
+          project-ids: ${{ vars.PROJECT_IDS }}
+          token: ${{ secrets.PAT }}

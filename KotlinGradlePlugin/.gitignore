@@ -1,0 +1,8 @@
+build
+KotlinSample
+*/.DS_Store
+.gradle/
+.idea/
+out/
+.DS_Store
+local.properties

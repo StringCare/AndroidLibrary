@@ -1,0 +1,92 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.0'
+    id 'maven-publish'
+    id 'signing'
+}
+
+def siteUrl = 'https://github.com/StringCare/KotlinGradlePlugin'
+def gitUrl = 'https://github.com/StringCare/KotlinGradlePlugin.git'
+
+sourceCompatibility = 1.8
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation group: 'com.android.tools.build', name: 'gradle', version: '3.5.3'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation group: 'com.google.guava', name: 'guava', version: '28.0-jre'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+group = "io.github.stringcare"
+version = "4.2.1"
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+publishing {
+    publications {
+        plugin(MavenPublication) {
+            from components.java
+            artifactId = "plugin"
+            pom {
+                packaging = 'aar'
+                name = 'StringCareAndroidPlugin'
+                description = "Stringcare Android library"
+                url = siteUrl
+                scm {
+                    connection = gitUrl
+                    developerConnection = gitUrl
+                    url = siteUrl
+                }
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'efraespada'
+                        name = 'efraespada'
+                        email = 'efraespada@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            //def releaseRepo = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            // def snapshotRepo = "https://oss.sonatype.org/content/repositories/snapshots/"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = properties["nexusUsername"]
+                password = properties["nexusPassword"]
+            }
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign publishing.publications.plugin
+}
+
+processResources {
+    from 'src/main/kotlin/components/jni'
+    include '*.dylib', '*.dll'
+}

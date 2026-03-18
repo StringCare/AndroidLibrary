@@ -1,0 +1,64 @@
+name: 🔥 Hotfix Issue
+
+description: Request a new hotfix for stringcare (only team members)
+title: "<YOUR TITLE HERE>"
+labels: [ "hotfix", "branched", "priority: high" ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### ⚠️ Disclaimer
+        > **Only members of the stringcare team can create hotfix issues.**
+        > Any hotfix issue created by someone outside the team will be closed automatically.
+
+        ---
+
+  - type: input
+    id: base_version
+    attributes:
+      label: Base Version
+      description: |
+        The base version is typically the most recent tag version. However, you can specify a different version tag if you'd like to start from a specific version for this hotfix.
+      placeholder: "e.g., 1.2.3"
+      value: "Automatic"
+    validations:
+      required: false
+
+  - type: input
+    id: hotfix_version
+    attributes:
+      label: Hotfix Version
+      description: |
+        By default, the version will increment the patch number of the most recent tag version (e.g., from 1.2.3 to 1.2.4). You can specify a different version number for the hotfix if needed.
+      placeholder: "e.g., 1.2.4"
+      value: "Automatic"
+    validations:
+      required: false
+
+  - type: textarea
+    id: issue_description
+    attributes:
+      label: Issue Description
+      description: |
+        Provide a detailed description of the issue this hotfix is addressing.
+      placeholder: "Describe the issue being fixed."
+    validations:
+      required: true
+
+  - type: textarea
+    id: hotfix_solution
+    attributes:
+      label: Hotfix Solution
+      description: |
+        Explain the solution being implemented in this hotfix.
+      placeholder: "Describe the solution."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: |
+        Add any additional details or context about this hotfix request.
+      placeholder: "Anything else to note?"

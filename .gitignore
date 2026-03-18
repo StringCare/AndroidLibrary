@@ -8,3 +8,5 @@ library/.externalNativeBuild
 *.DS_Store
 .cxx/
 *.cpp
+
+.env

@@ -1,0 +1,111 @@
+name: ✨ Feature Request
+description: Propose an idea or improvement for stringcare
+title: "<YOUR TITLE HERE>"
+labels: ["enhancement", "feature", "priority: low"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue or feature request for this?
+      description: |
+        Please search to see if an issue or feature request already exists for what you are proposing.
+      options:
+        - label: I have searched the existing issues and feature requests.
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: dropdown
+    id: feature_scope
+    attributes:
+      label: What area does this improvement affect?
+      multiple: false
+      options:
+        - Performance
+        - New Feature
+        - Preview
+        - Other
+
+  - type: dropdown
+    id: feature_actions
+    attributes:
+      label: What actions does this improvement affect?
+      multiple: true
+      options:
+        - Reveal
+        - Obfuscate
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: textarea
+    attributes:
+      label: Description of the idea or improvement
+      description: |
+        Describe your proposed idea or improvement in detail. Explain what you
+        would like to see and why it matters.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Current limitations or challenges
+      description: |
+        Explain what problems or challenges this improvement would address.
+        Why is the current functionality insufficient?
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: textarea
+    attributes:
+      label: Expected impact
+      description: |
+        Describe how this improvement would benefit users or developers.
+        Include specific scenarios or use cases where this would make a difference.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Alternatives considered
+      description: |
+        If you have considered alternative solutions or approaches, describe them here.
+        Why do you think your proposal is the best option?
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: input
+    attributes:
+      label: Version of copilot
+      description: |
+        What version of copilot are you using, or does this proposal apply to all versions?
+      placeholder: "master"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: textarea
+    id: comments
+    attributes:
+      label: Additional context or comments
+      description: |
+        Add any additional context, screenshots, or examples that may help us
+        understand your proposal better.

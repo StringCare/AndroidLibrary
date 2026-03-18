@@ -1,0 +1,79 @@
+name: 🔧 Chore Task
+description: Suggest a maintenance or internal improvement task
+title: "<YOUR TITLE HERE>"
+labels: ["chore", "maintenance", "priority: low"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: |
+        Please search to see if an issue already exists for what you are proposing.
+      options:
+        - label: I have searched the existing issues.
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: dropdown
+    id: chore_scope
+    attributes:
+      label: What area does this task affect?
+      multiple: false
+      options:
+        - CI/CD
+        - Dependencies
+        - Code Refactoring
+        - Repository Configuration
+        - Other
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: textarea
+    attributes:
+      label: Task description
+      description: |
+        Describe the chore task in detail. Explain what needs to be done and why.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Current issues or inefficiencies
+      description: |
+        Describe any problems this task is addressing. Why is this necessary?
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Expected impact
+      description: |
+        Explain how completing this chore will improve the project.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Alternatives considered
+      description: |
+        If you considered alternative solutions, describe them here.
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: textarea
+    id: comments
+    attributes:
+      label: Additional context or comments
+      description: |
+        Add any additional context, logs, or examples related to this task.

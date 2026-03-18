@@ -1,0 +1,23 @@
+name: Copilot - Commit
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!master'
+      - '!develop'
+
+jobs:
+  copilot-commits:
+    name: Copilot - Commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: vypdev/copilot@v2
+        with:
+          debug: ${{ vars.DEBUG }}
+          project-ids: ${{ vars.PROJECT_IDS }}
+          opencode-model: ${{ vars.OPENCODE_MODEL }}
+          token: ${{ secrets.PAT }}

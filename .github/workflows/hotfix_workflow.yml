@@ -1,0 +1,115 @@
+name: Task - Hotfix
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Hotfix version'
+        required: true
+        default: '1.0.0'
+      title:
+        description: 'Title'
+        required: true
+        default: 'New Version'
+      changelog:
+        description: 'Changelog'
+        required: true
+        default: '- Several improvements'
+      issue:
+        description: 'Launcher issue'
+        required: true
+        default: '-1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prepare-version-files:
+    name: Prepare files for hotfix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate inputs
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+          ISSUE: ${{ github.event.inputs.issue }}
+          TITLE: ${{ github.event.inputs.title }}
+          CHANGELOG: ${{ github.event.inputs.changelog }}
+        run: |
+          err=0
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Version must be in semver format (e.g. 1.0.0)."
+            err=1
+          fi
+          if ! [[ "$ISSUE" =~ ^-?[0-9]+$ ]]; then
+            echo "::error::Issue must be a number (e.g. 123 or -1)."
+            err=1
+          fi
+          if [[ ${#TITLE} -gt 1000 ]]; then
+            echo "::error::Title must be at most 1000 characters."
+            err=1
+          fi
+          if [[ ${#CHANGELOG} -gt 50000 ]]; then
+            echo "::error::Changelog must be at most 50000 characters."
+            err=1
+          fi
+          [[ $err -eq 0 ]] || exit 1
+
+      # Example: generic step to perform the version update or compilation (uncomment and adjust as needed)
+      # - name: Generic step
+      #   uses: whatever/action@v2 
+
+      - name: Commit updated package.json and dist directory
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: './build/ ./package.json'
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
+          default_author: user_info
+          message: 'gh-action: updated compiled files and bumped version to ${{ github.event.inputs.version }} (hotfix)'
+
+  tag:
+    name: Publish version
+    runs-on: ubuntu-latest
+    needs: [ prepare-version-files ]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Copilot - Create Tag
+        uses: vypdev/copilot@v2
+        if: ${{ success() }}
+        with:
+          debug: ${{ vars.DEBUG }}
+          single-action: 'create_tag'
+          single-action-issue: '${{ github.event.inputs.issue }}'
+          single-action-version: '${{ github.event.inputs.version }}'
+          token: ${{ secrets.PAT }}
+  
+      - name: Copilot - Create Release
+        uses: vypdev/copilot@v2
+        if: ${{ success() }}
+        with:
+          debug: ${{ vars.DEBUG }}
+          single-action: 'create_release'
+          single-action-issue: '${{ github.event.inputs.issue }}'
+          single-action-version: '${{ github.event.inputs.version }}'
+          single-action-title: '${{ github.event.inputs.title }}'
+          single-action-changelog: '${{ github.event.inputs.changelog }}'
+          token: ${{ secrets.PAT }}
+
+      # Example: generic step to perform the deployment (uncomment and adjust as needed)
+      # - name: Generic step
+      #   uses: whatever/action@v2 
+
+      - name: Copilot - Deploy success notification
+        uses: vypdev/copilot@v2
+        if: ${{ success() }}
+        with:
+          debug: ${{ vars.DEBUG }}
+          single-action: 'deployed_action'
+          single-action-issue: '${{ github.event.inputs.issue }}'
+          opencode-model: ${{ vars.OPENCODE_MODEL }}
+          token: ${{ secrets.PAT }}

@@ -1,0 +1,101 @@
+name: 🐛 Bug Report
+description: Report a bug on stringcare
+title: "<YOUR TITLE HERE>"
+labels: ["bug", "bugfix", "priority: high"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: |
+        Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues.
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: dropdown
+    id: plugins
+    attributes:
+      label: Which gradle tasks are affected?
+      multiple: true
+      options:
+        - stringcareTestReveal
+        - stringcareTestObfuscate
+        - stringcarePreview
+
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Which architectures are affected?
+      multiple: true
+      options:
+        - arm64-v8a
+        - armeabi-v7a
+        - x86
+        - x86_64
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: textarea
+    attributes:
+      label: Description
+      description: |
+        Describe the issue. Explain what you _expected_ to happen and what
+        _actually_ happened.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Reproducing the issue
+      description: |
+        Please provide either **steps to reproduce** or a [**minimal reproducible example**](https://stackoverflow.com/help/minimal-reproducible-example).
+        Providing a minimal reproducible example will help us triage your issue
+        faster.
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: input
+    attributes:
+      label: stringcare Version
+      description: What version of stringcare is being used?
+      placeholder: "master"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+  - type: textarea
+    attributes:
+      label: Relevant Log Output
+      description: |
+        Please copy and paste any relevant log output.
+      placeholder: |
+        Paste your logs here. Please redact any personally identifiable
+        information. This will be automatically formatted into code, so no
+        need for backticks.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: comments
+    attributes:
+      label: Additional context and comments
+      description: |
+        Anything else you want to add for this issue?

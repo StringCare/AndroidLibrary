@@ -1,0 +1,21 @@
+name: Copilot - Pull Request
+
+on:
+  pull_request:
+    types: [opened, reopened, edited, labeled, unlabeled, closed, assigned, unassigned, synchronize]
+
+jobs:
+  copilot-pull-requests:
+    name: Copilot - Pull Request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: vypdev/copilot@v2
+        with:
+          ai-ignore-files: build/*
+          debug: ${{ vars.DEBUG }}
+          opencode-model: ${{ vars.OPENCODE_MODEL }}
+          project-ids: ${{ vars.PROJECT_IDS }}
+          token: ${{ secrets.PAT }}
