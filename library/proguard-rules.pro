@@ -7,7 +7,14 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# Add any project specific keep options here:
+# StringCare library: keep native methods and public API
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# Consumer: if app uses ProGuard/R8, keep StringCare public API
+-keep class dev.vyp.stringcare.library.SC { *; }
+-keep class dev.vyp.stringcare.library.SCTextView { *; }
 
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
@@ -15,7 +22,3 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
-
--keepclasseswithmembernames class * {
-    native <methods>;
-}

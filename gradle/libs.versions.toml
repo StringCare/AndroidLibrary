@@ -29,6 +29,9 @@ commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "co
 # Plugin dependencies
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 
+# Kotlin stdlib (library)
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+
 # Testing
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }

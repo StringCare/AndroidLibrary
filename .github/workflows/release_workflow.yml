@@ -123,6 +123,16 @@ jobs:
         env:
           ORG_GRADLE_PROJECT_nexusUsername: ${{ secrets.NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_nexusPassword: ${{ secrets.NEXUS_PASSWORD }}
+          ORG_GRADLE_PROJECT_signing_gnupg_keyName: ${{ secrets.GPG_KEY_ID }}
+          ORG_GRADLE_PROJECT_signing_gnupg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Publish plugin to Sonatype
+        run: ./gradlew :plugin:publishPluginPublicationToSonatypeRepository --no-daemon
+        env:
+          ORG_GRADLE_PROJECT_nexusUsername: ${{ secrets.NEXUS_USERNAME }}
+          ORG_GRADLE_PROJECT_nexusPassword: ${{ secrets.NEXUS_PASSWORD }}
+          ORG_GRADLE_PROJECT_signing_gnupg_keyName: ${{ secrets.GPG_KEY_ID }}
+          ORG_GRADLE_PROJECT_signing_gnupg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
   tag:
     name: Publish version

@@ -67,8 +67,10 @@ fun Project.configurePublishing(
             }
         }
 
-        val signing = extensions.getByType(SigningExtension::class.java)
-        signing.useGpgCmd()
-        signing.sign(pub)
+        if (project.hasProperty("signing.gnupg.keyName") || project.findProperty("signing.gnupg.keyName") != null) {
+            val signing = extensions.getByType(SigningExtension::class.java)
+            signing.useGpgCmd()
+            signing.sign(pub)
+        }
     }
 }

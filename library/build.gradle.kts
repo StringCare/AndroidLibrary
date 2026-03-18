@@ -37,10 +37,15 @@ android {
             path = file("CMakeLists.txt")
         }
     }
-    ndkVersion = "26.1.10909125"
+    ndkVersion = "27.2.12479018"
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
     }
     publishing {
         singleVariant("release") {
@@ -52,13 +57,15 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.espresso.core) {
         exclude(group = "com.android.support", module = "support-annotations")
     }
     implementation(libs.androidx.appcompat)
     implementation(libs.commons.lang3)
-    testImplementation("junit:junit:4.13.2")  // TODO: migrate to JUnit 5 in Phase 5
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.get()}")
+    implementation(libs.kotlin.stdlib)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockito.kotlin)
 }
 
 version = libs.versions.stringcare.get()

@@ -9,7 +9,7 @@ gradlePlugin {
     plugins {
         create("stringcare") {
             id = "dev.vyp.stringcare.plugin"
-            implementationClass = "StringCare"
+            implementationClass = "dev.vyp.stringcare.plugin.StringCarePlugin"
             displayName = "StringCare"
             description = "StringCare Gradle plugin for Android string/asset obfuscation"
         }
@@ -87,14 +87,16 @@ publishing {
     }
 }
 
-signing {
-    useGpgCmd()
-    sign(publishing.publications["plugin"])
+if (project.hasProperty("signing.gnupg.keyName")) {
+    signing {
+        useGpgCmd()
+        sign(publishing.publications["plugin"])
+    }
 }
 
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    from("src/main/kotlin/components/jni") {
+    from("src/main/kotlin/dev/vyp/stringcare/plugin/internal/jni") {
         include("*.dylib", "*.dll")
     }
 }

@@ -77,7 +77,7 @@ For **Groovy** use `buildscript` / `apply plugin: 'dev.vyp.stringcare.plugin'` a
 
 **Build / CI:** This project uses the JNI native library as a Git submodule (`stringcare-jni`). Clone with submodules: `git clone --recurse-submodules ...` or run `git submodule update --init --recursive` after clone. CI workflows must use `checkout` with `submodules: true`.
 
-**Publishing (release workflow):** To publish the library to Sonatype from the release workflow, set repository secrets `NEXUS_USERNAME`, `NEXUS_PASSWORD`, and configure signing (e.g. GPG with `signing.keyId`, `signing.secretKeyRingFile`, `signing.password` in Gradle). When dispatching the release workflow, set **Publish Maven** to `true` to run the publish job.
+**Publishing (release workflow):** See [CONTRIBUTING.md](CONTRIBUTING.md) for required secrets: `NEXUS_USERNAME`, `NEXUS_PASSWORD`, `GPG_KEY_ID`, `GPG_PASSPHRASE`, `PAT`. When dispatching the release workflow, set **Publish Maven** to `true` to run the publish job (publishes both `dev.vyp.stringcare:library` and `dev.vyp.stringcare:plugin`).
 
 <p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
 

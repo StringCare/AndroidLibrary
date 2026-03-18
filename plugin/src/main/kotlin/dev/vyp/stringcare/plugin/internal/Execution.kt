@@ -1,0 +1,47 @@
+package dev.vyp.stringcare.plugin.internal
+
+import com.google.common.io.Files
+import dev.vyp.stringcare.plugin.StringCarePlugin
+import dev.vyp.stringcare.plugin.models.ExecutionResult
+import java.io.IOException
+
+fun execute(command: String): ExecutionResult = execute(Runtime.getRuntime(), command)
+
+private fun execute(runtime: Runtime, command: String): ExecutionResult {
+    return try {
+        when (getOs()) {
+            Os.WINDOWS -> {
+                val process = runtime.exec(
+                    arrayOf(
+                        "cmd",
+                        "/c",
+                        command.normalize()
+                    )
+                )
+                ExecutionResult(
+                    command.normalize(),
+                    process.outputString()
+                )
+            }
+            Os.OSX -> {
+                ExecutionResult(
+                    command,
+                    runtime.exec(
+                        arrayOf(
+                            "/bin/bash",
+                            "-c",
+                            command
+                        )
+                    ).outputString()
+                )
+            }
+        }
+    } catch (e: IOException) {
+        ExecutionResult(command.normalize(), "")
+    }
+}
+
+fun tempPath(): String {
+    StringCarePlugin.tempFolder = Files.createTempDir().absolutePath
+    return StringCarePlugin.tempFolder
+}
