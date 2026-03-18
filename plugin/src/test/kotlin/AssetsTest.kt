@@ -1,6 +1,6 @@
 import components.*
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.io.File
 
 class AssetsTest {
@@ -14,7 +14,7 @@ class AssetsTest {
         srcFolders.add("src/other_source")
     }
 
-    @Before
+    @BeforeEach
     fun setup() {
         librarySetupTask.runCommand()
     }

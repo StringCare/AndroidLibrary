@@ -1,7 +1,7 @@
 import components.*
 import models.StringEntity
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import utils.modifyForTest
 import java.io.File
 
@@ -14,7 +14,7 @@ class SCTest {
         srcFolders.add("src/other_source")
     }
 
-    @Before
+    @BeforeEach
     fun setup() {
         librarySetupTask.runCommand()
     }
