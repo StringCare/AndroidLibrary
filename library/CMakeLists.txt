@@ -19,6 +19,9 @@ find_library(log-lib log)
 
 target_link_libraries(sc-native-lib ${log-lib})
 
+# 16 KB page size support for Android 15+ / Google Play (Nov 2025+)
+target_link_options(sc-native-lib PRIVATE "-Wl,-z,max-page-size=16384")
+
 set_target_properties(sc-native-lib PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES

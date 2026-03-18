@@ -18,6 +18,8 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags += "-fexceptions"
+                // 16 KB page size support (required for Android 15+ / Google Play from Nov 2025)
+                arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
             }
         }
     }
