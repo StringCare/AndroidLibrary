@@ -2,6 +2,8 @@
 
 **StringCare Android** v5.0.0 — Compile-time obfuscation for strings and assets; runtime reveal in your app. GroupId: `dev.vyp.stringcare`.
 
+Full documentation is in the [docs/](docs/) directory (getting started, configuration, API, publishing, troubleshooting).
+
 <p align="center"><img width="10%" vspace="10" src="https://github.com/StringCare/AndroidLibrary/raw/develop/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
 
 <h3 align="center" style="margin-bottom:30px" vspace="20">StringCare Android Library</h3>
