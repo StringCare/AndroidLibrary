@@ -294,8 +294,7 @@ class SC {
         }
 
         private fun assetByteArray(path: String, predicate: () -> Boolean = { true }): ByteArray {
-            val inputStream = context.assets.openFd(path)
-            var bytes = inputStream.createInputStream().readBytes()
+            var bytes = context.assets.open(path).readBytes()
             if (predicate()) {
                 bytes = CPlusLogic.revealByteArray(context, bytes)
             }
