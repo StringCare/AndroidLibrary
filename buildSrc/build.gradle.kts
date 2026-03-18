@@ -8,5 +8,5 @@ repositories {
     gradlePluginPortal()
 }
 
-// Dependencies for build logic can be added here when needed (e.g. Publishing.kt)
+// Dependencies for build logic; gradleApi() is included by kotlin-dsl
 // Do not add AGP/Kotlin here to avoid classpath conflict with version catalog

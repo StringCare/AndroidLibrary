@@ -1,3 +1,5 @@
+import dev.vyp.stringcare.build.configurePublishing
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -59,7 +61,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.get()}")
 }
 
-group = "dev.vyp.stringcare"
 version = libs.versions.stringcare.get()
 
 afterEvaluate {
@@ -68,46 +69,8 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 from(components["release"])
                 artifactId = "library"
-                groupId = "dev.vyp.stringcare"
-                version = libs.versions.stringcare.get()
-                pom {
-                    name.set("StringCare Android Library")
-                    description.set("StringCare Android library for string obfuscation at runtime")
-                    url.set("https://github.com/vypdev/stringcare-android")
-                    scm {
-                        connection.set("scm:git:git://github.com/vypdev/stringcare-android.git")
-                        developerConnection.set("scm:git:ssh://github.com/vypdev/stringcare-android.git")
-                        url.set("https://github.com/vypdev/stringcare-android")
-                    }
-                    licenses {
-                        license {
-                            name.set("The Apache License, Version 2.0")
-                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("efraespada")
-                            name.set("efraespada")
-                            email.set("efraespada@gmail.com")
-                        }
-                    }
-                }
-            }
-        }
-        repositories {
-            maven {
-                name = "sonatype"
-                url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                credentials {
-                    username = project.findProperty("nexusUsername") as String?
-                    password = project.findProperty("nexusPassword") as String?
-                }
             }
         }
     }
-    signing {
-        useGpgCmd()
-        sign(publishing.publications["release"])
-    }
+    configurePublishing("library", "StringCare Android library for string obfuscation at runtime")
 }

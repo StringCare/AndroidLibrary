@@ -1,4 +1,6 @@
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.stringcare/library.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.stringcare%22%20AND%20a:%22library%22)
+[![Maven Central](https://img.shields.io/maven-central/v/dev.vyp.stringcare/library.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22dev.vyp.stringcare%22%20AND%20a:%22library%22)
+
+**StringCare Android** v5.0.0 — Compile-time obfuscation for strings and assets; runtime reveal in your app. GroupId: `dev.vyp.stringcare`.
 
 <p align="center"><img width="10%" vspace="10" src="https://github.com/StringCare/AndroidLibrary/raw/develop/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
 
@@ -6,9 +8,54 @@
 
 <p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
 
+### Installation (Kotlin DSL)
+
+**1. Plugin** — In the project root `settings.gradle.kts`:
+
+```kotlin
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        google()
+    }
+}
+// If publishing locally: includeBuild("../path/to/stringcare-android/plugin")
+```
+
+In the app (or module) `build.gradle.kts`:
+
+```kotlin
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("dev.vyp.stringcare.plugin")
+}
+
+stringcare {
+    debug = false
+    skip = false
+    assetsFiles = mutableListOf("*.json")
+    stringFiles = mutableListOf("strings.xml")
+    srcFolders = mutableListOf("src/main")
+}
+```
+
+**2. Library** — In the same module:
+
+```kotlin
+dependencies {
+    implementation("dev.vyp.stringcare:library:5.0.0")
+}
+```
+
+For **Groovy** use `buildscript` / `apply plugin: 'dev.vyp.stringcare.plugin'` and `implementation 'dev.vyp.stringcare:library:5.0.0'`. See [Migration from 4.x](MIGRATION.md) if upgrading.
+
 #### [Flutter Support](https://github.com/StringCare/stringcare)
 
 #### [What Is StringCare](https://github.com/StringCare/AndroidLibrary/wiki/What-is-StringCare)
+
+#### [Migration from 4.x to 5.0](MIGRATION.md)
 
 #### [Implementation](https://github.com/StringCare/AndroidLibrary/wiki/Implementation)
 
@@ -29,6 +76,8 @@
 #### [Resource Tips](https://github.com/StringCare/AndroidLibrary/wiki/Resource-Tips)
 
 **Build / CI:** This project uses the JNI native library as a Git submodule (`stringcare-jni`). Clone with submodules: `git clone --recurse-submodules ...` or run `git submodule update --init --recursive` after clone. CI workflows must use `checkout` with `submodules: true`.
+
+**Publishing (release workflow):** To publish the library to Sonatype from the release workflow, set repository secrets `NEXUS_USERNAME`, `NEXUS_PASSWORD`, and configure signing (e.g. GPG with `signing.keyId`, `signing.secretKeyRingFile`, `signing.password` in Gradle). When dispatching the release workflow, set **Publish Maven** to `true` to run the publish job.
 
 <p align="center"><img width="10%" vspace="20" src="https://github.com/StringCare/AndroidLibrary/raw/develop/white.png"></p>
 

@@ -2,6 +2,7 @@ package dev.vyp.stringcare.library
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import java.io.ByteArrayInputStream
 import java.io.UnsupportedEncodingException
 import java.security.MessageDigest
@@ -14,13 +15,25 @@ import javax.crypto.spec.SecretKeySpec
 
 internal fun getCertificateSHA1Fingerprint(context: Context): String {
     return try {
-        val packageInfo = context.packageManager.getPackageInfo(
+        val certBytes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val packageInfo = context.packageManager.getPackageInfo(
                 context.packageName,
-                PackageManager.GET_SIGNATURES)
-        @Suppress("DEPRECATION")
-        val signatures = packageInfo?.signatures
-        val cert = (signatures?.getOrNull(0) ?: return "")?.toByteArray() ?: return ""
-        val input = ByteArrayInputStream(cert)
+                PackageManager.GET_SIGNING_CERTIFICATES
+            )
+            val signingInfo = packageInfo.signingInfo
+            val firstSignature = signingInfo?.apkContentsSigners?.firstOrNull()
+                ?: signingInfo?.signingCertificateHistory?.firstOrNull()
+            (firstSignature?.toByteArray() ?: return "")
+        } else {
+            @Suppress("DEPRECATION")
+            val packageInfo = context.packageManager.getPackageInfo(
+                context.packageName,
+                PackageManager.GET_SIGNATURES
+            )
+            val signatures = packageInfo?.signatures
+            (signatures?.getOrNull(0) ?: return "")?.toByteArray() ?: return ""
+        }
+        val input = ByteArrayInputStream(certBytes)
 
         val cf = CertificateFactory.getInstance(certificate)
         val c = cf.generateCertificate(input) as X509Certificate
