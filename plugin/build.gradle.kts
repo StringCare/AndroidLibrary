@@ -179,7 +179,7 @@ if (project.hasProperty("signing.gnupg.keyName")) {
  * Prebuilts from stringcare-android-c (Git submodule path in this repo: `stringcare-jni`).
  * Relative to `plugin/`: `../stringcare-jni/dist` (same tree as `dist/` in stringcare-android-c: `macos/`, `linux/`, `windows/`, …).
  */
-val stringcareJniDist = layout.projectDirectory.dir("../../stringcare-android-c/dist")
+val stringcareJniDist = layout.projectDirectory.dir("../stringcare-jni/dist")
 val pluginJniSource = layout.projectDirectory.dir("src/main/kotlin/dev/vyp/stringcare/plugin/internal/jni")
 val pluginNativesGenerated = layout.buildDirectory.dir("generated/stringcare-plugin-natives")
 
