@@ -72,5 +72,13 @@ jobs:
       - name: Set AGP version in version catalog
         run: sed -i.bak 's/^agp = ".*"/agp = "${{ matrix.agp-version }}"/' gradle/libs.versions.toml
 
+      - name: Set Gradle version for selected AGP
+        run: |
+          if [ "${{ matrix.agp-version }}" = "9.0.0" ]; then
+            sed -i.bak 's#^distributionUrl=.*#distributionUrl=https\://services.gradle.org/distributions/gradle-9.1.0-bin.zip#' gradle/wrapper/gradle-wrapper.properties
+          else
+            sed -i.bak 's#^distributionUrl=.*#distributionUrl=https\://services.gradle.org/distributions/gradle-8.11.1-all.zip#' gradle/wrapper/gradle-wrapper.properties
+          fi
+
       - name: AGP compatibility check (assembleDebug)
         run: ./gradlew :app:assembleDebug --no-daemon
