@@ -121,7 +121,7 @@ fun File.validForXMLConfiguration(configuration: StringCareConfiguration): Boole
             excludedForXML().not()
     if (valid) {
         valid = false
-        configuration.srcFolders.forEach { folder ->
+        configuration.effectiveSrcFolders().forEach { folder ->
             if (pathContains(this.absolutePath, folder)) {
                 valid = true
             }
@@ -129,7 +129,7 @@ fun File.validForXMLConfiguration(configuration: StringCareConfiguration): Boole
     }
     if (valid) {
         valid = false
-        configuration.stringFiles.forEach { file ->
+        configuration.effectiveStringFiles().forEach { file ->
             if (pathEndsWith(this.absolutePath, file)) {
                 valid = true
             }
@@ -194,7 +194,7 @@ fun File.resourceFile(configuration: StringCareConfiguration): ResourceFile? {
     var sourceFolder = ""
     var validFile: File? = null
     var valid = false
-    configuration.srcFolders.forEach { folder ->
+    configuration.effectiveSrcFolders().forEach { folder ->
         if (pathContains(this.absolutePath, folder)) {
             sourceFolder = folder
             valid = true
@@ -202,7 +202,7 @@ fun File.resourceFile(configuration: StringCareConfiguration): ResourceFile? {
     }
     if (valid) {
         valid = false
-        configuration.stringFiles.forEach { file ->
+        configuration.effectiveStringFiles().forEach { file ->
             if (pathEndsWith(this.absolutePath, file)) {
                 valid = true
                 validFile = this
@@ -217,7 +217,7 @@ fun File.assetsFile(configuration: StringCareConfiguration): AssetsFile? {
     var sourceFolder = ""
     var validFile: File? = null
     var valid = false
-    configuration.srcFolders.forEach { folder ->
+    configuration.effectiveSrcFolders().forEach { folder ->
         if (pathContains(this.absolutePath, folder)) {
             sourceFolder = folder
             valid = true
@@ -334,3 +334,10 @@ fun StringCareConfiguration.normalize(): StringCareConfiguration {
     srcFolders.addAll(nextSrc)
     return this
 }
+
+/** Defaults must match [locateConfiguredFiles] / Variant task includes when lists were not merged from DSL yet. */
+internal fun StringCareConfiguration.effectiveSrcFolders(): List<String> =
+    srcFolders.takeIf { it.isNotEmpty() } ?: listOf("src/main")
+
+internal fun StringCareConfiguration.effectiveStringFiles(): List<String> =
+    stringFiles.takeIf { it.isNotEmpty() } ?: listOf("strings.xml")

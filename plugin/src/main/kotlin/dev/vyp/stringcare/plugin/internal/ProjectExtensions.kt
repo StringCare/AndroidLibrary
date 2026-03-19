@@ -14,15 +14,8 @@ import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 import java.io.File
 
-fun Project.absolutePath(): String {
-    val fPath =
-        this.file("build.gradle").absolutePath.replace(
-            "build.gradle",
-            emptyChar,
-        )
-    val pathComponents = fPath.split(File.separator)
-    return fPath.replace(pathComponents[pathComponents.size - 2] + File.separator, "")
-}
+/** Root directory of this Gradle project (the module applying the plugin). */
+fun Project.absolutePath(): String = projectDir.absolutePath
 
 fun Project.module(): String {
     val fPath =

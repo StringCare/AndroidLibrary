@@ -30,10 +30,11 @@ class StringCarePlugin : Plugin<Project> {
         val buildService = registerStringCareService(target)
 
         target.plugins.withId("com.android.application") {
-            val config = target.config(extension)
-            buildService.get().setResolvedConfiguration(config)
-            target.registerVariantObfuscationTasks(config, buildService)
+            val bookkeeping = target.config(extension)
+            buildService.get().setResolvedConfiguration(bookkeeping)
+            target.registerVariantObfuscationTasks(bookkeeping, extension, buildService)
             target.afterEvaluate {
+                buildService.get().setResolvedConfiguration(target.config(extension))
                 val resolved = buildService.get().getResolvedConfiguration()
                 if (resolved.debug) {
                     PrintUtils.print("PATH", buildService.get().absoluteProjectPath())
