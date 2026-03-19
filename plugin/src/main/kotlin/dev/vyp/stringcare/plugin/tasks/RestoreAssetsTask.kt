@@ -37,6 +37,7 @@ abstract class RestoreAssetsTask : DefaultTask() {
 
     init {
         skip.convention(false)
+        outputs.upToDateWhen { false }
     }
 
     @TaskAction

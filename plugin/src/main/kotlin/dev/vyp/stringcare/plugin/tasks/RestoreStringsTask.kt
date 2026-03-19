@@ -37,6 +37,10 @@ abstract class RestoreStringsTask : DefaultTask() {
 
     init {
         skip.convention(false)
+        // Restore rewrites sources under projectPath; Gradle has no tracked outputs here. Without this,
+        // inputs (projectPath, moduleName) never change between builds so the task can be UP-TO-DATE
+        // while sources remain obfuscated from the last ObfuscateStringsTask run.
+        outputs.upToDateWhen { false }
     }
 
     @TaskAction

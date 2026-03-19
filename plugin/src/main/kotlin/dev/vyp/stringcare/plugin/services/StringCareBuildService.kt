@@ -4,6 +4,7 @@ import dev.vyp.stringcare.plugin.StringCareConfiguration
 import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
+import java.io.File
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -37,7 +38,11 @@ abstract class StringCareBuildService : BuildService<StringCareBuildService.Para
     }
 
     fun resetTempFolder() {
-        tempDir = null
+        synchronized(this) {
+            val path = tempDir ?: return
+            tempDir = null
+            runCatching { File(path).deleteRecursively() }
+        }
     }
 
     fun putVariantApplicationId(

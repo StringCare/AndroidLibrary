@@ -273,15 +273,19 @@ fun File.restore(
     projectPath: String,
     tempRoot: String,
 ): File {
-    val baseTemp = Path.of(tempRoot).toAbsolutePath().normalize()
-    val current = this.toPath().toAbsolutePath().normalize()
-    val relative = baseTemp.relativize(current)
-    val restore = Path.of(projectPath).resolve(relative).normalize().toFile()
+    val baseDir = File(tempRoot).canonicalFile
+    val backupFile = this.canonicalFile
+    val prefix = baseDir.absolutePath.let { if (it.endsWith(File.separator)) it else it + File.separator }
+    require(backupFile.absolutePath.startsWith(prefix)) {
+        "Backup ${backupFile.absolutePath} is not under temp root ${baseDir.absolutePath}"
+    }
+    val relative = backupFile.absolutePath.substring(prefix.length)
+    val restore = File(projectPath, relative).normalize()
     withFileLock(restore) {
         if (restore.exists()) {
             restore.delete()
         }
-        File(restore.absolutePath).writeText(this.getContent())
+        File(restore.absolutePath).writeText(backupFile.getContent())
     }
     return restore
 }
