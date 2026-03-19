@@ -79,8 +79,14 @@ fun restoreResourceFiles(
     return resourceFiles
 }
 
+/**
+ * Parses obfuscatable `<string>` nodes from [file].
+ *
+ * Uses SAX by default through [XmlParser] and falls back to DOM parsing when nested tags are present.
+ */
 fun parseXML(file: File): List<StringEntity> = XmlParser.parse(file, ::parseStringsXmlDom)
 
+/** DOM fallback parser for `strings.xml` files that contain nested markup inside `<string>`. */
 internal fun parseStringsXmlDom(file: File): List<StringEntity> {
     val doc = file.getXML()
     val stringNodes = doc.getElementsByTagName(XmlAttributes.TAG_STRING)

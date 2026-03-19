@@ -4,13 +4,13 @@ import dev.vyp.stringcare.plugin.StringCareConfiguration
 import dev.vyp.stringcare.plugin.internal.PrintUtils
 import dev.vyp.stringcare.plugin.internal.LoadResult
 import dev.vyp.stringcare.plugin.internal.Stark
-import dev.vyp.stringcare.plugin.internal.backupResourceFiles
 import dev.vyp.stringcare.plugin.internal.backupStringRes
 import dev.vyp.stringcare.plugin.internal.fingerPrint
 import dev.vyp.stringcare.plugin.internal.locateResourceFiles
 import dev.vyp.stringcare.plugin.internal.modifyXML
 import dev.vyp.stringcare.plugin.internal.obfuscateStringRes
 import dev.vyp.stringcare.plugin.internal.parseJsonStringList
+import dev.vyp.stringcare.plugin.domain.models.forEachWithBackup
 import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
@@ -20,6 +20,21 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
 
 @DisableCachingByDefault(because = "Mutates Android string resource XML files in the source tree")
+/**
+ * Obfuscates XML string resources for one Android variant before merge resources.
+ *
+ * @property stringCareService Shared build state/provider.
+ * @property projectPath Absolute module path used to scan files.
+ * @property moduleName Gradle module name.
+ * @property variantName Variant being processed (e.g. `debug`).
+ * @property applicationId Variant application id for JNI obfuscation.
+ * @property skip If true, task exits without side effects.
+ * @property debug Enables verbose logging.
+ * @property mockedFingerprint Optional fixed fingerprint for local tests.
+ * @property srcFoldersJson JSON array of source-set folders.
+ * @property stringFilesJson JSON array of XML filenames to process.
+ * @property assetsFilesJson JSON array of asset patterns (kept for config parity).
+ */
 abstract class ObfuscateStringsTask : DefaultTask() {
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
@@ -77,6 +92,7 @@ abstract class ObfuscateStringsTask : DefaultTask() {
     }
 
     @TaskAction
+    /** Executes backup + obfuscation flow for selected string resources. */
     fun run() {
         val config = configuration()
         Stark.setVerboseNativeLogging(config.debug)
@@ -100,9 +116,10 @@ abstract class ObfuscateStringsTask : DefaultTask() {
             }
             PrintUtils.print(moduleName.get(), "${variantName.get()}:$key")
             PrintUtils.print(moduleName.get(), backupStringRes)
-            backupResourceFiles(projectPath.get(), config, tempRoot)
             val files = locateResourceFiles(projectPath.get(), config)
-            files.forEach { modifyXML(it.file, key, config) }
+            forEachWithBackup(files, tempRoot) { resource ->
+                modifyXML(resource.file, key, config)
+            }
         }
         PrintUtils.print(moduleName.get(), obfuscateStringRes)
     }

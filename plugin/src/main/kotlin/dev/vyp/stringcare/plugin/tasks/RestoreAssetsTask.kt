@@ -12,6 +12,14 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
 
 @DisableCachingByDefault(because = "Restores asset files from backups in the source tree")
+/**
+ * Restores original assets after merge assets finished.
+ *
+ * @property stringCareService Shared build state/provider.
+ * @property projectPath Absolute module path used to restore files.
+ * @property moduleName Gradle module name.
+ * @property skip If true, task exits without side effects.
+ */
 abstract class RestoreAssetsTask : DefaultTask() {
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
@@ -30,6 +38,7 @@ abstract class RestoreAssetsTask : DefaultTask() {
     }
 
     @TaskAction
+    /** Restores backed up asset files and resets temp folder state. */
     fun run() {
         if (skip.get()) return
         PrintUtils.print(moduleName.get(), restoreAssets)

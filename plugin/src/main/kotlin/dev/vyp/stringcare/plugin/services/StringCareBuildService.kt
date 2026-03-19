@@ -4,6 +4,7 @@ import dev.vyp.stringcare.plugin.StringCareConfiguration
 import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -29,7 +30,7 @@ abstract class StringCareBuildService : BuildService<StringCareBuildService.Para
         tempDir?.let { return it }
         synchronized(this) {
             tempDir?.let { return it }
-            val created = kotlin.io.path.createTempDirectory("stringcare-").toFile().absolutePath
+            val created = kotlin.io.path.createTempDirectory("stringcare-${UUID.randomUUID()}-").toFile().absolutePath
             tempDir = created
             return created
         }

@@ -12,6 +12,14 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
 
 @DisableCachingByDefault(because = "Restores string resources from backups in the source tree")
+/**
+ * Restores original XML resources after merge resources finished.
+ *
+ * @property stringCareService Shared build state/provider.
+ * @property projectPath Absolute module path used to restore files.
+ * @property moduleName Gradle module name.
+ * @property skip If true, task exits without side effects.
+ */
 abstract class RestoreStringsTask : DefaultTask() {
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
@@ -30,6 +38,7 @@ abstract class RestoreStringsTask : DefaultTask() {
     }
 
     @TaskAction
+    /** Restores backed up XML files and resets temp folder state. */
     fun run() {
         if (skip.get()) return
         PrintUtils.print(moduleName.get(), restoreStringRes)

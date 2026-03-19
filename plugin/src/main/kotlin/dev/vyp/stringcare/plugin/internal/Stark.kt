@@ -8,6 +8,7 @@ import java.nio.file.Files
 import java.security.MessageDigest
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import java.util.zip.ZipFile
 
 /** Result of attempting to load the host-side JNI library. */
@@ -34,11 +35,7 @@ open class Stark {
                 linuxLibArm64 to "17de04a716395f69020642c88363c0caa54863d323f1702478c6443541b7eba5",
             )
 
-        @Volatile
-        private var nativeLibLoaded = false
-
-        @Volatile
-        private var nativeLoadAttempted = false
+        private val nativeLoadState = AtomicReference<LoadResult?>(null)
 
         @Volatile
         private var verboseNativeLogging = true
@@ -77,22 +74,31 @@ open class Stark {
         @JvmStatic
         fun isNativeLibLoaded(): LoadResult {
             synchronized(Stark::class.java) {
-                if (!nativeLoadAttempted) {
+                val cached = nativeLoadState.get()
+                if (cached == null) {
                     logNative(
                         "Loading native library (os.name=${System.getProperty("os.name")}, " +
                             "os.arch=${System.getProperty("os.arch")}, os.detected=${getOs()})",
                     )
-                    nativeLibLoaded = loadNativeForHostWithRetries()
-                    nativeLoadAttempted = true
-                    if (nativeLibLoaded) {
+                    val loaded = loadNativeForHostWithRetries()
+                    val resolved =
+                        if (loaded) {
+                            LoadResult.Loaded
+                        } else {
+                            LoadResult.Failed("Native library not loaded")
+                        }
+                    nativeLoadState.set(resolved)
+                    if (resolved is LoadResult.Loaded) {
                         logNative("Native library loaded successfully.")
                     } else {
                         logNative("Native library NOT loaded — obfuscation tasks will skip. See messages above.")
                     }
-                } else if (!nativeLibLoaded) {
+                    return resolved
+                }
+                if (cached is LoadResult.Failed) {
                     logNative("isNativeLibLoaded: returning cached false (load attempted earlier in this Gradle JVM)")
                 }
-                return if (nativeLibLoaded) LoadResult.Loaded else LoadResult.Failed("Native library not loaded")
+                return cached
             }
         }
 

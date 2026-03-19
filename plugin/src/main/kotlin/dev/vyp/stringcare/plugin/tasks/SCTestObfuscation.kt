@@ -19,6 +19,20 @@ import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * Manual verification task that prints before/after XML content for obfuscation.
+ *
+ * @property stringCareService Shared build state/provider.
+ * @property module Target module name.
+ * @property assetsFiles JSON array of configured asset patterns.
+ * @property stringFiles JSON array of configured XML files.
+ * @property srcFolders JSON array of source-set roots.
+ * @property debug Enables verbose debug behavior in config.
+ * @property skip If true, task exits without side effects.
+ * @property applicationId Android application id for native obfuscation.
+ * @property mockedFingerprint Optional fixed fingerprint for deterministic runs.
+ * @property variantName Variant under test.
+ */
 abstract class SCTestObfuscation : DefaultTask() {
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
@@ -62,6 +76,7 @@ abstract class SCTestObfuscation : DefaultTask() {
     }
 
     @TaskAction
+    /** Runs backup, obfuscation and restore while printing full trace to stdout. */
     fun greet() {
         println("== TEST OBFUSCATION ======================================")
         var key = ""

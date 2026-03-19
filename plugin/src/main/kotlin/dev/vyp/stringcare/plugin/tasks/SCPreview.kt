@@ -13,6 +13,20 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
+/**
+ * Prints a debug report of files/entities that StringCare would process.
+ *
+ * @property stringCareService Shared build state/provider.
+ * @property module Target module name.
+ * @property assetsFiles JSON array of configured asset patterns.
+ * @property stringFiles JSON array of configured XML files.
+ * @property srcFolders JSON array of source-set roots.
+ * @property debug Enables verbose debug behavior in config.
+ * @property skip If true, configuration marks execution as skipped.
+ * @property applicationId Android application id for report context.
+ * @property mockedFingerprint Optional fixed fingerprint for local testing.
+ * @property variantName Variant shown in report headers.
+ */
 abstract class SCPreview : DefaultTask() {
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
@@ -56,6 +70,7 @@ abstract class SCPreview : DefaultTask() {
     }
 
     @TaskAction
+    /** Emits report output to stdout with parsed entities and source contents. */
     fun greet() {
         println("== REPORT ======================================")
         val task = this

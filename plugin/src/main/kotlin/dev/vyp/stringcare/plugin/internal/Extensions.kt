@@ -4,6 +4,7 @@ import dev.vyp.stringcare.plugin.StringCareConfiguration
 import dev.vyp.stringcare.plugin.domain.models.AssetsFile
 import dev.vyp.stringcare.plugin.domain.models.ExecutionResult
 import dev.vyp.stringcare.plugin.domain.models.ResourceFile
+import dev.vyp.stringcare.plugin.domain.models.withFileLock
 import groovy.json.StringEscapeUtils
 import org.gradle.api.GradleException
 import org.w3c.dom.Document
@@ -12,13 +13,15 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.io.StringWriter
+import java.nio.file.Path
+import java.nio.file.Paths
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
-fun String.runCommand(runner: (command: String, result: String) -> Unit = { _, _ -> }): String {
+inline fun String.runCommand(runner: (command: String, result: String) -> Unit = { _, _ -> }): String {
     val outcome =
         execute(this).getOrElse { error ->
             throw GradleException("Unable to execute command: $this", error)
@@ -81,6 +84,23 @@ fun String.unescape(): String = StringEscapeUtils.unescapeJava(this)
 
 fun String.removeNewLines(): String = this.replace("\n", "")
 
+private fun String.toUnixPath(): String = replace("\\", "/")
+
+private fun pathFragment(vararg segments: String): String {
+    if (segments.isEmpty()) return ""
+    return Paths.get(segments.first(), *segments.drop(1).toTypedArray()).toString().toUnixPath()
+}
+
+private fun pathContains(
+    absolutePath: String,
+    vararg segments: String,
+): Boolean = absolutePath.toUnixPath().contains(pathFragment(*segments))
+
+private fun pathEndsWith(
+    absolutePath: String,
+    vararg segments: String,
+): Boolean = absolutePath.toUnixPath().endsWith(pathFragment(*segments))
+
 fun String.androidTreatment(): String {
     val words = this.split(" ")
     return buildList {
@@ -94,18 +114,12 @@ fun String.androidTreatment(): String {
 
 fun File.validForXMLConfiguration(configuration: StringCareConfiguration): Boolean {
     var valid =
-        this.absolutePath.contains("${File.separator}${configuration.name}${File.separator}") &&
+        pathContains(this.absolutePath, configuration.name) &&
             excludedForXML().not()
     if (valid) {
         valid = false
         configuration.srcFolders.forEach { folder ->
-            if (this.absolutePath.contains(
-                    "${File.separator}$folder${File.separator}".replace(
-                        "${File.separator}${File.separator}",
-                        File.separator,
-                    ),
-                )
-            ) {
+            if (pathContains(this.absolutePath, folder)) {
                 valid = true
             }
         }
@@ -113,13 +127,7 @@ fun File.validForXMLConfiguration(configuration: StringCareConfiguration): Boole
     if (valid) {
         valid = false
         configuration.stringFiles.forEach { file ->
-            if (this.absolutePath.contains(
-                    "${File.separator}$file".replace(
-                        "${File.separator}${File.separator}",
-                        File.separator,
-                    ),
-                )
-            ) {
+            if (pathEndsWith(this.absolutePath, file)) {
                 valid = true
             }
         }
@@ -132,17 +140,12 @@ fun File.validForXMLConfiguration(configuration: StringCareConfiguration): Boole
 
 fun File.validForAssetsConfiguration(configuration: StringCareConfiguration): Boolean {
     var valid =
-        this.absolutePath.contains("${File.separator}${configuration.name}${File.separator}") &&
+        pathContains(this.absolutePath, configuration.name) &&
             excludedForAssets().not()
     if (valid) {
         valid = false
         configuration.assetsFiles.forEach { file ->
-            if (this.absolutePath.endsWith(
-                    "${File.separator}$file".replace(
-                        "${File.separator}${File.separator}",
-                        File.separator,
-                    ),
-                ) ||
+            if (pathEndsWith(this.absolutePath, file) ||
                 (file.contains("*.") && this.absolutePath.endsWith(file.replace("*", "")))
             ) {
                 valid = true
@@ -189,13 +192,7 @@ fun File.resourceFile(configuration: StringCareConfiguration): ResourceFile? {
     var validFile: File? = null
     var valid = false
     configuration.srcFolders.forEach { folder ->
-        if (this.absolutePath.contains(
-                "${File.separator}$folder${File.separator}".replace(
-                    "${File.separator}${File.separator}",
-                    File.separator,
-                ),
-            )
-        ) {
+        if (pathContains(this.absolutePath, folder)) {
             sourceFolder = folder
             valid = true
         }
@@ -203,13 +200,7 @@ fun File.resourceFile(configuration: StringCareConfiguration): ResourceFile? {
     if (valid) {
         valid = false
         configuration.stringFiles.forEach { file ->
-            if (this.absolutePath.contains(
-                    "${File.separator}$file".replace(
-                        "${File.separator}${File.separator}",
-                        File.separator,
-                    ),
-                )
-            ) {
+            if (pathEndsWith(this.absolutePath, file)) {
                 valid = true
                 validFile = this
             }
@@ -224,13 +215,7 @@ fun File.assetsFile(configuration: StringCareConfiguration): AssetsFile? {
     var validFile: File? = null
     var valid = false
     configuration.srcFolders.forEach { folder ->
-        if (this.absolutePath.contains(
-                "${File.separator}$folder${File.separator}".replace(
-                    "${File.separator}${File.separator}",
-                    File.separator,
-                ),
-            )
-        ) {
+        if (pathContains(this.absolutePath, folder)) {
             sourceFolder = folder
             valid = true
         }
@@ -238,12 +223,7 @@ fun File.assetsFile(configuration: StringCareConfiguration): AssetsFile? {
     if (valid) {
         valid = false
         configuration.assetsFiles.forEach { file ->
-            if (this.absolutePath.endsWith(
-                    "${File.separator}$file".replace(
-                        "${File.separator}${File.separator}",
-                        File.separator,
-                    ),
-                ) ||
+            if (pathEndsWith(this.absolutePath, file) ||
                 (file.contains("*.") && this.absolutePath.endsWith(file.replace("*", "")))
             ) {
                 valid = true
@@ -274,25 +254,32 @@ fun Process.outputString(): String {
 
 fun defaultConfig(): StringCareConfiguration =
     StringCareConfiguration("app").apply {
-        stringFiles.add("strings.xml")
-        srcFolders.add("src/main")
+        stringFiles.addAll(
+            buildList {
+                add("strings.xml")
+            },
+        )
+        srcFolders.addAll(
+            buildList {
+                add("src/main")
+            },
+        )
     }
 
 fun File.restore(
     projectPath: String,
     tempRoot: String,
 ): File {
-    val cleanPath =
-        "$projectPath${File.separator}${this.absolutePath.split(tempRoot)[1]}"
-            .replace("${File.separator}${File.separator}", File.separator)
-
-    val restore = File(cleanPath)
-    if (restore.exists()) {
-        restore.delete()
+    val baseTemp = Path.of(tempRoot).toAbsolutePath().normalize()
+    val current = this.toPath().toAbsolutePath().normalize()
+    val relative = baseTemp.relativize(current)
+    val restore = Path.of(projectPath).resolve(relative).normalize().toFile()
+    withFileLock(restore) {
+        if (restore.exists()) {
+            restore.delete()
+        }
+        File(restore.absolutePath).writeText(this.getContent())
     }
-
-    File(restore.absolutePath).writeText(this.getContent())
-
     return restore
 }
 

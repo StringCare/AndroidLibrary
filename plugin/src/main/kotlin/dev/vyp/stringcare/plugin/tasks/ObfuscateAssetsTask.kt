@@ -5,13 +5,13 @@ import dev.vyp.stringcare.plugin.internal.PrintUtils
 import dev.vyp.stringcare.plugin.internal.LoadResult
 import dev.vyp.stringcare.plugin.internal.Stark
 import dev.vyp.stringcare.plugin.internal.backupAssets
-import dev.vyp.stringcare.plugin.internal.backupAssetsFiles
 import dev.vyp.stringcare.plugin.internal.fingerPrint
 import dev.vyp.stringcare.plugin.internal.getContent
 import dev.vyp.stringcare.plugin.internal.locateAssetsFiles
 import dev.vyp.stringcare.plugin.internal.obfuscateAssets
 import dev.vyp.stringcare.plugin.internal.obfuscateFile
 import dev.vyp.stringcare.plugin.internal.parseJsonStringList
+import dev.vyp.stringcare.plugin.domain.models.forEachWithBackup
 import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
@@ -21,6 +21,21 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
 
 @DisableCachingByDefault(because = "Mutates asset files in the source tree")
+/**
+ * Obfuscates configured assets for one Android variant before merge assets.
+ *
+ * @property stringCareService Shared build state/provider.
+ * @property projectPath Absolute module path used to scan files.
+ * @property moduleName Gradle module name.
+ * @property variantName Variant being processed (e.g. `debug`).
+ * @property applicationId Variant application id for JNI obfuscation.
+ * @property skip If true, task exits without side effects.
+ * @property debug Enables verbose logging.
+ * @property mockedFingerprint Optional fixed fingerprint for local tests.
+ * @property srcFoldersJson JSON array of source-set folders.
+ * @property stringFilesJson JSON array of XML filenames (kept for config parity).
+ * @property assetsFilesJson JSON array of asset file names/patterns to process.
+ */
 abstract class ObfuscateAssetsTask : DefaultTask() {
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
@@ -78,6 +93,7 @@ abstract class ObfuscateAssetsTask : DefaultTask() {
     }
 
     @TaskAction
+    /** Executes backup + obfuscation flow for selected assets. */
     fun run() {
         val config = configuration()
         Stark.setVerboseNativeLogging(config.debug)
@@ -101,12 +117,11 @@ abstract class ObfuscateAssetsTask : DefaultTask() {
             }
             PrintUtils.print(moduleName.get(), "${variantName.get()}:$key")
             PrintUtils.print(moduleName.get(), backupAssets)
-            backupAssetsFiles(projectPath.get(), config, tempRoot)
             val files = locateAssetsFiles(projectPath.get(), config)
-            files.forEach { file ->
-                if (debug.get()) PrintUtils.print(null, file.file.getContent())
-                obfuscateFile(key, file.file, config.applicationId)
-                if (debug.get()) PrintUtils.print(null, file.file.getContent())
+            forEachWithBackup(files, tempRoot) { asset ->
+                if (debug.get()) PrintUtils.print(null, asset.file.getContent())
+                obfuscateFile(key, asset.file, config.applicationId)
+                if (debug.get()) PrintUtils.print(null, asset.file.getContent())
             }
             PrintUtils.print(moduleName.get(), obfuscateAssets)
         }
