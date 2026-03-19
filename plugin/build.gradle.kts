@@ -97,6 +97,27 @@ if (project.hasProperty("signing.gnupg.keyName")) {
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     from("src/main/kotlin/dev/vyp/stringcare/plugin/internal/jni") {
-        include("*.dylib", "*.dll")
+        include("*.dylib", "*.dll", "*.so")
+    }
+}
+
+/**
+ * Copy prebuilt plugin natives from the stringcare-jni submodule (stringcare-android-c dist/).
+ * Run after building natives there: ./gradlew :plugin:syncPluginNativeLibraries
+ */
+tasks.register<Copy>("syncPluginNativeLibraries") {
+    val dist = rootProject.layout.projectDirectory.dir("stringcare-jni/dist")
+    val jni = layout.projectDirectory.dir("src/main/kotlin/dev/vyp/stringcare/plugin/internal/jni")
+    from(dist.dir("macos")) { include("*.dylib") }
+    from(dist.dir("linux")) { include("*.so") }
+    from(dist.dir("windows")) { include("*.dll") }
+    into(jni)
+    doFirst {
+        if (!dist.asFile.exists()) {
+            throw GradleException(
+                "stringcare-jni/dist not found. Init submodule: git submodule update --init --recursive " +
+                    "then build natives in stringcare-android-c (see that repo's docs)."
+            )
+        }
     }
 }

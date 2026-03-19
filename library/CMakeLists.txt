@@ -8,7 +8,7 @@ project("stringcare-native" CXX)
 if(EXISTS "${CMAKE_SOURCE_DIR}/../stringcare-jni/lib/sc-native-lib.cpp")
     set(JNI_SOURCE_DIR "${CMAKE_SOURCE_DIR}/../stringcare-jni/lib")
 else()
-    set(JNI_SOURCE_DIR "${CMAKE_SOURCE_DIR}/../../stringcare-jni-android-library/lib")
+    set(JNI_SOURCE_DIR "${CMAKE_SOURCE_DIR}/../../stringcare-android-c/lib")
 endif()
 
 add_library(sc-native-lib SHARED

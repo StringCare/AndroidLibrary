@@ -23,7 +23,7 @@ private fun execute(runtime: Runtime, command: String): ExecutionResult {
                     process.outputString()
                 )
             }
-            Os.OSX -> {
+            Os.OSX, Os.LINUX -> {
                 ExecutionResult(
                     command,
                     runtime.exec(

@@ -10,6 +10,7 @@ import dev.vyp.stringcare.plugin.internal.getContent
 import dev.vyp.stringcare.plugin.internal.locateAssetsFiles
 import dev.vyp.stringcare.plugin.internal.obfuscateAssets
 import dev.vyp.stringcare.plugin.internal.obfuscateFile
+import dev.vyp.stringcare.plugin.internal.Stark
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
@@ -67,6 +68,10 @@ open class ObfuscateAssetsTask : DefaultTask() {
         val config = configuration()
         if (skip) {
             PrintUtils.print(moduleName, "Skipping $variantName")
+            return
+        }
+        if (!Stark.isNativeLibLoaded()) {
+            PrintUtils.print(moduleName, "Skipping $variantName (native library not available for this architecture)")
             return
         }
         PrintUtils.print("", "ApplicationId: $applicationId", tab = true)

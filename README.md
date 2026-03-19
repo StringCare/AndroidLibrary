@@ -77,7 +77,9 @@ For **Groovy** use `buildscript` / `apply plugin: 'dev.vyp.stringcare.plugin'` a
 
 #### [Resource Tips](https://github.com/StringCare/AndroidLibrary/wiki/Resource-Tips)
 
-**Build / CI:** This project uses the JNI native library as a Git submodule (`stringcare-jni`). Clone with submodules: `git clone --recurse-submodules ...` or run `git submodule update --init --recursive` after clone. CI workflows must use `checkout` with `submodules: true`.
+**Build / CI:** This project uses the JNI native library as a Git submodule (`stringcare-jni`, e.g. stringcare-android-c). Clone with submodules: `git clone --recurse-submodules ...` or run `git submodule update --init --recursive` after clone. CI workflows must use `checkout` with `submodules: true`.
+
+**Plugin host natives:** After building prebuilts in the submodule (`stringcare-jni/dist/{macos,linux,windows}/`), copy them into the plugin with **`./gradlew :plugin:syncPluginNativeLibraries`**. macOS ships a universal `libsignKey.dylib`; Linux and Windows ship x64 and arm64 variants (`*.so` / `*.dll`).
 
 **Publishing (release workflow):** See [CONTRIBUTING.md](CONTRIBUTING.md) for required secrets: `NEXUS_USERNAME`, `NEXUS_PASSWORD`, `GPG_KEY_ID`, `GPG_PASSPHRASE`, `PAT`. When dispatching the release workflow, set **Publish Maven** to `true` to run the publish job (publishes both `dev.vyp.stringcare:library` and `dev.vyp.stringcare:plugin`).
 

@@ -6,7 +6,7 @@ plugins {
 
 stringcare {
     debug = false
-    skip = true  // Set to false when running on x86_64 or when arm64 dylib is available; plugin JNI is x86_64 only
+    skip = false  // Obfuscation runs when native lib is available (x86_64 or arm64); otherwise tasks skip automatically
     assetsFiles = mutableListOf("*.json")
     stringFiles = mutableListOf("strings.xml")
     srcFolders = mutableListOf("src/main")

@@ -51,7 +51,7 @@ fun String.normalizePath(): String {
         .replace("\\\\", "/")
         .replace("//", "/")
     return when (getOs()) {
-        Os.OSX -> unixPath
+        Os.OSX, Os.LINUX -> unixPath
         Os.WINDOWS -> unixPath.replace("/", "\\")
     }
 }

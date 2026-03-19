@@ -11,6 +11,7 @@ import dev.vyp.stringcare.plugin.internal.parseXML
 import dev.vyp.stringcare.plugin.internal.restoreResourceFiles
 import dev.vyp.stringcare.plugin.internal.runCommand
 import dev.vyp.stringcare.plugin.internal.signingReportTask
+import dev.vyp.stringcare.plugin.internal.Stark
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
@@ -75,6 +76,14 @@ open class SCTestObfuscation : DefaultTask() {
             debug = task.debug
         }
         println("\t== $variantName ======================================")
+        if (configuration.skip) {
+            println("\tSkipping (skip=true)")
+            return
+        }
+        if (!Stark.isNativeLibLoaded()) {
+            println("\tSkipping (native library not available for this architecture)")
+            return
+        }
         signingReportTask().runCommand { _, result ->
             key = result.extractFingerprint(module, variantName, configuration)
         }

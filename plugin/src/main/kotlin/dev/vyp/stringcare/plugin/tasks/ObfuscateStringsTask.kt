@@ -9,6 +9,7 @@ import dev.vyp.stringcare.plugin.internal.fingerPrint
 import dev.vyp.stringcare.plugin.internal.locateResourceFiles
 import dev.vyp.stringcare.plugin.internal.modifyXML
 import dev.vyp.stringcare.plugin.internal.obfuscateStringRes
+import dev.vyp.stringcare.plugin.internal.Stark
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
@@ -66,6 +67,10 @@ open class ObfuscateStringsTask : DefaultTask() {
         val config = configuration()
         if (skip) {
             PrintUtils.print(moduleName, "Skipping $variantName")
+            return
+        }
+        if (!Stark.isNativeLibLoaded()) {
+            PrintUtils.print(moduleName, "Skipping $variantName (native library not available for this architecture)")
             return
         }
         PrintUtils.print("", "ApplicationId: $applicationId", tab = true)

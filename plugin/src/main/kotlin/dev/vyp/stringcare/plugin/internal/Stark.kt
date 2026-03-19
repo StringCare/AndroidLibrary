@@ -8,28 +8,52 @@ import java.util.zip.ZipFile
 open class Stark {
 
     companion object {
+        @Volatile
+        private var nativeLibLoaded = false
+
         init {
+            val arch = System.getProperty("os.arch", "").lowercase()
             when (getOs()) {
-                Os.WINDOWS -> loadLib(winLib)
-                Os.OSX -> loadLib(osxLib)
+                Os.WINDOWS -> {
+                    nativeLibLoaded = if (arch == "aarch64") {
+                        loadLib(winLibArm64) || loadLib(winLib)
+                    } else {
+                        loadLib(winLib) || loadLib(winLibArm64)
+                    }
+                }
+                Os.OSX -> nativeLibLoaded = loadLib(osxLib)
+                Os.LINUX -> {
+                    nativeLibLoaded = if (arch == "aarch64") {
+                        loadLib(linuxLibArm64) || loadLib(linuxLib)
+                    } else {
+                        loadLib(linuxLib) || loadLib(linuxLibArm64)
+                    }
+                }
             }
         }
 
-        private fun loadLib(name: String) {
-            val inputStream = getLibFromFolder(name)?.inputStream() ?: return
-            val buffer = ByteArray(1024)
-            val temp = File.createTempFile(name, "")
-            val fos = FileOutputStream(temp)
+        @JvmStatic
+        fun isNativeLibLoaded(): Boolean = nativeLibLoaded
 
-            var read = inputStream.read(buffer)
-            while (read != -1) {
-                fos.write(buffer, 0, read)
-                read = inputStream.read(buffer)
+        private fun loadLib(name: String): Boolean {
+            val file = getLibFromFolder(name) ?: return false
+            return try {
+                val inputStream = file.inputStream()
+                val buffer = ByteArray(1024)
+                val temp = File.createTempFile(name, "")
+                FileOutputStream(temp).use { fos ->
+                    var read = inputStream.read(buffer)
+                    while (read != -1) {
+                        fos.write(buffer, 0, read)
+                        read = inputStream.read(buffer)
+                    }
+                }
+                inputStream.close()
+                System.load(temp.absolutePath)
+                true
+            } catch (_: UnsatisfiedLinkError) {
+                false
             }
-            fos.close()
-            inputStream.close()
-
-            System.load(temp.absolutePath)
         }
 
         private fun getLibFromFolder(fileName: String): File? {
