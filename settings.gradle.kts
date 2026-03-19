@@ -28,4 +28,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "stringcare-android"
-include(":app", ":library")
+include(":app", ":library", ":benchmark")
