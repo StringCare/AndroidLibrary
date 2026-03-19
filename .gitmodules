@@ -3,3 +3,6 @@
 [submodule "stringcare-jni"]
 	path = stringcare-jni
 	url = https://github.com/vypdev/stringcare-android-c.git
+[submodule "example"]
+	path = example
+	url = https://github.com/vypdev/stringcare-android-sample
