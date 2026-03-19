@@ -44,13 +44,12 @@ abstract class RestoreStringsTask : DefaultTask() {
     }
 
     @TaskAction
-    /** Restores backed up XML files and resets temp folder state. */
+    /** Restores backed up XML files from the shared temp root (cleared later by [RestoreAssetsTask]). */
     fun run() {
         if (skip.get()) return
         PrintUtils.print(moduleName.get(), restoreStringRes)
         val service = stringCareService.get()
         val tempRoot = service.getOrCreateTempFolder()
         restoreFilesUseCase.restoreResources(projectPath.get(), moduleName.get(), tempRoot)
-        service.resetTempFolder()
     }
 }

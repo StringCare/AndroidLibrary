@@ -67,4 +67,4 @@ internal fun restoreBackedUpFiles(
         .walkTopDown()
         .toList()
         .filter { file -> !file.isDirectory }
-        .map { file -> file.restore(projectPath, tempRoot) }
+        .map { file -> file.restore(projectPath, tempRoot, module) }

@@ -269,9 +269,17 @@ fun defaultConfig(): StringCareConfiguration =
         )
     }
 
+/**
+ * Copies a backup from [tempRoot] back under [projectPath].
+ *
+ * Backups are stored as `tempRoot/<module>/…` while [projectPath] is already the Gradle module directory,
+ * so the path segment after [tempRoot] must be `<module>/src/…` and resolves to `projectPath/src/…`,
+ * not `projectPath/<module>/src/…`.
+ */
 fun File.restore(
     projectPath: String,
     tempRoot: String,
+    module: String,
 ): File {
     val baseDir = File(tempRoot).canonicalFile
     val backupFile = this.canonicalFile
@@ -279,13 +287,19 @@ fun File.restore(
     require(backupFile.absolutePath.startsWith(prefix)) {
         "Backup ${backupFile.absolutePath} is not under temp root ${baseDir.absolutePath}"
     }
-    val relative = backupFile.absolutePath.substring(prefix.length)
+    var relative = backupFile.absolutePath.substring(prefix.length)
+    val modulePrefix = module + File.separator
+    require(relative.startsWith(modulePrefix)) {
+        "Backup relative path $relative does not start with module directory $modulePrefix"
+    }
+    relative = relative.substring(modulePrefix.length)
     val restore = File(projectPath, relative).normalize()
     withFileLock(restore) {
         if (restore.exists()) {
             restore.delete()
         }
-        File(restore.absolutePath).writeText(backupFile.getContent())
+        restore.parentFile?.mkdirs()
+        backupFile.copyTo(restore, overwrite = true)
     }
     return restore
 }

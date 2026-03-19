@@ -107,6 +107,10 @@ fun Project.registerVariantObfuscationTasks(
             t.skip.set(provider { extension.skip })
         }
 
+        tasks.named("stringcareBeforeMergeAssets$variantCapitalized").configure {
+            it.mustRunAfter(tasks.named("stringcareBeforeMergeResources$variantCapitalized"))
+        }
+
         val mergeRes =
             "${AndroidTaskNames.MERGE}${variantCapitalized}${AndroidTaskNames.RESOURCES}"
         val beforeRes = "stringcareBeforeMergeResources$variantCapitalized"
