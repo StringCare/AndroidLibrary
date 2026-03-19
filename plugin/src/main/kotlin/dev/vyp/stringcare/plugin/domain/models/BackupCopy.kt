@@ -66,9 +66,10 @@ internal inline fun <T> withBackup(
     targetFile: File,
     action: () -> T,
 ): T {
+    @Suppress("TooGenericExceptionCaught")
     return try {
         action()
-    } catch (error: Throwable) {
+    } catch (error: Exception) {
         withFileLock(targetFile) {
             Files.copy(
                 backupFile.toPath(),

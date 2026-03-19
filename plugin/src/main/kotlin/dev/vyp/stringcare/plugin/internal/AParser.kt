@@ -8,25 +8,14 @@ import java.io.File
 fun locateAssetsFiles(
     projectPath: String,
     configuration: StringCareConfiguration,
-): List<AssetsFile> {
-    if (configuration.debug) {
-        println("== ASSETS FILES FOUND ======================================")
-    }
-    val normalized = configuration.normalize()
-    return File(projectPath)
-        .walkTopDown()
-        .onEnter { dir ->
-            val path = dir.path.replace('\\', '/')
-            !path.contains("/build/") &&
-                !path.contains("/.gradle/") &&
-                !path.contains("/.git/") &&
-                !path.contains("/node_modules/")
-        }.filter { file ->
-            !file.isDirectory && file.validForAssetsConfiguration(normalized)
-        }.mapNotNull { file ->
-            file.assetsFile(normalized)
-        }.toList()
-}
+): List<AssetsFile> =
+    locateConfiguredFiles(
+        projectPath = projectPath,
+        configuration = configuration,
+        debugHeader = "== ASSETS FILES FOUND ======================================",
+        isValid = { file, normalized -> file.validForAssetsConfiguration(normalized) },
+        mapFile = { file, normalized -> file.assetsFile(normalized) },
+    )
 
 /** Test convenience: uses [StringCareSession] temp root set by [tempPath]. */
 fun backupAssetsFiles(
@@ -40,28 +29,14 @@ fun backupAssetsFiles(
     tempRoot: String,
 ): List<AssetsFile> {
     val files = locateAssetsFiles(projectPath, configuration.normalize())
-    files.forEach { resource ->
-        resource.backup(tempRoot)
-    }
-    return files
+    return backupLocatedFiles(files, tempRoot)
 }
 
 fun restoreAssetsFiles(
     projectPath: String,
     module: String,
     tempRoot: String,
-): List<File> {
-    val resourceFiles =
-        File("$tempRoot${File.separator}$module")
-            .walkTopDown()
-            .toList()
-            .filter { file ->
-                !file.isDirectory
-            }.map { file ->
-                file.restore(projectPath, tempRoot)
-            }
-    return resourceFiles
-}
+): List<File> = restoreBackedUpFiles(projectPath, module, tempRoot)
 
 /** Test convenience: uses [StringCareSession] temp root set by [tempPath]. */
 fun restoreAssetsFiles(

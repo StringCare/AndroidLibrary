@@ -21,6 +21,7 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
+@Suppress("ThrowsCount")
 inline fun String.runCommand(runner: (command: String, result: String) -> Unit = { _, _ -> }): String {
     val outcome =
         execute(this).getOrElse { error ->
@@ -88,7 +89,9 @@ private fun String.toUnixPath(): String = replace("\\", "/")
 
 private fun pathFragment(vararg segments: String): String {
     if (segments.isEmpty()) return ""
-    return Paths.get(segments.first(), *segments.drop(1).toTypedArray()).toString().toUnixPath()
+    val initial = Paths.get(segments.first())
+    val resolved = segments.drop(1).fold(initial) { acc, segment -> acc.resolve(segment) }
+    return resolved.toString().toUnixPath()
 }
 
 private fun pathContains(

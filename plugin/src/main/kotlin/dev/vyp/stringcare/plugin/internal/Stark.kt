@@ -40,6 +40,9 @@ open class Stark {
         @Volatile
         private var verboseNativeLogging = true
 
+        private const val NATIVE_LOAD_RETRY_ATTEMPTS = 3
+        private const val NATIVE_LOAD_BACKOFF_BASE_MS = 100L
+
         private val nativeTempFiles: MutableSet<File> = ConcurrentHashMap.newKeySet()
 
         private val nativeShutdownHookInstalled = AtomicBoolean(false)
@@ -126,11 +129,11 @@ open class Stark {
                 }
             logNative("Try order for this host: ${order.joinToString()}")
             for (name in order) {
-                repeat(3) { attempt ->
+                repeat(NATIVE_LOAD_RETRY_ATTEMPTS) { attempt ->
                     if (loadLib(name)) return true
-                    if (attempt < 2) {
+                    if (attempt < NATIVE_LOAD_RETRY_ATTEMPTS - 1) {
                         try {
-                            Thread.sleep(100L * (attempt + 1))
+                            Thread.sleep(NATIVE_LOAD_BACKOFF_BASE_MS * (attempt + 1))
                         } catch (_: InterruptedException) {
                             Thread.currentThread().interrupt()
                         }

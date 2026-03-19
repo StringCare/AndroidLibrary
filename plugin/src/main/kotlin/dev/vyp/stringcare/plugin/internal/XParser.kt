@@ -13,25 +13,14 @@ import java.io.File
 fun locateResourceFiles(
     projectPath: String,
     configuration: StringCareConfiguration,
-): List<ResourceFile> {
-    if (configuration.debug) {
-        println("== RESOURCE FILES FOUND ======================================")
-    }
-    val normalized = configuration.normalize()
-    return File(projectPath)
-        .walkTopDown()
-        .onEnter { dir ->
-            val path = dir.path.replace('\\', '/')
-            !path.contains("/build/") &&
-                !path.contains("/.gradle/") &&
-                !path.contains("/.git/") &&
-                !path.contains("/node_modules/")
-        }.filter { file ->
-            !file.isDirectory && file.validForXMLConfiguration(normalized)
-        }.mapNotNull { file ->
-            file.resourceFile(normalized)
-        }.toList()
-}
+): List<ResourceFile> =
+    locateConfiguredFiles(
+        projectPath = projectPath,
+        configuration = configuration,
+        debugHeader = "== RESOURCE FILES FOUND ======================================",
+        isValid = { file, normalized -> file.validForXMLConfiguration(normalized) },
+        mapFile = { file, normalized -> file.resourceFile(normalized) },
+    )
 
 fun backupResourceFiles(
     projectPath: String,
@@ -39,10 +28,7 @@ fun backupResourceFiles(
     tempRoot: String,
 ): List<ResourceFile> {
     val files = locateResourceFiles(projectPath, configuration.normalize())
-    files.forEach { resource ->
-        resource.backup(tempRoot)
-    }
-    return files
+    return backupLocatedFiles(files, tempRoot)
 }
 
 /** Test convenience: uses [StringCareSession] temp root set by [tempPath]. */
@@ -66,18 +52,7 @@ fun restoreResourceFiles(
     projectPath: String,
     module: String,
     tempRoot: String,
-): List<File> {
-    val resourceFiles =
-        File("$tempRoot${File.separator}$module")
-            .walkTopDown()
-            .toList()
-            .filter { file ->
-                !file.isDirectory
-            }.map { file ->
-                file.restore(projectPath, tempRoot)
-            }
-    return resourceFiles
-}
+): List<File> = restoreBackedUpFiles(projectPath, module, tempRoot)
 
 /**
  * Parses obfuscatable `<string>` nodes from [file].
