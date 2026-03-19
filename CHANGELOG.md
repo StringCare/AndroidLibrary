@@ -6,6 +6,10 @@
 
 - **Docs**: [Refactor plan checklist](docs/refactor-plan-checklist.md) — seguimiento hecho/pendiente del roadmap del plugin.
 
+### Fixed
+
+- **Restore**: Backups under `temp/<module>/src/...` now copy back to `<module>/src/...` (no duplicated module segment). Restore uses binary `copyTo` for assets; restore-resource task no longer clears temp before restore-assets; `stringcareBeforeMergeAssets` runs after `stringcareBeforeMergeResources`. Restore tasks stay non–UP-TO-DATE so Gradle cannot skip them while sources remain obfuscated.
+
 ### Changed
 
 - **Architecture**: Domain models under `domain.models` (with `models` typealiases for compatibility); `infrastructure` packages for parsers, Gradle wiring, crypto, filesystem; thin `ObfuscateStringsUseCase` + `ResourceRepository`.
