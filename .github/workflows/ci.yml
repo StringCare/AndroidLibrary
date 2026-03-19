@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.PAT }}
 
       - uses: actions/setup-java@v4
         with:
@@ -54,6 +57,9 @@ jobs:
         agp-version: ["8.0.2", "8.7.3", "9.0.0"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.PAT }}
 
       - uses: actions/setup-java@v4
         with:

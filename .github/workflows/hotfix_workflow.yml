@@ -30,6 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.PAT }}
 
       - name: Validate inputs
         env:
@@ -77,6 +80,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.PAT }}
         
       - name: Copilot - Create Tag
         uses: vypdev/copilot@v2

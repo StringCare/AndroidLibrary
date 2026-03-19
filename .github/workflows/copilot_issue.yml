@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.PAT }}
 
       - uses: vypdev/copilot@v2
         with:
