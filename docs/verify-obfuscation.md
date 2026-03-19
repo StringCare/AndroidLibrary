@@ -18,7 +18,20 @@ Skipping <variant> (native library not available for this architecture)
 
 Tras actualizar `dist/` en el submódulo, basta con **`./gradlew :plugin:jar`** o **`./gradlew :app:assemble...`** para volver a empaquetar las nativas.
 
-## 2. Tareas útiles
+## 2. Depurar carga de librería nativa (plugin)
+
+Si ves *Skipping … native library not available*, activa trazas en **stderr** con cualquiera de:
+
+1. **`stringcare { debug = true }`** en el módulo `app` (ya propagado a las tareas de ofuscación).
+2. **Propiedad JVM** al invocar Gradle:
+   ```bash
+   ./gradlew :app:assembleDevDebug -Dstringcare.debug.native=true --info
+   ```
+3. **Variable de entorno:** `STRINGCARE_DEBUG_NATIVE=1` o `STRINGCARE_DEBUG_NATIVE=true`.
+
+Verás líneas `[StringCare native] …`: OS, arquitectura, orden de ficheros probados, si se encontró el recurso en classpath / JAR / `resources/main`, tamaño del fichero temporal y errores de `System.load` (p. ej. `UnsatisfiedLinkError` si el binario no coincide con la CPU).
+
+## 3. Tareas útiles
 
 Listar tareas del plugin en el app:
 
@@ -37,7 +50,7 @@ Tareas típicas (por variante; ejemplo **prodDebug**):
 | `stringcarePreview` | Vista previa / diagnóstico |
 | `stringcareTestObfuscate` | Prueba de ofuscación (tests del plugin) |
 
-## 3. Comprobar que no se salta la ofuscación
+## 4. Comprobar que no se salta la ofuscación
 
 Con salida detallada:
 
@@ -53,7 +66,7 @@ Comprobar también assets:
 ./gradlew :app:stringcareBeforeMergeAssetsProdDebug --rerun-tasks --info 2>&1 | tee -a stringcare-verify.log
 ```
 
-## 4. Build completa
+## 5. Build completa
 
 ```bash
 ./gradlew :app:clean :app:assembleProdDebug --rerun-tasks --info 2>&1 | tee stringcare-assemble.log
@@ -61,7 +74,7 @@ Comprobar también assets:
 
 Durante el merge, los recursos en disco pueden estar ofuscados de forma temporal; al final **`stringcareAfterMerge*`** restaura los fuentes del módulo. La comprobación fiable es el **log** de las tareas `BeforeMerge` (y que exista huella vía `signingReport` o configuración del plugin), no solo el `values.xml` final empaquetado.
 
-## 5. Huella de firma (SHA1)
+## 6. Huella de firma (SHA1)
 
 Si no hay `mockedFingerprint` en el bloque `stringcare { }`, el plugin usa `./gradlew signingReport` para la variante. Sin SHA1 válido, puede no ofuscar aunque la nativa cargue. Para depurar:
 

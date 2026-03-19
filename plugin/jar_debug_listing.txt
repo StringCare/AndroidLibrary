@@ -1,0 +1,71 @@
+=== Gradle (as requested) ===
+Command: ./gradlew :plugin:clean :plugin:jar --no-daemon
+Exit code: 0 (BUILD SUCCESSFUL)
+Note: Gradle executed :plugin:jar (UP-TO-DATE) before :plugin:clean, so build/libs was removed by clean.
+Follow-up: ./gradlew :plugin:jar --no-daemon (exit 0) was run to repopulate plugin/build/libs/ for this listing.
+
+=== JAR files in plugin/build/libs/ ===
+total 1952
+drwxr-xr-x@ 3 efrain.espada@feverup.com  staff      96 Mar 19 10:33 .
+drwxr-xr-x@ 9 efrain.espada@feverup.com  staff     288 Mar 19 10:33 ..
+-rw-r--r--@ 1 efrain.espada@feverup.com  staff  995351 Mar 19 10:33 stringcare-plugin-5.0.0.jar
+
+========================================
+JAR: /Users/efrain.espada@feverup.com/Development/stringcare-android/plugin/build/libs/stringcare-plugin-5.0.0.jar
+========================================
+META-INF/
+META-INF/MANIFEST.MF
+META-INF/stringcare-plugin.kotlin_module
+dev/
+dev/vyp/
+dev/vyp/stringcare/
+dev/vyp/stringcare/plugin/
+dev/vyp/stringcare/plugin/tasks/
+dev/vyp/stringcare/plugin/tasks/SCTestObfuscation.class
+dev/vyp/stringcare/plugin/tasks/ObfuscateAssetsTask.class
+dev/vyp/stringcare/plugin/tasks/RestoreStringsTask.class
+dev/vyp/stringcare/plugin/tasks/ObfuscateStringsTask.class
+dev/vyp/stringcare/plugin/tasks/RestoreAssetsTask.class
+dev/vyp/stringcare/plugin/tasks/SCPreview.class
+dev/vyp/stringcare/plugin/StringCarePlugin$Companion.class
+dev/vyp/stringcare/plugin/StringCareExtension.class
+dev/vyp/stringcare/plugin/internal/
+dev/vyp/stringcare/plugin/internal/VarsKt.class
+dev/vyp/stringcare/plugin/internal/StringType.class
+dev/vyp/stringcare/plugin/internal/AParserKt.class
+dev/vyp/stringcare/plugin/internal/Stark$Companion.class
+dev/vyp/stringcare/plugin/internal/PrintUtils.class
+dev/vyp/stringcare/plugin/internal/VariantApiKt.class
+dev/vyp/stringcare/plugin/internal/Stark$WhenMappings.class
+dev/vyp/stringcare/plugin/internal/TasksKt.class
+dev/vyp/stringcare/plugin/internal/XParserKt.class
+dev/vyp/stringcare/plugin/internal/OsKt.class
+dev/vyp/stringcare/plugin/internal/ExecutionKt.class
+dev/vyp/stringcare/plugin/internal/Fingerprint$Companion.class
+dev/vyp/stringcare/plugin/internal/FingerprintKt.class
+dev/vyp/stringcare/plugin/internal/PrintUtils$Companion.class
+dev/vyp/stringcare/plugin/internal/TasksKt$WhenMappings.class
+dev/vyp/stringcare/plugin/internal/Os.class
+dev/vyp/stringcare/plugin/internal/ExecutionKt$WhenMappings.class
+dev/vyp/stringcare/plugin/internal/ExtensionsKt$WhenMappings.class
+dev/vyp/stringcare/plugin/internal/ExtensionsKt.class
+dev/vyp/stringcare/plugin/internal/Stark.class
+dev/vyp/stringcare/plugin/internal/Fingerprint.class
+dev/vyp/stringcare/plugin/models/
+dev/vyp/stringcare/plugin/models/StringEntity.class
+dev/vyp/stringcare/plugin/models/ResourceFile.class
+dev/vyp/stringcare/plugin/models/SAttribute.class
+dev/vyp/stringcare/plugin/models/ExecutionResult.class
+dev/vyp/stringcare/plugin/models/AssetsFile.class
+dev/vyp/stringcare/plugin/StringCareConfiguration.class
+dev/vyp/stringcare/plugin/StringCarePlugin.class
+META-INF/gradle-plugins/
+META-INF/gradle-plugins/dev.vyp.stringcare.plugin.properties
+libsignKey.dll
+libsignKey.dylib
+
+=== FILTERED (signKey | dylib | .so | .dll) ===
+--- /Users/efrain.espada@feverup.com/Development/stringcare-android/plugin/build/libs/stringcare-plugin-5.0.0.jar ---
+libsignKey.dll
+libsignKey.dylib
+

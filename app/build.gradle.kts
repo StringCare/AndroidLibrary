@@ -5,7 +5,7 @@ plugins {
 }
 
 stringcare {
-    debug = false
+    debug = true
     skip = false  // Obfuscation runs when native lib is available (x86_64 or arm64); otherwise tasks skip automatically
     assetsFiles = mutableListOf("*.json")
     stringFiles = mutableListOf("strings.xml")

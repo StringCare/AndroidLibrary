@@ -4,6 +4,7 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+    includeBuild("plugin")
 }
 
 dependencyResolutionManagement {
@@ -16,4 +17,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "stringcare-android"
 include(":app", ":library")
-includeBuild("plugin")

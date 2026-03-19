@@ -8,3 +8,11 @@ plugins {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+/** Dev: copies `stringcare-jni/dist` into the plugin’s `internal/jni` (included build `plugin`). */
+tasks.register("syncPluginNativesFromDist") {
+    group = "stringcare"
+    description =
+        "Copy stringcare-jni/dist → plugin internal/jni. Run after building natives in stringcare-android-c."
+    dependsOn(gradle.includedBuild("plugin").task(":syncDistNativesToPluginJni"))
+}

@@ -95,29 +95,22 @@ if (project.hasProperty("signing.gnupg.keyName")) {
 }
 
 /**
- * Prebuilt natives from stringcare-android-c (submodule `stringcare-jni`).
- * NOTE: With `includeBuild("plugin")`, this project's `rootProject` is the plugin dir, not stringcare-android —
- * use a path relative to this project (`../stringcare-jni/dist`).
+ * Prebuilts from stringcare-android-c (Git submodule path in this repo: `stringcare-jni`).
+ * Relative to `plugin/`: `../stringcare-jni/dist` (same tree as `dist/` in stringcare-android-c: `macos/`, `linux/`, `windows/`, …).
  */
-val stringcareJniDist = layout.projectDirectory.dir("../stringcare-jni/dist")
+val stringcareJniDist = layout.projectDirectory.dir("../../stringcare-android-c/dist")
 val pluginJniSource = layout.projectDirectory.dir("src/main/kotlin/dev/vyp/stringcare/plugin/internal/jni")
 val pluginNativesGenerated = layout.buildDirectory.dir("generated/stringcare-plugin-natives")
 
 /**
- * Packs all host natives into the plugin JAR on every `processResources` / `jar`.
- * - If `../stringcare-jni/dist/{macos,linux,windows}/` exists (after building in stringcare-android-c), copies from there.
- * - Otherwise falls back to checked-in files under `internal/jni/`.
+ * Mirrors `dist/` (or checked-in `internal/jni/`) into the build dir so `processResources` packs the same layout into the JAR.
  */
 tasks.register<Sync>("preparePluginNativeLibraries") {
     into(pluginNativesGenerated)
     if (stringcareJniDist.asFile.exists()) {
-        from(stringcareJniDist.dir("macos")) { include("*.dylib") }
-        from(stringcareJniDist.dir("linux")) { include("*.so") }
-        from(stringcareJniDist.dir("windows")) { include("*.dll") }
+        from(stringcareJniDist)
     } else {
-        from(pluginJniSource) {
-            include("*.dylib", "*.dll", "*.so")
-        }
+        from(pluginJniSource)
     }
 }
 
@@ -125,25 +118,38 @@ tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     dependsOn("preparePluginNativeLibraries")
     from(pluginNativesGenerated) {
-        include("*.dylib", "*.dll", "*.so")
+        include("**/*.dylib", "**/*.dll", "**/*.so")
     }
 }
 
+// If you run `:plugin:clean :plugin:jar` in one invocation, Gradle may run `jar` (UP-TO-DATE) before `clean` and delete the JAR. Force correct order.
+tasks.named("jar") {
+    mustRunAfter(tasks.named("clean"))
+}
+
 /**
- * Optional: copy dist natives into `src/.../jni/` for committing prebuilts to Git (e.g. Maven publish without submodule on CI).
+ * Dev-only: mirror `../stringcare-jni/dist/` into `internal/jni/` (same folder layout: `macos/`, `linux/`, `windows/`, …).
+ *
+ * From repo root: `./gradlew syncPluginNativesFromDist`. Or: `./gradlew -p plugin syncDistNativesToPluginJni`
  */
-tasks.register<Copy>("syncPluginNativeLibraries") {
-    val dist = stringcareJniDist
+tasks.register<Sync>("syncDistNativesToPluginJni") {
+    group = "stringcare"
+    description = "Dev: sync stringcare-jni/dist → plugin internal/jni (entire tree)."
     into(pluginJniSource)
-    from(dist.dir("macos")) { include("*.dylib") }
-    from(dist.dir("linux")) { include("*.so") }
-    from(dist.dir("windows")) { include("*.dll") }
+    from(stringcareJniDist)
     doFirst {
-        if (!dist.asFile.exists()) {
+        if (!stringcareJniDist.asFile.exists()) {
             throw GradleException(
                 "stringcare-jni/dist not found. Init submodule: git submodule update --init --recursive " +
                     "then build natives in stringcare-android-c (see that repo's docs)."
             )
         }
     }
+}
+
+// Legacy name; prefer syncDistNativesToPluginJni.
+tasks.register("syncPluginNativeLibraries") {
+    group = "stringcare"
+    description = "Alias for syncDistNativesToPluginJni."
+    dependsOn("syncDistNativesToPluginJni")
 }

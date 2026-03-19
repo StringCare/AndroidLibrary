@@ -79,7 +79,7 @@ For **Groovy** use `buildscript` / `apply plugin: 'dev.vyp.stringcare.plugin'` a
 
 **Build / CI:** This project uses the JNI native library as a Git submodule (`stringcare-jni`, e.g. stringcare-android-c). Clone with submodules: `git clone --recurse-submodules ...` or run `git submodule update --init --recursive` after clone. CI workflows must use `checkout` with `submodules: true`.
 
-**Plugin host natives:** With submodule `stringcare-jni` and `dist/` built, the plugin JAR picks up **`dist/{macos,linux,windows}/`** automatically on each **`preparePluginNativeLibraries`** (runs before `processResources`). Use **`./gradlew :plugin:syncPluginNativeLibraries`** only if you want to commit those binaries under `plugin/.../jni/`. macOS: universal `libsignKey.dylib`; Linux/Windows: x64 + arm64 `*.so` / `*.dll`.
+**Plugin host natives:** With submodule `stringcare-jni` and `dist/` built, the plugin mirrors the whole **`dist/`** tree (e.g. **`macos/`**, **`linux/`**, **`windows/`**) into the JAR on each **`preparePluginNativeLibraries`**. To sync that tree into **`plugin/.../internal/jni/`**, run **`./gradlew syncPluginNativesFromDist`** (root) or **`./gradlew -p plugin syncDistNativesToPluginJni`**. macOS: universal `libsignKey.dylib`; Linux/Windows: x64 + arm64 `*.so` / `*.dll`.
 
 **Publishing (release workflow):** See [CONTRIBUTING.md](CONTRIBUTING.md) for required secrets: `NEXUS_USERNAME`, `NEXUS_PASSWORD`, `GPG_KEY_ID`, `GPG_PASSPHRASE`, `PAT`. When dispatching the release workflow, set **Publish Maven** to `true` to run the publish job (publishes both `dev.vyp.stringcare:library` and `dev.vyp.stringcare:plugin`).
 
