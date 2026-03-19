@@ -7,17 +7,21 @@ import dev.vyp.stringcare.plugin.domain.models.SAttribute
 import dev.vyp.stringcare.plugin.domain.models.StringEntity
 import dev.vyp.stringcare.plugin.infrastructure.parsers.XmlAttributes
 import dev.vyp.stringcare.plugin.infrastructure.parsers.XmlParser
+import org.gradle.api.Project
 import org.w3c.dom.Element
 import java.io.File
 
 fun locateResourceFiles(
     projectPath: String,
     configuration: StringCareConfiguration,
+    project: Project? = null,
 ): List<ResourceFile> =
     locateConfiguredFiles(
         projectPath = projectPath,
         configuration = configuration,
         debugHeader = "== RESOURCE FILES FOUND ======================================",
+        project = project,
+        includeNames = configuration.normalize().stringFiles.ifEmpty { listOf("strings.xml") },
         isValid = { file, normalized -> file.validForXMLConfiguration(normalized) },
         mapFile = { file, normalized -> file.resourceFile(normalized) },
     )

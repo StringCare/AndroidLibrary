@@ -1,17 +1,14 @@
 package dev.vyp.stringcare.plugin.tasks
 
 import dev.vyp.stringcare.plugin.StringCareConfiguration
+import dev.vyp.stringcare.plugin.domain.usecases.ObfuscateAssetsUseCase
 import dev.vyp.stringcare.plugin.internal.PrintUtils
 import dev.vyp.stringcare.plugin.internal.LoadResult
 import dev.vyp.stringcare.plugin.internal.Stark
 import dev.vyp.stringcare.plugin.internal.backupAssets
 import dev.vyp.stringcare.plugin.internal.fingerPrint
-import dev.vyp.stringcare.plugin.internal.getContent
-import dev.vyp.stringcare.plugin.internal.locateAssetsFiles
 import dev.vyp.stringcare.plugin.internal.obfuscateAssets
-import dev.vyp.stringcare.plugin.internal.obfuscateFile
 import dev.vyp.stringcare.plugin.internal.parseJsonStringList
-import dev.vyp.stringcare.plugin.domain.models.forEachWithBackup
 import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
@@ -37,6 +34,8 @@ import org.gradle.work.DisableCachingByDefault
  * @property assetsFilesJson JSON array of asset file names/patterns to process.
  */
 abstract class ObfuscateAssetsTask : DefaultTask() {
+    private val obfuscateAssetsUseCase = ObfuscateAssetsUseCase()
+
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
 
@@ -117,12 +116,7 @@ abstract class ObfuscateAssetsTask : DefaultTask() {
             }
             PrintUtils.print(moduleName.get(), "${variantName.get()}:$key")
             PrintUtils.print(moduleName.get(), backupAssets)
-            val files = locateAssetsFiles(projectPath.get(), config)
-            forEachWithBackup(files, tempRoot) { asset ->
-                if (debug.get()) PrintUtils.print(null, asset.file.getContent())
-                obfuscateFile(key, asset.file, config.applicationId)
-                if (debug.get()) PrintUtils.print(null, asset.file.getContent())
-            }
+            obfuscateAssetsUseCase.obfuscate(projectPath.get(), config, tempRoot, key, project)
             PrintUtils.print(moduleName.get(), obfuscateAssets)
         }
     }

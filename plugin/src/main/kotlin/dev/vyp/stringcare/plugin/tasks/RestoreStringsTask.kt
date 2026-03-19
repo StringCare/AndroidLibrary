@@ -1,7 +1,7 @@
 package dev.vyp.stringcare.plugin.tasks
 
+import dev.vyp.stringcare.plugin.domain.usecases.RestoreFilesUseCase
 import dev.vyp.stringcare.plugin.internal.PrintUtils
-import dev.vyp.stringcare.plugin.internal.restoreResourceFiles
 import dev.vyp.stringcare.plugin.internal.restoreStringRes
 import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import org.gradle.api.DefaultTask
@@ -21,6 +21,8 @@ import org.gradle.work.DisableCachingByDefault
  * @property skip If true, task exits without side effects.
  */
 abstract class RestoreStringsTask : DefaultTask() {
+    private val restoreFilesUseCase = RestoreFilesUseCase()
+
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
 
@@ -44,7 +46,7 @@ abstract class RestoreStringsTask : DefaultTask() {
         PrintUtils.print(moduleName.get(), restoreStringRes)
         val service = stringCareService.get()
         val tempRoot = service.getOrCreateTempFolder()
-        restoreResourceFiles(projectPath.get(), moduleName.get(), tempRoot)
+        restoreFilesUseCase.restoreResources(projectPath.get(), moduleName.get(), tempRoot)
         service.resetTempFolder()
     }
 }

@@ -51,6 +51,21 @@ fun Project.registerVariantObfuscationTasks(
             t.srcFoldersJson.set(srcJson)
             t.stringFilesJson.set(strJson)
             t.assetsFilesJson.set(assetsJson)
+            val includes =
+                config.srcFolders
+                    .ifEmpty { listOf("src/main/res") }
+                    .flatMap { src ->
+                        config.stringFiles
+                            .ifEmpty { listOf("strings.xml") }
+                            .map { name -> "$src/**/$name" }
+                    }
+            t.xmlInputFiles.from(
+                fileTree(absoluteProjectPath).matching { pattern ->
+                    pattern.include(includes)
+                    pattern.exclude("**/build/**", "**/.git/**", "**/.gradle/**", "**/node_modules/**")
+                },
+            )
+            t.outputDirectory.set(layout.buildDirectory.dir("stringcare/obfuscate-strings/$variantName"))
         }
         tasks.register(
             "stringcareAfterMergeResources$variantCapitalized",

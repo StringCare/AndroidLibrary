@@ -88,7 +88,7 @@ abstract class SCPreview : DefaultTask() {
                 debug = task.debug.get()
             }
         val projectRoot = stringCareService.get().absoluteProjectPath()
-        val files = locateResourceFiles(projectRoot, configuration)
+        val files = locateResourceFiles(projectRoot, configuration, project)
         println("\tLocated files(${files.size}) for obfuscating")
         println("\tConfig (module=${configuration.name}, debug=${configuration.debug})")
         files.forEach { file ->

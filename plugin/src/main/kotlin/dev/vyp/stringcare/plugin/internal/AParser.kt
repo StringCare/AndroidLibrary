@@ -3,16 +3,20 @@ package dev.vyp.stringcare.plugin.internal
 import dev.vyp.stringcare.plugin.StringCareConfiguration
 import dev.vyp.stringcare.plugin.StringCarePlugin
 import dev.vyp.stringcare.plugin.domain.models.AssetsFile
+import org.gradle.api.Project
 import java.io.File
 
 fun locateAssetsFiles(
     projectPath: String,
     configuration: StringCareConfiguration,
+    project: Project? = null,
 ): List<AssetsFile> =
     locateConfiguredFiles(
         projectPath = projectPath,
         configuration = configuration,
         debugHeader = "== ASSETS FILES FOUND ======================================",
+        project = project,
+        includeNames = configuration.normalize().assetsFiles,
         isValid = { file, normalized -> file.validForAssetsConfiguration(normalized) },
         mapFile = { file, normalized -> file.assetsFile(normalized) },
     )

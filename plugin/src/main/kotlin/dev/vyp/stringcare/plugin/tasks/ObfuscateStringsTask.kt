@@ -5,17 +5,22 @@ import dev.vyp.stringcare.plugin.internal.PrintUtils
 import dev.vyp.stringcare.plugin.internal.LoadResult
 import dev.vyp.stringcare.plugin.internal.Stark
 import dev.vyp.stringcare.plugin.internal.backupStringRes
+import dev.vyp.stringcare.plugin.domain.usecases.ObfuscateStringsUseCase
+import dev.vyp.stringcare.plugin.infrastructure.gradle.FileSystemResourceRepository
 import dev.vyp.stringcare.plugin.internal.fingerPrint
-import dev.vyp.stringcare.plugin.internal.locateResourceFiles
-import dev.vyp.stringcare.plugin.internal.modifyXML
 import dev.vyp.stringcare.plugin.internal.obfuscateStringRes
 import dev.vyp.stringcare.plugin.internal.parseJsonStringList
-import dev.vyp.stringcare.plugin.domain.models.forEachWithBackup
 import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
 
@@ -36,6 +41,8 @@ import org.gradle.work.DisableCachingByDefault
  * @property assetsFilesJson JSON array of asset patterns (kept for config parity).
  */
 abstract class ObfuscateStringsTask : DefaultTask() {
+    private val obfuscateStringsUseCase = ObfuscateStringsUseCase(FileSystemResourceRepository())
+
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
 
@@ -69,6 +76,13 @@ abstract class ObfuscateStringsTask : DefaultTask() {
     @get:Input
     abstract val assetsFilesJson: Property<String>
 
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val xmlInputFiles: ConfigurableFileCollection
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
     init {
         skip.convention(false)
         debug.convention(false)
@@ -76,6 +90,9 @@ abstract class ObfuscateStringsTask : DefaultTask() {
         srcFoldersJson.convention("[]")
         stringFilesJson.convention("[]")
         assetsFilesJson.convention("[]")
+        outputDirectory.convention(
+            project.layout.buildDirectory.dir("stringcare/obfuscate-strings/${name}"),
+        )
     }
 
     private fun configuration(): StringCareConfiguration {
@@ -95,6 +112,7 @@ abstract class ObfuscateStringsTask : DefaultTask() {
     /** Executes backup + obfuscation flow for selected string resources. */
     fun run() {
         val config = configuration()
+        outputDirectory.get().asFile.mkdirs()
         Stark.setVerboseNativeLogging(config.debug)
         if (skip.get()) {
             PrintUtils.print(moduleName.get(), "Skipping ${variantName.get()}")
@@ -116,10 +134,7 @@ abstract class ObfuscateStringsTask : DefaultTask() {
             }
             PrintUtils.print(moduleName.get(), "${variantName.get()}:$key")
             PrintUtils.print(moduleName.get(), backupStringRes)
-            val files = locateResourceFiles(projectPath.get(), config)
-            forEachWithBackup(files, tempRoot) { resource ->
-                modifyXML(resource.file, key, config)
-            }
+            obfuscateStringsUseCase.obfuscate(projectPath.get(), config, tempRoot, key, project)
         }
         PrintUtils.print(moduleName.get(), obfuscateStringRes)
     }
