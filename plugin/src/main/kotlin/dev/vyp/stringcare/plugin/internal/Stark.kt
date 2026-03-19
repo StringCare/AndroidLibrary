@@ -68,13 +68,13 @@ open class Stark {
 
                     ZipFile(zipFile.absolutePath).use { zip ->
                         zip.entries().asSequence().forEach { entry ->
+                            if (entry.isDirectory) return@forEach
+                            val matches = entry.name == fileName || entry.name.endsWith("/$fileName")
+                            if (!matches) return@forEach
                             zip.getInputStream(entry).use { input ->
-                                if (entry.name == fileName) {
-
-                                    lib = File("${StringCarePlugin.tempFolder}${File.separator}${entry.name}").apply {
-                                        this.outputStream().use { output ->
-                                            input.copyTo(output)
-                                        }
+                                lib = File("${StringCarePlugin.tempFolder}${File.separator}$fileName").apply {
+                                    this.outputStream().use { output ->
+                                        input.copyTo(output)
                                     }
                                 }
                             }

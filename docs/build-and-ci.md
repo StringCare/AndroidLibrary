@@ -38,15 +38,15 @@ To run instrumented tests (requires an emulator or device):
 - **plugin** — Gradle plugin (JVM); included as a **composite build** via `includeBuild("plugin")` in the root `settings.gradle.kts`, not as `include(":plugin")`. So the plugin is built from the `plugin/` directory and applied to the app by ID `dev.vyp.stringcare.plugin`.
 - **stringcare-jni** — Git submodule containing the native C++ code used by the library and the **plugin host** prebuilts. The library’s `CMakeLists.txt` points to `../stringcare-jni/lib` for the Android JNI source. Plugin host binaries are produced under **`stringcare-jni/dist/`** (`macos/`, `linux/`, `windows/`).
 
-### Syncing plugin host natives into the plugin JAR
+### Plugin host natives in the JAR
 
-After building natives in the submodule (see that repo’s build output), run from the stringcare-android root:
+After building natives in the submodule (`stringcare-jni/dist/{macos,linux,windows}/`), **every** `:plugin:jar` / `:plugin:processResources` runs **`preparePluginNativeLibraries`**, which copies `dist/` into `plugin/build/generated/stringcare-plugin-natives/` and packages those files into the plugin JAR. No manual step is required for local builds as long as the submodule is present and `dist/` is populated.
+
+Optional — copy prebuilts into Git-tracked `jni/` (for publishing without submodule on CI):
 
 ```bash
 ./gradlew :plugin:syncPluginNativeLibraries
 ```
-
-This copies `dist/macos/*.dylib`, `dist/linux/*.so`, and `dist/windows/*.dll` into `plugin/src/main/kotlin/dev/vyp/stringcare/plugin/internal/jni/` so they are packaged with the plugin.
 
 ## CI
 

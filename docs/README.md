@@ -15,5 +15,6 @@ StringCare Android provides **compile-time obfuscation** for strings and assets 
 - [Architecture](architecture.md) — Mono-repo layout, library vs plugin, JNI, and Variant API.
 - [Contributing](contributing.md) — Release workflow secrets and local publish steps.
 - [Troubleshooting](troubleshooting.md) — Submodule, signing, plugin not found, publish job, JNI/NDK.
+- [Verify obfuscation](verify-obfuscation.md) — Comandos `gradlew` para comprobar que strings/assets se ofuscan (nativas del host, `syncPluginNativeLibraries`).
 
 For the main project README and badges, see the [root README](../README.md).

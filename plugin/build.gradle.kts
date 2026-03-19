@@ -94,24 +94,50 @@ if (project.hasProperty("signing.gnupg.keyName")) {
     }
 }
 
+/**
+ * Prebuilt natives from stringcare-android-c (submodule `stringcare-jni`).
+ * NOTE: With `includeBuild("plugin")`, this project's `rootProject` is the plugin dir, not stringcare-android —
+ * use a path relative to this project (`../stringcare-jni/dist`).
+ */
+val stringcareJniDist = layout.projectDirectory.dir("../stringcare-jni/dist")
+val pluginJniSource = layout.projectDirectory.dir("src/main/kotlin/dev/vyp/stringcare/plugin/internal/jni")
+val pluginNativesGenerated = layout.buildDirectory.dir("generated/stringcare-plugin-natives")
+
+/**
+ * Packs all host natives into the plugin JAR on every `processResources` / `jar`.
+ * - If `../stringcare-jni/dist/{macos,linux,windows}/` exists (after building in stringcare-android-c), copies from there.
+ * - Otherwise falls back to checked-in files under `internal/jni/`.
+ */
+tasks.register<Sync>("preparePluginNativeLibraries") {
+    into(pluginNativesGenerated)
+    if (stringcareJniDist.asFile.exists()) {
+        from(stringcareJniDist.dir("macos")) { include("*.dylib") }
+        from(stringcareJniDist.dir("linux")) { include("*.so") }
+        from(stringcareJniDist.dir("windows")) { include("*.dll") }
+    } else {
+        from(pluginJniSource) {
+            include("*.dylib", "*.dll", "*.so")
+        }
+    }
+}
+
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    from("src/main/kotlin/dev/vyp/stringcare/plugin/internal/jni") {
+    dependsOn("preparePluginNativeLibraries")
+    from(pluginNativesGenerated) {
         include("*.dylib", "*.dll", "*.so")
     }
 }
 
 /**
- * Copy prebuilt plugin natives from the stringcare-jni submodule (stringcare-android-c dist/).
- * Run after building natives there: ./gradlew :plugin:syncPluginNativeLibraries
+ * Optional: copy dist natives into `src/.../jni/` for committing prebuilts to Git (e.g. Maven publish without submodule on CI).
  */
 tasks.register<Copy>("syncPluginNativeLibraries") {
-    val dist = rootProject.layout.projectDirectory.dir("stringcare-jni/dist")
-    val jni = layout.projectDirectory.dir("src/main/kotlin/dev/vyp/stringcare/plugin/internal/jni")
+    val dist = stringcareJniDist
+    into(pluginJniSource)
     from(dist.dir("macos")) { include("*.dylib") }
     from(dist.dir("linux")) { include("*.so") }
     from(dist.dir("windows")) { include("*.dll") }
-    into(jni)
     doFirst {
         if (!dist.asFile.exists()) {
             throw GradleException(

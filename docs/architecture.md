@@ -23,7 +23,7 @@ The **plugin** module:
 
 - Implements the Gradle plugin entry point **`StringCarePlugin`** (implements `Plugin<Project>`), creates the **`stringcare`** extension (`StringCareExtension`) and registers tasks.
 - Uses the **AGP 8.7 Variant API**: it does **not** use `BuildListener`. It uses `project.plugins.withId("com.android.application")` and then `project.extensions.getByType(AndroidComponentsExtension::class.java)` and **`onVariants`** to register per-variant tasks (e.g. `stringcareBeforeMergeResourcesDebug`, `stringcareAfterMergeResourcesDebug`, and the same for Assets). Each variant gets before/after merge tasks for resources and for assets; the “before” tasks obfuscate, the “after” tasks restore originals from backup.
-- Contains **JNI** (`.dylib`, `.dll`, `.so`) in `src/main/kotlin/.../internal/jni` for the **host** (Gradle on macOS, Windows, or Linux). Prebuilts are built in **stringcare-jni** under `dist/{macos,linux,windows}/` and copied with `:plugin:syncPluginNativeLibraries`. macOS uses a universal `libsignKey.dylib`; Linux and Windows ship x64 and arm64 binaries. Packaged via `processResources`; separate from the app’s **sc-native-lib** in the library module.
+- Contains **JNI** (`.dylib`, `.dll`, `.so`) for the **host** (Gradle on macOS, Windows, or Linux). Prebuilts come from **stringcare-jni** `dist/{macos,linux,windows}/`; **`preparePluginNativeLibraries`** (before `processResources`) copies them into `build/generated/stringcare-plugin-natives/` and they are packaged in the JAR. Optional checked-in copies live under `internal/jni/`. macOS: universal `libsignKey.dylib`; Linux/Windows: x64 + arm64. Separate from the app’s **sc-native-lib** in the library module.
 
 ## Flow
 
