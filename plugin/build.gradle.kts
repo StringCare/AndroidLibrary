@@ -38,7 +38,7 @@ repositories {
 
 dependencies {
     implementation(gradleApi())
-    implementation("com.android.tools.build:gradle:8.7.3")
+    compileOnly("com.android.tools.build:gradle:8.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
@@ -89,6 +89,20 @@ tasks.jacocoTestReport {
     }
 }
 
+/** Soft gate: raise minimum over time (target &gt;80% per roadmap). */
+tasks.jacocoTestCoverageVerification {
+    dependsOn(tasks.test)
+    violationRules {
+        rule {
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = "0.12".toBigDecimal()
+            }
+        }
+    }
+}
+
 detekt {
     buildUponDefaultConfig = true
     allRules = false
@@ -102,6 +116,7 @@ ktlint {
     ignoreFailures.set(true)
     filter {
         exclude("**/build/**")
+        exclude("**/Vars.kt")
     }
 }
 

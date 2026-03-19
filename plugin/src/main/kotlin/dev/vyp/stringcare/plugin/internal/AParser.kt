@@ -2,7 +2,7 @@ package dev.vyp.stringcare.plugin.internal
 
 import dev.vyp.stringcare.plugin.StringCareConfiguration
 import dev.vyp.stringcare.plugin.StringCarePlugin
-import dev.vyp.stringcare.plugin.models.AssetsFile
+import dev.vyp.stringcare.plugin.domain.models.AssetsFile
 import java.io.File
 
 fun locateAssetsFiles(

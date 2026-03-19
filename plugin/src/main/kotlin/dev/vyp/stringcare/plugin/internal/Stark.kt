@@ -6,15 +6,17 @@ import java.net.JarURLConnection
 import java.net.URL
 import java.nio.file.Files
 import java.security.MessageDigest
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.ZipFile
 
 /** Result of attempting to load the host-side JNI library. */
-sealed class NativeLoadResult {
-    data object Loaded : NativeLoadResult()
+sealed class LoadResult {
+    data object Loaded : LoadResult()
 
     data class Failed(
         val message: String,
-    ) : NativeLoadResult()
+    ) : LoadResult()
 }
 
 open class Stark {
@@ -41,6 +43,21 @@ open class Stark {
         @Volatile
         private var verboseNativeLogging = true
 
+        private val nativeTempFiles: MutableSet<File> = ConcurrentHashMap.newKeySet()
+
+        private val nativeShutdownHookInstalled = AtomicBoolean(false)
+
+        private fun trackNativeTempForCleanup(file: File) {
+            nativeTempFiles.add(file)
+            if (nativeShutdownHookInstalled.compareAndSet(false, true)) {
+                Runtime.getRuntime().addShutdownHook(
+                    Thread {
+                        nativeTempFiles.forEach { f -> runCatching { f.delete() } }
+                    },
+                )
+            }
+        }
+
         @JvmStatic
         fun setVerboseNativeLogging(enabled: Boolean) {
             verboseNativeLogging = enabled
@@ -58,7 +75,7 @@ open class Stark {
         }
 
         @JvmStatic
-        fun nativeLoadResult(): NativeLoadResult {
+        fun isNativeLibLoaded(): LoadResult {
             synchronized(Stark::class.java) {
                 if (!nativeLoadAttempted) {
                     logNative(
@@ -75,12 +92,12 @@ open class Stark {
                 } else if (!nativeLibLoaded) {
                     logNative("isNativeLibLoaded: returning cached false (load attempted earlier in this Gradle JVM)")
                 }
-                return if (nativeLibLoaded) NativeLoadResult.Loaded else NativeLoadResult.Failed("Native library not loaded")
+                return if (nativeLibLoaded) LoadResult.Loaded else LoadResult.Failed("Native library not loaded")
             }
         }
 
         @JvmStatic
-        fun isNativeLibLoaded(): Boolean = nativeLoadResult() is NativeLoadResult.Loaded
+        fun hasNativeLibLoaded(): Boolean = isNativeLibLoaded() is LoadResult.Loaded
 
         private fun nativeResourceDir(): String =
             when (getOs()) {
@@ -140,7 +157,7 @@ open class Stark {
                 val size = tempFile.length()
                 logNative("loadLib($name): extracted $size bytes → ${tempFile.absolutePath}")
                 System.load(tempFile.absolutePath)
-                tempFile.deleteOnExit()
+                trackNativeTempForCleanup(tempFile)
                 logNative("loadLib($name): System.load OK")
                 true
             } catch (e: UnsatisfiedLinkError) {

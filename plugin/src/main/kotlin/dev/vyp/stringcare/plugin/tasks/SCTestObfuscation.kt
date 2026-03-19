@@ -1,6 +1,7 @@
 package dev.vyp.stringcare.plugin.tasks
 
 import dev.vyp.stringcare.plugin.StringCareConfiguration
+import dev.vyp.stringcare.plugin.internal.LoadResult
 import dev.vyp.stringcare.plugin.internal.Stark
 import dev.vyp.stringcare.plugin.internal.backupResourceFiles
 import dev.vyp.stringcare.plugin.internal.extractFingerprint
@@ -83,9 +84,12 @@ abstract class SCTestObfuscation : DefaultTask() {
             println("\tSkipping (skip=true)")
             return
         }
-        if (!Stark.isNativeLibLoaded()) {
-            println("\tSkipping (native library not available for this architecture)")
-            return
+        when (val nativeLoad = Stark.isNativeLibLoaded()) {
+            LoadResult.Loaded -> Unit
+            is LoadResult.Failed -> {
+                println("\tSkipping (${nativeLoad.message})")
+                return
+            }
         }
         signingReportTask().runCommand { _, result ->
             key = result.extractFingerprint(module.get(), variantName.get(), configuration)

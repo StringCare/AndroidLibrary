@@ -1,24 +1,12 @@
 package dev.vyp.stringcare.plugin.internal
 
-import com.android.build.gradle.AppExtension
-import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.api.ApplicationVariant
 import dev.vyp.stringcare.plugin.StringCareConfiguration
-import dev.vyp.stringcare.plugin.StringCareExtension
-import dev.vyp.stringcare.plugin.models.AssetsFile
-import dev.vyp.stringcare.plugin.models.ExecutionResult
-import dev.vyp.stringcare.plugin.models.ResourceFile
-import dev.vyp.stringcare.plugin.services.StringCareBuildService
-import dev.vyp.stringcare.plugin.tasks.SCPreview
-import dev.vyp.stringcare.plugin.tasks.SCTestObfuscation
+import dev.vyp.stringcare.plugin.domain.models.AssetsFile
+import dev.vyp.stringcare.plugin.domain.models.ExecutionResult
+import dev.vyp.stringcare.plugin.domain.models.ResourceFile
 import groovy.json.StringEscapeUtils
-import org.gradle.api.DomainObjectSet
 import org.gradle.api.GradleException
-import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.provider.Provider
 import org.w3c.dom.Document
-import org.w3c.dom.Node
 import org.xml.sax.InputSource
 import java.io.File
 import java.io.FileInputStream
@@ -31,11 +19,19 @@ import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
 fun String.runCommand(runner: (command: String, result: String) -> Unit = { _, _ -> }): String {
-    val outcome = execute(this)
+    val outcome =
+        execute(this).getOrElse { error ->
+            throw GradleException("Unable to execute command: $this", error)
+        }
     return when (outcome) {
         is ExecutionResult.Success -> {
             runner(outcome.command, outcome.result)
             outcome.result
+        }
+        is ExecutionResult.Timeout -> {
+            throw GradleException(
+                "Command timed out: ${outcome.command}\n${outcome.result}",
+            )
         }
         is ExecutionResult.Failure -> {
             throw GradleException(
@@ -47,13 +43,12 @@ fun String.runCommand(runner: (command: String, result: String) -> Unit = { _, _
 }
 
 fun String.normalize(): String {
-    val com = mutableListOf<String>()
-    this.replace("\n", " ").split(" ").forEach {
-        if (it.trim().isNotEmpty()) {
-            com.add(it)
-        }
-    }
-    return com.joinToString(" ")
+    val collapsed =
+        replace("\n", " ")
+            .split(" ")
+            .filter { it.isNotEmpty() }
+            .joinToString(" ")
+    return if (collapsed == this) this else collapsed
 }
 
 fun String.normalizePath(): String {
@@ -87,14 +82,14 @@ fun String.unescape(): String = StringEscapeUtils.unescapeJava(this)
 fun String.removeNewLines(): String = this.replace("\n", "")
 
 fun String.androidTreatment(): String {
-    val va = this.split(" ")
-    val values = mutableListOf<String>()
-    va.forEach { value ->
-        if (value.trim().isNotBlank()) {
-            values.add(value.trim())
+    val words = this.split(" ")
+    return buildList {
+        words.forEach { value ->
+            if (value.isNotBlank()) {
+                add(value.trim())
+            }
         }
-    }
-    return values.joinToString(separator = " ")
+    }.joinToString(separator = " ")
 }
 
 fun File.validForXMLConfiguration(configuration: StringCareConfiguration): Boolean {
@@ -220,7 +215,8 @@ fun File.resourceFile(configuration: StringCareConfiguration): ResourceFile? {
             }
         }
     }
-    return if (valid) ResourceFile(validFile!!, sourceFolder, configuration.name) else null
+    val file = validFile ?: return null
+    return if (valid) ResourceFile(file, sourceFolder, configuration.name) else null
 }
 
 fun File.assetsFile(configuration: StringCareConfiguration): AssetsFile? {
@@ -266,94 +262,8 @@ fun File.assetsFile(configuration: StringCareConfiguration): AssetsFile? {
             }}",
         )
     }
-    return if (valid) AssetsFile(validFile!!, sourceFolder, configuration.name) else null
-}
-
-fun Project.absolutePath(): String {
-    val fPath =
-        this.file("build.gradle").absolutePath.replace(
-            "build.gradle",
-            emptyChar,
-        )
-    val p = fPath.split(File.separator)
-    return fPath.replace(p[p.size - 2] + File.separator, "")
-}
-
-fun Project.module(): String {
-    val fPath =
-        this.file("build.gradle").absolutePath.replace(
-            "build.gradle",
-            emptyChar,
-        )
-    val p = fPath.split(File.separator)
-    return p[p.size - 2]
-}
-
-fun Project.createExtension(): StringCareExtension = extensions.create(extensionName, StringCareExtension::class.java)
-
-fun Project.applicationVariants(): DomainObjectSet<ApplicationVariant>? {
-    if (this.plugins.hasPlugin(AppPlugin::class.java)) {
-        val extension = this.extensions.getByType(AppExtension::class.java)
-        return extension.applicationVariants
-    }
-    return null
-}
-
-fun Project.config(extension: StringCareExtension): StringCareConfiguration {
-    val mod = this.module()
-    return StringCareConfiguration(mod).apply {
-        debug = extension.debug
-        skip = extension.skip
-        if (extension.srcFolders.isNotEmpty()) {
-            srcFolders.addAll(extension.srcFolders)
-        }
-        if (extension.stringFiles.isNotEmpty()) {
-            stringFiles.addAll(extension.stringFiles)
-        }
-        if (extension.assetsFiles.isNotEmpty()) {
-            assetsFiles.addAll(extension.assetsFiles)
-        }
-        if (extension.mockedFingerprint.isNotEmpty()) {
-            mockedFingerprint = extension.mockedFingerprint
-        }
-    }
-}
-
-fun Project.registerTask(
-    configuration: StringCareConfiguration,
-    buildService: Provider<StringCareBuildService>,
-) {
-    val variantDefault = buildService.get().firstVariantKeyOrDefault("debug")
-    val srcJson = toJsonStringList(configuration.srcFolders)
-    val strJson = toJsonStringList(configuration.stringFiles)
-    val assetsJson = toJsonStringList(configuration.assetsFiles)
-
-    this.tasks.register(gradleTaskNameDoctor, SCPreview::class.java) { t ->
-        (t as Task).usesService(buildService)
-        t.stringCareService.set(buildService)
-        t.module.set(configuration.name)
-        t.applicationId.set(configuration.applicationId)
-        t.variantName.set(variantDefault)
-        t.srcFolders.set(srcJson)
-        t.stringFiles.set(strJson)
-        t.assetsFiles.set(assetsJson)
-        t.mockedFingerprint.set(configuration.mockedFingerprint)
-        t.debug.set(configuration.debug)
-        t.skip.set(configuration.skip)
-    }
-    this.tasks.register(gradleTaskNameObfuscate, SCTestObfuscation::class.java) { t ->
-        (t as Task).usesService(buildService)
-        t.stringCareService.set(buildService)
-        t.module.set(configuration.name)
-        t.applicationId.set(configuration.applicationId)
-        t.variantName.set(variantDefault)
-        t.srcFolders.set(srcJson)
-        t.stringFiles.set(strJson)
-        t.assetsFiles.set(assetsJson)
-        t.mockedFingerprint.set(configuration.mockedFingerprint)
-        t.debug.set(configuration.debug)
-        t.skip.set(configuration.skip)
-    }
+    val file = validFile ?: return null
+    return if (valid) AssetsFile(file, sourceFolder, configuration.name) else null
 }
 
 fun Process.outputString(): String {
@@ -367,30 +277,6 @@ fun defaultConfig(): StringCareConfiguration =
         stringFiles.add("strings.xml")
         srcFolders.add("src/main")
     }
-
-fun ResourceFile.backup(tempRoot: String): File {
-    val cleanPath =
-        "$tempRoot${File.separator}${this.module}${File.separator}${this.sourceFolder}${this.file.absolutePath.split(
-            this.sourceFolder,
-        )[1]}"
-            .replace("${File.separator}${File.separator}", File.separator)
-
-    val backupFile = File(cleanPath)
-    this.file.copyTo(backupFile, true)
-    return backupFile
-}
-
-fun AssetsFile.backup(tempRoot: String): File {
-    val cleanPath =
-        "$tempRoot${File.separator}${this.module}${File.separator}${this.sourceFolder}${this.file.absolutePath.split(
-            this.sourceFolder,
-        )[1]}"
-            .replace("${File.separator}${File.separator}", File.separator)
-
-    val backupFile = File(cleanPath)
-    this.file.copyTo(backupFile, true)
-    return backupFile
-}
 
 fun File.restore(
     projectPath: String,
@@ -409,8 +295,6 @@ fun File.restore(
 
     return restore
 }
-
-fun ByteArray.toReadableString(): String = joinToString(separator = ", ") { it.toString() }
 
 fun File.getXML(): Document {
     val inputStream = FileInputStream(this)
@@ -447,114 +331,6 @@ fun File.removeAttributes() {
 }
 
 fun File.getContent() = this.inputStream().readBytes().toString(Charsets.UTF_8)
-
-fun Task.getModuleName(): String? {
-    val path = this.project.path
-    return if (path.isEmpty()) null else path.split(":")[path.split(":").size - 1]
-}
-
-fun Task.dataFound(): Boolean =
-    this.name.contains(pre) &&
-        this.name.contains(build) &&
-        this.name != "$pre$build" &&
-        !this.name.contains(test)
-
-fun Task.onMergeResourcesStarts(): Boolean =
-    this.name.contains(merge) &&
-        this.name.contains(resources) &&
-        !this.name.contains(test)
-
-fun Task.onMergeResourcesFinish(): Boolean =
-    this.name.contains(merge) &&
-        this.name.contains(resources) &&
-        !this.name.contains(test)
-
-fun Task.onMergeAssetsStarts(): Boolean =
-    this.name.contains(generate) &&
-        this.name.contains(assets) &&
-        !this.name.contains(test)
-
-fun Task.onMergeAssetsFinish(): Boolean =
-    this.name.contains(merge) &&
-        this.name.contains(assets) &&
-        !this.name.contains(test)
-
-fun Task.dataFoundVariant(): String =
-    this.name
-        .substring(pre.length)
-        .substring(0, this.name.substring(pre.length).length - build.length)
-
-fun Task.onMergeResourcesStartsVariant(): String =
-    this.name
-        .substring(merge.length)
-        .substring(0, this.name.substring(merge.length).length - resources.length)
-
-fun Task.onMergeResourcesFinishVariant(): String =
-    this.name
-        .substring(merge.length)
-        .substring(0, this.name.substring(merge.length).length - resources.length)
-
-fun Task.onMergeAssetsStartsVariant(): String =
-    this.name
-        .substring(generate.length)
-        .substring(0, this.name.substring(generate.length).length - assets.length)
-
-fun Task.onMergeAssetsFinishVariant(): String =
-    this.name
-        .substring(merge.length)
-        .substring(0, this.name.substring(merge.length).length - assets.length)
-
-fun Node.extractHtml(): String {
-    val stringBuilder = StringBuilder()
-    for (i in 0 until this.childNodes.length) {
-        val item = this.childNodes.item(i)
-        val type = item.getType()
-        when (type) {
-            StringType.BR ->
-                stringBuilder.append(
-                    "<br>${when {
-                        item.textContent.isNotEmpty() -> item.extractHtml()
-                        else -> ""
-                    }
-                    }</br>",
-                )
-            StringType.I ->
-                stringBuilder.append(
-                    "<i>${when {
-                        item.textContent.isNotEmpty() -> item.extractHtml()
-                        else -> ""
-                    }
-                    }</i>",
-                )
-            StringType.STRONG ->
-                stringBuilder.append(
-                    "<strong>${when {
-                        item.textContent.isNotEmpty() -> item.extractHtml()
-                        else -> ""
-                    }
-                    }</strong>",
-                )
-            StringType.TEXT -> stringBuilder.append(item.textContent)
-        }
-    }
-    return stringBuilder.toString()
-}
-
-enum class StringType {
-    BR,
-    TEXT,
-    I,
-    STRONG,
-}
-
-fun Node.getType(): StringType =
-    when {
-        this.toString().contains("[br:") -> StringType.BR
-        this.toString().contains("[i:") -> StringType.I
-        this.toString().contains("[strong:") -> StringType.STRONG
-        this.toString().contains("[#text") -> StringType.TEXT
-        else -> StringType.TEXT
-    }
 
 fun StringCareConfiguration.normalize(): StringCareConfiguration {
     val nextStrings = stringFiles.map { it.normalizePath() }

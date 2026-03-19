@@ -2,6 +2,7 @@ package dev.vyp.stringcare.plugin.tasks
 
 import dev.vyp.stringcare.plugin.StringCareConfiguration
 import dev.vyp.stringcare.plugin.internal.PrintUtils
+import dev.vyp.stringcare.plugin.internal.LoadResult
 import dev.vyp.stringcare.plugin.internal.Stark
 import dev.vyp.stringcare.plugin.internal.backupAssets
 import dev.vyp.stringcare.plugin.internal.backupAssetsFiles
@@ -17,7 +18,9 @@ import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 
+@DisableCachingByDefault(because = "Mutates asset files in the source tree")
 abstract class ObfuscateAssetsTask : DefaultTask() {
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
@@ -82,9 +85,12 @@ abstract class ObfuscateAssetsTask : DefaultTask() {
             PrintUtils.print(moduleName.get(), "Skipping ${variantName.get()}")
             return
         }
-        if (!Stark.isNativeLibLoaded()) {
-            PrintUtils.print(moduleName.get(), "Skipping ${variantName.get()} (native library not available for this architecture)")
-            return
+        when (val nativeLoad = Stark.isNativeLibLoaded()) {
+            LoadResult.Loaded -> Unit
+            is LoadResult.Failed -> {
+                PrintUtils.print(moduleName.get(), "Skipping ${variantName.get()} (${nativeLoad.message})")
+                return
+            }
         }
         val tempRoot = stringCareService.get().getOrCreateTempFolder()
         PrintUtils.print("", "ApplicationId: ${applicationId.get()}", tab = true)

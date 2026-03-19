@@ -1,4 +1,4 @@
-package dev.vyp.stringcare.plugin.models
+package dev.vyp.stringcare.plugin.domain.models
 
 /** Result of running an external command (e.g. Gradle wrapper / shell script). */
 sealed class ExecutionResult {
@@ -13,5 +13,10 @@ sealed class ExecutionResult {
         val result: String,
         val exitCode: Int?,
         val error: Throwable? = null,
+    ) : ExecutionResult()
+
+    data class Timeout(
+        val command: String,
+        val result: String,
     ) : ExecutionResult()
 }

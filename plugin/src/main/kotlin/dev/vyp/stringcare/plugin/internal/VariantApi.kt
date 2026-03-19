@@ -7,9 +7,11 @@ import dev.vyp.stringcare.plugin.tasks.ObfuscateAssetsTask
 import dev.vyp.stringcare.plugin.tasks.ObfuscateStringsTask
 import dev.vyp.stringcare.plugin.tasks.RestoreAssetsTask
 import dev.vyp.stringcare.plugin.tasks.RestoreStringsTask
+import dev.vyp.stringcare.plugin.infrastructure.gradle.AndroidTaskNames
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskCollection
 
 private fun String.variantTaskSuffix(): String = replaceFirstChar { it.uppercase() }
 
@@ -26,8 +28,6 @@ fun Project.registerVariantObfuscationTasks(
     val srcJson = toJsonStringList(config.srcFolders)
     val strJson = toJsonStringList(config.stringFiles)
     val assetsJson = toJsonStringList(config.assetsFiles)
-    val variantNames = mutableListOf<String>()
-
     androidComponents.onVariants(androidComponents.selector().all()) { variant ->
         val variantName: String = variant.name
         val applicationId = variant.applicationId.get()
@@ -62,7 +62,6 @@ fun Project.registerVariantObfuscationTasks(
             t.moduleName.set(moduleNameValue)
             t.skip.set(config.skip)
         }
-        variantNames.add(variantCapitalized)
 
         tasks.register(
             "stringcareBeforeMergeAssets$variantCapitalized",
@@ -91,25 +90,29 @@ fun Project.registerVariantObfuscationTasks(
             t.moduleName.set(moduleNameValue)
             t.skip.set(config.skip)
         }
-    }
 
-    // AGP registers merge/process tasks after variant API callbacks; use afterEvaluate + findByName (nullable).
-    afterEvaluate {
-        for (variantCapitalized in variantNames) {
-            val mergeRes = "merge${variantCapitalized}Resources"
-            val beforeRes = "stringcareBeforeMergeResources$variantCapitalized"
-            val afterRes = "stringcareAfterMergeResources$variantCapitalized"
-            val processRes = "process${variantCapitalized}Resources"
-            tasks.findByName(mergeRes)?.dependsOn(beforeRes)
-            tasks.findByName(afterRes)?.dependsOn(mergeRes)
-            tasks.findByName(processRes)?.dependsOn(afterRes)
-            val genAssets = "generate${variantCapitalized}Assets"
-            val beforeAssets = "stringcareBeforeMergeAssets$variantCapitalized"
-            val mergeAssets = "merge${variantCapitalized}Assets"
-            val afterAssets = "stringcareAfterMergeAssets$variantCapitalized"
-            tasks.findByName(genAssets)?.dependsOn(beforeAssets)
-            tasks.findByName(afterAssets)?.dependsOn(mergeAssets)
-            tasks.findByName("compress${variantCapitalized}Assets")?.dependsOn(afterAssets)
-        }
+        val mergeRes =
+            "${AndroidTaskNames.MERGE}${variantCapitalized}${AndroidTaskNames.RESOURCES}"
+        val beforeRes = "stringcareBeforeMergeResources$variantCapitalized"
+        val afterRes = "stringcareAfterMergeResources$variantCapitalized"
+        val processRes =
+            "${AndroidTaskNames.PROCESS}${variantCapitalized}${AndroidTaskNames.RESOURCES}"
+        namedLike(mergeRes).configureEach { task -> task.dependsOn(beforeRes) }
+        namedLike(afterRes).configureEach { task -> task.dependsOn(mergeRes) }
+        namedLike(processRes).configureEach { task -> task.dependsOn(afterRes) }
+
+        val genAssets =
+            "${AndroidTaskNames.GENERATE}${variantCapitalized}${AndroidTaskNames.ASSETS}"
+        val beforeAssets = "stringcareBeforeMergeAssets$variantCapitalized"
+        val mergeAssets =
+            "${AndroidTaskNames.MERGE}${variantCapitalized}${AndroidTaskNames.ASSETS}"
+        val afterAssets = "stringcareAfterMergeAssets$variantCapitalized"
+        namedLike(genAssets).configureEach { task -> task.dependsOn(beforeAssets) }
+        namedLike(afterAssets).configureEach { task -> task.dependsOn(mergeAssets) }
+        namedLike(
+            "${AndroidTaskNames.COMPRESS}${variantCapitalized}${AndroidTaskNames.ASSETS}",
+        ).configureEach { task -> task.dependsOn(afterAssets) }
     }
 }
+
+private fun Project.namedLike(name: String): TaskCollection<Task> = tasks.matching { it.name == name }

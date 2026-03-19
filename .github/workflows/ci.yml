@@ -21,7 +21,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Plugin unit tests
-        run: ./gradlew :plugin:test :plugin:jacocoTestReport :plugin:detekt --no-daemon
+        run: ./gradlew :plugin:test :plugin:jacocoTestReport :plugin:jacocoTestCoverageVerification :plugin:detekt --no-daemon
 
       - name: Plugin integration tests (optional)
         continue-on-error: true

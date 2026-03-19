@@ -1,0 +1,30 @@
+# Manual / tag-driven publish to Maven Central (requires signing + Nexus credentials).
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, only build plugin (no upload)"
+        required: false
+        default: "true"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build plugin JAR
+        run: ./gradlew :plugin:jar --no-daemon
+
+      # Wire signing + publish when secrets are configured:
+      # ./gradlew :plugin:publishPluginPublicationToSonatypeRepository -PnexusUsername=... -PnexusPassword=...

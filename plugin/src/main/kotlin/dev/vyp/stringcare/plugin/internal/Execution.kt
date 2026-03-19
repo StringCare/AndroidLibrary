@@ -1,24 +1,28 @@
 package dev.vyp.stringcare.plugin.internal
 
-import dev.vyp.stringcare.plugin.models.ExecutionResult
-import org.gradle.api.GradleException
+import dev.vyp.stringcare.plugin.domain.models.ExecutionResult
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 private const val COMMAND_TIMEOUT_SECONDS = 60L
 
-fun execute(command: String): ExecutionResult = executeShell(command)
+fun execute(command: String): Result<ExecutionResult> = executeShell(shellCommand(command), command)
 
-private fun executeShell(command: String): ExecutionResult {
-    val processArgs =
-        when (getOs()) {
-            Os.WINDOWS -> listOf("cmd", "/c", command.normalize())
-            Os.OSX, Os.LINUX -> listOf("/bin/bash", "-c", command)
-        }
-    val displayCommand = command
+fun execute(command: List<String>): Result<ExecutionResult> = executeShell(command, command.joinToString(" "))
+
+private fun shellCommand(command: String): List<String> =
+    when (getOs()) {
+        Os.WINDOWS -> listOf("cmd", "/c", command.normalize())
+        Os.OSX, Os.LINUX -> listOf("/bin/bash", "-c", command)
+    }
+
+private fun executeShell(
+    command: List<String>,
+    displayCommand: String,
+): Result<ExecutionResult> {
     return try {
         val process =
-            ProcessBuilder(processArgs)
+            ProcessBuilder(command)
                 .redirectErrorStream(true)
                 .start()
         val output =
@@ -28,42 +32,36 @@ private fun executeShell(command: String): ExecutionResult {
         val completed = process.waitFor(COMMAND_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         if (!completed) {
             process.destroyForcibly()
-            return ExecutionResult.Failure(
-                command = displayCommand,
-                result = output,
-                exitCode = null,
-                error = GradleException("Command timed out after ${COMMAND_TIMEOUT_SECONDS}s"),
+            return Result.success(
+                ExecutionResult.Timeout(
+                    command = displayCommand,
+                    result = output,
+                ),
             )
         }
         val exit = process.exitValue()
         if (exit != 0) {
-            ExecutionResult.Failure(
-                command = displayCommand,
-                result = output,
-                exitCode = exit,
+            Result.success(
+                ExecutionResult.Failure(
+                    command = displayCommand,
+                    result = output,
+                    exitCode = exit,
+                ),
             )
         } else {
-            ExecutionResult.Success(
-                command = displayCommand,
-                result = output,
-                exitCode = exit,
+            Result.success(
+                ExecutionResult.Success(
+                    command = displayCommand,
+                    result = output,
+                    exitCode = exit,
+                ),
             )
         }
     } catch (e: IOException) {
-        ExecutionResult.Failure(
-            command = displayCommand,
-            result = "",
-            exitCode = null,
-            error = e,
-        )
+        Result.failure(e)
     } catch (e: InterruptedException) {
         Thread.currentThread().interrupt()
-        ExecutionResult.Failure(
-            command = displayCommand,
-            result = "",
-            exitCode = null,
-            error = e,
-        )
+        Result.failure(e)
     }
 }
 

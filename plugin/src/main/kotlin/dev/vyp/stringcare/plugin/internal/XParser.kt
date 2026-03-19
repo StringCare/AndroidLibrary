@@ -2,9 +2,11 @@ package dev.vyp.stringcare.plugin.internal
 
 import dev.vyp.stringcare.plugin.StringCareConfiguration
 import dev.vyp.stringcare.plugin.StringCarePlugin
-import dev.vyp.stringcare.plugin.models.ResourceFile
-import dev.vyp.stringcare.plugin.models.SAttribute
-import dev.vyp.stringcare.plugin.models.StringEntity
+import dev.vyp.stringcare.plugin.domain.models.ResourceFile
+import dev.vyp.stringcare.plugin.domain.models.SAttribute
+import dev.vyp.stringcare.plugin.domain.models.StringEntity
+import dev.vyp.stringcare.plugin.infrastructure.parsers.XmlAttributes
+import dev.vyp.stringcare.plugin.infrastructure.parsers.XmlParser
 import org.w3c.dom.Element
 import java.io.File
 
@@ -77,47 +79,53 @@ fun restoreResourceFiles(
     return resourceFiles
 }
 
-fun parseXML(file: File): List<StringEntity> {
-    val entities = mutableListOf<StringEntity>()
+fun parseXML(file: File): List<StringEntity> = XmlParser.parse(file, ::parseStringsXmlDom)
+
+internal fun parseStringsXmlDom(file: File): List<StringEntity> {
     val doc = file.getXML()
-    val stringNodes = doc.getElementsByTagName("string")
-    for (i in 0 until stringNodes.length) {
-        val node = stringNodes.item(i) as Element
-        var name = ""
-        val attributes = mutableListOf<SAttribute>()
-        var obfuscate = false
-        var androidTreatment = true
-        var containsHtml = false
-        val attrs = node.attributes
-        for (j in 0 until attrs.length) {
-            val attribute = attrs.item(j)
-            val attrName = attribute.nodeName
-            val attrVal = attribute.nodeValue ?: ""
-            when (attrName) {
-                "name" -> name = attrVal
-                "hidden" -> if (attrVal != "false") obfuscate = true
-                "androidTreatment" -> if (attrVal == "false") androidTreatment = false
-                "containsHtml" -> if (attrVal != "false") containsHtml = true
+    val stringNodes = doc.getElementsByTagName(XmlAttributes.TAG_STRING)
+    return buildList {
+        for (i in 0 until stringNodes.length) {
+            val node = stringNodes.item(i) as Element
+            var name = ""
+            val attrs = node.attributes
+            val attributes =
+                buildList {
+                    for (j in 0 until attrs.length) {
+                        val attribute = attrs.item(j)
+                        val attrName = attribute.nodeName
+                        val attrVal = attribute.nodeValue ?: ""
+                        add(SAttribute(attrName, attrVal))
+                    }
+                }
+            var obfuscate = false
+            var androidTreatment = true
+            var containsHtml = false
+            for (attr in attributes) {
+                when (attr.name) {
+                    XmlAttributes.NAME -> name = attr.value
+                    XmlAttributes.HIDDEN -> if (attr.value != "false") obfuscate = true
+                    XmlAttributes.ANDROID_TREATMENT -> if (attr.value == "false") androidTreatment = false
+                    XmlAttributes.CONTAINS_HTML -> if (attr.value != "false") containsHtml = true
+                }
             }
-            attributes.add(SAttribute(attrName, attrVal))
-        }
-        if (obfuscate) {
-            entities.add(
-                StringEntity(
-                    name,
-                    attributes,
-                    when {
-                        containsHtml -> node.extractHtml()
-                        else -> node.textContent
-                    },
-                    "string",
-                    i,
-                    androidTreatment,
-                ),
-            )
+            if (obfuscate) {
+                add(
+                    StringEntity(
+                        name,
+                        attributes,
+                        when {
+                            containsHtml -> node.extractHtml()
+                            else -> node.textContent
+                        },
+                        XmlAttributes.TAG_STRING,
+                        i,
+                        androidTreatment,
+                    ),
+                )
+            }
         }
     }
-    return entities
 }
 
 fun modifyXML(
@@ -131,12 +139,12 @@ fun modifyXML(
     }
 
     val doc = file.getXML()
-    val nList = doc.getElementsByTagName("string")
-    for (i in 0 until nList.length) {
-        val node = nList.item(i)
+    val stringNodeList = doc.getElementsByTagName(XmlAttributes.TAG_STRING)
+    for (i in 0 until stringNodeList.length) {
+        val node = stringNodeList.item(i)
         val entity =
             stringEntities.find {
-                it.tag == "string" && it.index == i
+                it.tag == XmlAttributes.TAG_STRING && it.index == i
             }
         entity?.let {
             node.textContent = obfuscateStringEntity(key, it, configuration.applicationId).value
@@ -165,7 +173,7 @@ fun obfuscateStringEntity(
                 }.toByteArray(),
                 mockId,
             ).toReadableString()
-    return StringEntity(entity.name, entity.attributes, obfuscation, entity.tag, entity.index, entity.androidTreatment)
+    return entity.withValue(obfuscation)
 }
 
 fun revealStringEntity(
@@ -179,5 +187,5 @@ fun revealStringEntity(
             .map { it.toInt().toByte() }
             .toByteArray()
     val original = String(Stark.reveal(key, arr, mockId))
-    return StringEntity(entity.name, entity.attributes, original, entity.tag, entity.index, entity.androidTreatment)
+    return entity.withValue(original)
 }
