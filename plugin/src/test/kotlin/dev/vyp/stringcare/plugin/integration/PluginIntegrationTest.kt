@@ -42,7 +42,7 @@ class PluginIntegrationTest {
     ): org.gradle.testkit.runner.BuildResult {
         return GradleRunner.create()
             .withProjectDir(projectDir)
-            .withArguments(*args, "--stacktrace")
+            .withArguments(*args, "--stacktrace", "--no-scan")
             .forwardOutput()
             .build()
     }
@@ -55,7 +55,7 @@ class PluginIntegrationTest {
         val runner =
             GradleRunner.create()
                 .withProjectDir(projectDir)
-                .withArguments(*args, "--stacktrace")
+                .withArguments(*args, "--stacktrace", "--no-scan")
                 .forwardOutput()
                 .withGradleVersion(gradleVersion)
         return runner.build()
@@ -77,30 +77,87 @@ class PluginIntegrationTest {
         return temp
     }
 
-    private fun setAgpVersion(
+    private fun setCompatibilityVersions(
         copiedRepo: File,
-        version: String,
+        agpVersion: String,
+        kotlinVersion: String? = null,
     ) {
         val versionsFile = copiedRepo.resolve("gradle/libs.versions.toml")
-        val updated = versionsFile.readText().replace(Regex("""^agp = ".*"$""", RegexOption.MULTILINE), """agp = "$version"""")
-        versionsFile.writeText(updated)
+        val withAgp =
+            versionsFile
+                .readText()
+                .replace(Regex("""^agp = ".*"$""", RegexOption.MULTILINE), """agp = "$agpVersion"""")
+        val withKotlin =
+            if (kotlinVersion != null) {
+                withAgp.replace(Regex("""^kotlin = ".*"$""", RegexOption.MULTILINE), """kotlin = "$kotlinVersion"""")
+            } else {
+                withAgp
+            }
+        versionsFile.writeText(withKotlin)
+
+        if (kotlinVersion != null) {
+            val pluginBuild = copiedRepo.resolve("plugin/build.gradle.kts")
+            pluginBuild.writeText(
+                pluginBuild
+                    .readText()
+                    .replace("""kotlin("jvm") version "2.0.21"""", """kotlin("jvm") version "$kotlinVersion"""")
+                    .replace("""kotlin("plugin.serialization") version "2.0.21"""", """kotlin("plugin.serialization") version "$kotlinVersion""""),
+            )
+        }
     }
 
     private fun assertAppConfiguresWithAgp(version: String) {
         val copiedRepo = copyRepoForAgpCompatibilityTest()
-        setAgpVersion(copiedRepo, version)
-        val gradleVersion =
+        try {
+            val gradleVersion: String?
             when (version) {
-                "9.0.0" -> "9.1.0"
-                else -> null
+                "9.0.0" -> {
+                    gradleVersion = "9.1.0"
+                    setCompatibilityVersions(copiedRepo, agpVersion = version, kotlinVersion = "2.2.0")
+                    adaptProjectForAgp9(copiedRepo)
+                }
+                else -> {
+                    gradleVersion = null
+                    setCompatibilityVersions(copiedRepo, agpVersion = version)
+                }
             }
-        val result =
-            if (gradleVersion == null) {
-                runBuild(copiedRepo, ":app:help")
-            } else {
-                runBuildWithGradleVersion(copiedRepo, gradleVersion, ":app:help")
-            }
-        assertTrue(result.output.contains("BUILD SUCCESSFUL"))
+            val result =
+                if (gradleVersion == null) {
+                    runBuild(copiedRepo, ":app:help")
+                } else {
+                    runBuildWithGradleVersion(copiedRepo, gradleVersion, ":app:help")
+                }
+            assertTrue(result.output.contains("BUILD SUCCESSFUL"))
+        } finally {
+            copiedRepo.deleteRecursively()
+        }
+    }
+
+    private fun adaptProjectForAgp9(copiedRepo: File) {
+        listOf("app/build.gradle.kts", "library/build.gradle.kts").forEach { relative ->
+            val file = copiedRepo.resolve(relative)
+            if (!file.exists()) return@forEach
+            var text = file.readText()
+            text = text.replace(Regex("""^\s*alias\(libs\.plugins\.kotlin\.android\)\s*$""", RegexOption.MULTILINE), "")
+            text = text.replace(Regex("""^\s*id\("org\.jetbrains\.kotlin\.android"\)\s*$""", RegexOption.MULTILINE), "")
+            text = text.replace(Regex("""^\s*kotlin\("android"\)\s*$""", RegexOption.MULTILINE), "")
+            text = text.replace(Regex("""^\s*targetSdk\s*=.*$""", RegexOption.MULTILINE), "")
+            text = text.replace(Regex("""(?s)\n\s*kotlinOptions\s*\{.*?\}\n"""), "\n")
+            text =
+                text
+                    .replace(
+                        """
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+""".trimIndent(),
+                        "",
+                    ).replace(
+                        "kotlinOptions {\r\n        jvmTarget = \"17\"\r\n    }\r\n",
+                        "",
+                    )
+            file.writeText(text)
+        }
     }
 
     @Test
