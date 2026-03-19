@@ -4,7 +4,15 @@ import dev.vyp.stringcare.plugin.domain.models.ExecutionResult
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-private const val COMMAND_TIMEOUT_SECONDS = 60L
+private const val DEFAULT_COMMAND_TIMEOUT_SECONDS = 300L
+private const val COMMAND_TIMEOUT_PROPERTY = "stringcare.command.timeout.seconds"
+
+private fun commandTimeoutSeconds(): Long =
+    System
+        .getProperty(COMMAND_TIMEOUT_PROPERTY)
+        ?.toLongOrNull()
+        ?.takeIf { it > 0 }
+        ?: DEFAULT_COMMAND_TIMEOUT_SECONDS
 
 fun execute(command: String): Result<ExecutionResult> = executeShell(shellCommand(command), command)
 
@@ -29,7 +37,7 @@ private fun executeShell(
             process.inputStream.bufferedReader().use { reader ->
                 reader.readText()
             }.replace("\r", "")
-        val completed = process.waitFor(COMMAND_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        val completed = process.waitFor(commandTimeoutSeconds(), TimeUnit.SECONDS)
         if (!completed) {
             process.destroyForcibly()
             return Result.success(

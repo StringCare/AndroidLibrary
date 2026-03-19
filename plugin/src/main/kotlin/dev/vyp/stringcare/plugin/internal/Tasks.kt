@@ -43,8 +43,21 @@ internal fun prepareTask(directory: String): String =
     """
     cd $directory &&
     git clone https://github.com/StringCare/$testProjectName.git &&
-    cd $testProjectName
+    cd $testProjectName &&
+    ${updateWrapperForJava17()}
     """.trimIndent()
+
+/**
+ * Integration fixtures may carry an old wrapper distribution that cannot evaluate scripts
+ * referencing Java 17 bytecode. Pin to a modern Gradle distribution before executing tasks.
+ */
+private fun updateWrapperForJava17(): String =
+    when (getOs()) {
+        Os.WINDOWS -> "echo Wrapper update skipped on Windows"
+        Os.OSX, Os.LINUX ->
+            "sed -i.bak 's#distributionUrl=.*#distributionUrl=https\\\\://services.gradle.org/distributions/gradle-8.11.1-bin.zip#' " +
+                "gradle/wrapper/gradle-wrapper.properties && rm -f gradle/wrapper/gradle-wrapper.properties.bak"
+    }
 
 internal fun buildTask(directory: String): String =
     """
