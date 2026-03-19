@@ -6,15 +6,15 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 class AssetsTest {
-
     // private val logger by logger()
 
-    private val configuration = defaultConfig().apply {
-        debug = true
-        applicationId = "com.stringcare.sample"
-        stringFiles.add("strings_extra.xml")
-        srcFolders.add("src/other_source")
-    }
+    private val configuration =
+        defaultConfig().apply {
+            debug = true
+            applicationId = "com.stringcare.sample"
+            stringFiles.add("strings_extra.xml")
+            srcFolders.add("src/other_source")
+        }
 
     @BeforeEach
     fun setup() {
@@ -25,9 +25,14 @@ class AssetsTest {
     fun `01 - (PLUGIN) locate assets files for default configuration`() {
         val temp = tempPath()
         prepareTask(temp).runCommand { _, _ ->
-            assert(locateAssetsFiles("$temp${File.separator}$testProjectName", configuration.apply {
-                assetsFiles = mutableListOf("*.json")
-            }).isNotEmpty())
+            assert(
+                locateAssetsFiles(
+                    "$temp${File.separator}$testProjectName",
+                    configuration.apply {
+                        assetsFiles = mutableListOf("*.json")
+                    },
+                ).isNotEmpty(),
+            )
         }
         StringCarePlugin.resetFolder()
     }
@@ -36,9 +41,14 @@ class AssetsTest {
     fun `02 - (PLUGIN) backup assets files`() {
         val temp = tempPath()
         prepareTask(temp).runCommand { _, _ ->
-            assert(backupAssetsFiles("$temp${File.separator}$testProjectName", configuration.apply {
-                assetsFiles = mutableListOf("*.json")
-            }).isNotEmpty())
+            assert(
+                backupAssetsFiles(
+                    "$temp${File.separator}$testProjectName",
+                    configuration.apply {
+                        assetsFiles = mutableListOf("*.json")
+                    },
+                ).isNotEmpty(),
+            )
         }
         StringCarePlugin.resetFolder()
     }
@@ -49,15 +59,18 @@ class AssetsTest {
         prepareTask(temp).runCommand { _, report ->
             println(report)
             assert(
-                restoreAssetsFiles("$temp${File.separator}$testProjectName", defaultMainModule).isEmpty()
+                restoreAssetsFiles("$temp${File.separator}$testProjectName", defaultMainModule).isEmpty(),
             )
             assert(
-                backupAssetsFiles("$temp${File.separator}$testProjectName", configuration.apply {
-                    assetsFiles = mutableListOf("*.json")
-                }).isNotEmpty()
+                backupAssetsFiles(
+                    "$temp${File.separator}$testProjectName",
+                    configuration.apply {
+                        assetsFiles = mutableListOf("*.json")
+                    },
+                ).isNotEmpty(),
             )
             assert(
-                restoreAssetsFiles("$temp${File.separator}$testProjectName", defaultMainModule).isNotEmpty()
+                restoreAssetsFiles("$temp${File.separator}$testProjectName", defaultMainModule).isNotEmpty(),
             )
         }
     }
@@ -70,11 +83,13 @@ class AssetsTest {
             val key = report.extractFingerprint(variant = "prodDebug", configuration = configuration)
             println(key)
             assert(key.isNotEmpty())
-            val files = locateAssetsFiles(
-                "$temp${File.separator}$testProjectName",
-                configuration.apply {
-                    assetsFiles = mutableListOf("*.json")
-                })
+            val files =
+                locateAssetsFiles(
+                    "$temp${File.separator}$testProjectName",
+                    configuration.apply {
+                        assetsFiles = mutableListOf("*.json")
+                    },
+                )
             assert(files.isNotEmpty())
             files.forEach {
                 println("-------------------------------------------------------")
@@ -83,7 +98,7 @@ class AssetsTest {
                 obfuscateFile(
                     key,
                     it.file,
-                    configuration.applicationId
+                    configuration.applicationId,
                 )
                 val obfuscated = it.file.getContent()
                 println("obfuscated: \n $obfuscated")
@@ -100,11 +115,13 @@ class AssetsTest {
             val key = report.extractFingerprint(variant = "prodDebug", configuration = configuration)
             println(key)
             assert(key.isNotEmpty())
-            val files = locateAssetsFiles(
-                "$temp${File.separator}$testProjectName",
-                configuration.apply {
-                    assetsFiles = mutableListOf("*.json")
-                })
+            val files =
+                locateAssetsFiles(
+                    "$temp${File.separator}$testProjectName",
+                    configuration.apply {
+                        assetsFiles = mutableListOf("*.json")
+                    },
+                )
             assert(files.isNotEmpty())
             files.forEach {
                 println("-------------------------------------------------------")
@@ -113,7 +130,7 @@ class AssetsTest {
                 obfuscateFile(
                     key,
                     it.file,
-                    configuration.applicationId
+                    configuration.applicationId,
                 )
                 val obfuscated = it.file.getContent()
                 println("obfuscated: \n $obfuscated")
@@ -121,7 +138,7 @@ class AssetsTest {
                 revealFile(
                     key,
                     it.file,
-                    configuration.applicationId
+                    configuration.applicationId,
                 )
                 val reveal = it.file.getContent()
                 println("reveal: \n $reveal")
@@ -129,5 +146,4 @@ class AssetsTest {
             }
         }
     }
-
 }

@@ -1,22 +1,26 @@
 package dev.vyp.stringcare.plugin.tasks
 
-import com.google.gson.Gson
 import dev.vyp.stringcare.plugin.StringCareConfiguration
-import dev.vyp.stringcare.plugin.StringCarePlugin
+import dev.vyp.stringcare.plugin.internal.Stark
 import dev.vyp.stringcare.plugin.internal.backupResourceFiles
 import dev.vyp.stringcare.plugin.internal.extractFingerprint
 import dev.vyp.stringcare.plugin.internal.getContent
 import dev.vyp.stringcare.plugin.internal.modifyXML
+import dev.vyp.stringcare.plugin.internal.parseJsonStringList
 import dev.vyp.stringcare.plugin.internal.parseXML
 import dev.vyp.stringcare.plugin.internal.restoreResourceFiles
 import dev.vyp.stringcare.plugin.internal.runCommand
 import dev.vyp.stringcare.plugin.internal.signingReportTask
-import dev.vyp.stringcare.plugin.internal.Stark
+import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import org.gradle.api.DefaultTask
+import org.gradle.api.provider.Property
+import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
-open class SCTestObfuscation : DefaultTask() {
+abstract class SCTestObfuscation : DefaultTask() {
+    @get:ServiceReference("stringCareBuildService")
+    abstract val stringCareService: Property<StringCareBuildService>
 
     @Input
     var module = String()
@@ -49,33 +53,21 @@ open class SCTestObfuscation : DefaultTask() {
     fun greet() {
         println("== TEST OBFUSCATION ======================================")
         var key = ""
-        val gson = Gson()
-
         val task = this
-        val configuration = StringCareConfiguration(module).apply {
-            @Suppress("UNCHECKED_CAST")
-            val lSrcFolders = gson.fromJson(task.srcFolders, MutableList::class.java)
-            if (task.srcFolders.isNotEmpty()) {
-                srcFolders.addAll(lSrcFolders as MutableList<String>)
+        val configuration =
+            StringCareConfiguration(module).apply {
+                srcFolders.addAll(parseJsonStringList(task.srcFolders))
+                stringFiles.addAll(parseJsonStringList(task.stringFiles))
+                assetsFiles.addAll(parseJsonStringList(task.assetsFiles))
+                if (task.mockedFingerprint.isNotEmpty()) {
+                    mockedFingerprint = task.mockedFingerprint
+                }
+                applicationId = task.applicationId
+                skip = task.skip
+                debug = task.debug
             }
-            @Suppress("UNCHECKED_CAST")
-            val lStringFiles = gson.fromJson(task.stringFiles, MutableList::class.java)
-            if (task.stringFiles.isNotEmpty()) {
-                stringFiles.addAll(lStringFiles as MutableList<String>)
-            }
-            @Suppress("UNCHECKED_CAST")
-            val lAssetsFiles = gson.fromJson(task.assetsFiles, MutableList::class.java)
-            if (task.assetsFiles.isNotEmpty()) {
-                assetsFiles.addAll(lAssetsFiles as MutableList<String>)
-            }
-            if (task.mockedFingerprint.isNotEmpty()) {
-                mockedFingerprint = task.mockedFingerprint
-            }
-            applicationId = task.applicationId
-            skip = task.skip
-            debug = task.debug
-        }
         println("\t== $variantName ======================================")
+        Stark.setVerboseNativeLogging(configuration.debug)
         if (configuration.skip) {
             println("\tSkipping (skip=true)")
             return
@@ -87,7 +79,10 @@ open class SCTestObfuscation : DefaultTask() {
         signingReportTask().runCommand { _, result ->
             key = result.extractFingerprint(module, variantName, configuration)
         }
-        val filesToObfuscate = backupResourceFiles(StringCarePlugin.absoluteProjectPath, configuration)
+        val service = stringCareService.get()
+        val tempRoot = service.getOrCreateTempFolder()
+        val projectRoot = service.absoluteProjectPath()
+        val filesToObfuscate = backupResourceFiles(projectRoot, configuration, tempRoot)
         filesToObfuscate.forEach { file ->
             val originalEntities = parseXML(file.file)
             println("\t============================")
@@ -108,7 +103,8 @@ open class SCTestObfuscation : DefaultTask() {
             println(file.file.getContent())
             println("\t============================")
         }
-        restoreResourceFiles(StringCarePlugin.absoluteProjectPath, module)
+        restoreResourceFiles(projectRoot, module, tempRoot)
+        service.resetTempFolder()
         println("== END OBFUSCATION ==================================")
     }
 }

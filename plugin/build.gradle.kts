@@ -1,8 +1,12 @@
 plugins {
     kotlin("jvm") version "2.0.21"
+    kotlin("plugin.serialization") version "2.0.21"
     id("java-gradle-plugin")
     id("maven-publish")
     id("signing")
+    id("io.gitlab.arturbosch.detekt") version "1.23.7"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    jacoco
 }
 
 gradlePlugin {
@@ -32,15 +36,46 @@ repositories {
 dependencies {
     implementation(gradleApi())
     implementation("com.android.tools.build:gradle:8.7.3")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
-    implementation("com.google.guava:guava:33.3.1-jre")
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    testImplementation(gradleTestKit())
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = "17"
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    baseline = file("$rootDir/config/detekt/baseline.xml")
+    parallel = true
+}
+
+ktlint {
+    version.set("1.3.1")
+    ignoreFailures.set(true)
+    filter {
+        exclude("**/build/**")
+    }
 }
 
 publishing {
@@ -141,7 +176,7 @@ tasks.register<Sync>("syncDistNativesToPluginJni") {
         if (!stringcareJniDist.asFile.exists()) {
             throw GradleException(
                 "stringcare-jni/dist not found. Init submodule: git submodule update --init --recursive " +
-                    "then build natives in stringcare-android-c (see that repo's docs)."
+                    "then build natives in stringcare-android-c (see that repo's docs).",
             )
         }
     }

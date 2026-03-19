@@ -6,7 +6,10 @@ open class StringEntity(
     var value: String,
     val tag: String,
     val index: Int,
-    val androidTreatment: Boolean = true
+    val androidTreatment: Boolean = true,
 )
 
-data class SAttribute(val name: String, val value: String)
+data class SAttribute(
+    val name: String,
+    val value: String,
+)

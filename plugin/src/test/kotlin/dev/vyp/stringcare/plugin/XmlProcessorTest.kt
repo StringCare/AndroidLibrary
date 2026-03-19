@@ -1,23 +1,22 @@
 package dev.vyp.stringcare.plugin
 
 import dev.vyp.stringcare.plugin.internal.parseXML
-import dev.vyp.stringcare.plugin.models.StringEntity
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.File
 
 class XmlProcessorTest {
-
     @Test
     fun `parseXML extracts StringEntity with hidden true`() {
-        val xml = """
+        val xml =
+            """
             <?xml version="1.0" encoding="utf-8"?>
             <resources>
                 <string name="public_string">Hello</string>
                 <string name="secret" hidden="true">sensitive</string>
             </resources>
-        """.trimIndent()
+            """.trimIndent()
         val file = File.createTempFile("strings", ".xml")
         file.writeText(xml)
         try {
@@ -34,12 +33,13 @@ class XmlProcessorTest {
 
     @Test
     fun `parseXML returns empty for no hidden strings`() {
-        val xml = """
+        val xml =
+            """
             <?xml version="1.0" encoding="utf-8"?>
             <resources>
                 <string name="public_string">Hello</string>
             </resources>
-        """.trimIndent()
+            """.trimIndent()
         val file = File.createTempFile("strings", ".xml")
         file.writeText(xml)
         try {

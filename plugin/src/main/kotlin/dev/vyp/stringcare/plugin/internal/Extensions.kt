@@ -5,18 +5,18 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.api.ApplicationVariant
 import dev.vyp.stringcare.plugin.StringCareConfiguration
 import dev.vyp.stringcare.plugin.StringCareExtension
-import dev.vyp.stringcare.plugin.StringCarePlugin
 import dev.vyp.stringcare.plugin.models.AssetsFile
+import dev.vyp.stringcare.plugin.models.ExecutionResult
 import dev.vyp.stringcare.plugin.models.ResourceFile
+import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import dev.vyp.stringcare.plugin.tasks.SCPreview
 import dev.vyp.stringcare.plugin.tasks.SCTestObfuscation
-import com.google.gson.Gson
 import groovy.json.StringEscapeUtils
 import org.gradle.api.DomainObjectSet
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.gradle.api.provider.Provider
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import org.xml.sax.InputSource
@@ -31,9 +31,19 @@ import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
 fun String.runCommand(runner: (command: String, result: String) -> Unit = { _, _ -> }): String {
-    val result = execute(this)
-    runner(result.command, result.result)
-    return result.result
+    val outcome = execute(this)
+    return when (outcome) {
+        is ExecutionResult.Success -> {
+            runner(outcome.command, outcome.result)
+            outcome.result
+        }
+        is ExecutionResult.Failure -> {
+            throw GradleException(
+                "Command failed (exit=${outcome.exitCode}): ${outcome.command}\n${outcome.result}",
+                outcome.error,
+            )
+        }
+    }
 }
 
 fun String.normalize(): String {
@@ -47,9 +57,11 @@ fun String.normalize(): String {
 }
 
 fun String.normalizePath(): String {
-    val unixPath = this.replace("\\", "/")
-        .replace("\\\\", "/")
-        .replace("//", "/")
+    val unixPath =
+        this
+            .replace("\\", "/")
+            .replace("\\\\", "/")
+            .replace("//", "/")
     return when (getOs()) {
         Os.OSX, Os.LINUX -> unixPath
         Os.WINDOWS -> unixPath.replace("/", "\\")
@@ -69,8 +81,11 @@ fun String.uncapitalize(): String {
 }
 
 fun String.escape(): String = Regex.escape(this)
+
 fun String.unescape(): String = StringEscapeUtils.unescapeJava(this)
+
 fun String.removeNewLines(): String = this.replace("\n", "")
+
 fun String.androidTreatment(): String {
     val va = this.split(" ")
     val values = mutableListOf<String>()
@@ -83,16 +98,17 @@ fun String.androidTreatment(): String {
 }
 
 fun File.validForXMLConfiguration(configuration: StringCareConfiguration): Boolean {
-    var valid = this.absolutePath.contains("${File.separator}${configuration.name}${File.separator}")
-            && excludedForXML().not()
+    var valid =
+        this.absolutePath.contains("${File.separator}${configuration.name}${File.separator}") &&
+            excludedForXML().not()
     if (valid) {
         valid = false
         configuration.srcFolders.forEach { folder ->
             if (this.absolutePath.contains(
                     "${File.separator}$folder${File.separator}".replace(
                         "${File.separator}${File.separator}",
-                        File.separator
-                    )
+                        File.separator,
+                    ),
                 )
             ) {
                 valid = true
@@ -105,8 +121,8 @@ fun File.validForXMLConfiguration(configuration: StringCareConfiguration): Boole
             if (this.absolutePath.contains(
                     "${File.separator}$file".replace(
                         "${File.separator}${File.separator}",
-                        File.separator
-                    )
+                        File.separator,
+                    ),
                 )
             ) {
                 valid = true
@@ -120,18 +136,19 @@ fun File.validForXMLConfiguration(configuration: StringCareConfiguration): Boole
 }
 
 fun File.validForAssetsConfiguration(configuration: StringCareConfiguration): Boolean {
-    var valid = this.absolutePath.contains("${File.separator}${configuration.name}${File.separator}")
-            && excludedForAssets().not()
+    var valid =
+        this.absolutePath.contains("${File.separator}${configuration.name}${File.separator}") &&
+            excludedForAssets().not()
     if (valid) {
         valid = false
         configuration.assetsFiles.forEach { file ->
             if (this.absolutePath.endsWith(
                     "${File.separator}$file".replace(
                         "${File.separator}${File.separator}",
-                        File.separator
-                    )
-                )
-                || (file.contains("*.") && this.absolutePath.endsWith(file.replace("*", "")))
+                        File.separator,
+                    ),
+                ) ||
+                (file.contains("*.") && this.absolutePath.endsWith(file.replace("*", "")))
             ) {
                 valid = true
             }
@@ -143,13 +160,14 @@ fun File.validForAssetsConfiguration(configuration: StringCareConfiguration): Bo
     return valid
 }
 
-val exclude = listOf(
-    "/build/",
-    "/.git/",
-    "/.idea/",
-    "/.gradle/",
-    "/gradle/"
-)
+val exclude =
+    listOf(
+        "/build/",
+        "/.git/",
+        "/.idea/",
+        "/.gradle/",
+        "/gradle/",
+    )
 
 fun File.excludedForXML(): Boolean {
     var valid = true
@@ -179,8 +197,8 @@ fun File.resourceFile(configuration: StringCareConfiguration): ResourceFile? {
         if (this.absolutePath.contains(
                 "${File.separator}$folder${File.separator}".replace(
                     "${File.separator}${File.separator}",
-                    File.separator
-                )
+                    File.separator,
+                ),
             )
         ) {
             sourceFolder = folder
@@ -193,8 +211,8 @@ fun File.resourceFile(configuration: StringCareConfiguration): ResourceFile? {
             if (this.absolutePath.contains(
                     "${File.separator}$file".replace(
                         "${File.separator}${File.separator}",
-                        File.separator
-                    )
+                        File.separator,
+                    ),
                 )
             ) {
                 valid = true
@@ -213,8 +231,8 @@ fun File.assetsFile(configuration: StringCareConfiguration): AssetsFile? {
         if (this.absolutePath.contains(
                 "${File.separator}$folder${File.separator}".replace(
                     "${File.separator}${File.separator}",
-                    File.separator
-                )
+                    File.separator,
+                ),
             )
         ) {
             sourceFolder = folder
@@ -227,10 +245,10 @@ fun File.assetsFile(configuration: StringCareConfiguration): AssetsFile? {
             if (this.absolutePath.endsWith(
                     "${File.separator}$file".replace(
                         "${File.separator}${File.separator}",
-                        File.separator
-                    )
-                )
-                || (file.contains("*.") && this.absolutePath.endsWith(file.replace("*", "")))
+                        File.separator,
+                    ),
+                ) ||
+                (file.contains("*.") && this.absolutePath.endsWith(file.replace("*", "")))
             ) {
                 valid = true
                 validFile = this
@@ -245,33 +263,33 @@ fun File.assetsFile(configuration: StringCareConfiguration): AssetsFile? {
             }}${when {
                 validFile != null -> validFile?.getContent()
                 else -> "the file is null"
-            }}"
+            }}",
         )
     }
     return if (valid) AssetsFile(validFile!!, sourceFolder, configuration.name) else null
 }
 
 fun Project.absolutePath(): String {
-    val fPath = this.file("build.gradle").absolutePath.replace(
-        "build.gradle",
-        emptyChar
-    )
+    val fPath =
+        this.file("build.gradle").absolutePath.replace(
+            "build.gradle",
+            emptyChar,
+        )
     val p = fPath.split(File.separator)
     return fPath.replace(p[p.size - 2] + File.separator, "")
 }
 
 fun Project.module(): String {
-    val fPath = this.file("build.gradle").absolutePath.replace(
-        "build.gradle",
-        emptyChar
-    )
+    val fPath =
+        this.file("build.gradle").absolutePath.replace(
+            "build.gradle",
+            emptyChar,
+        )
     val p = fPath.split(File.separator)
     return p[p.size - 2]
 }
 
-fun Project.createExtension(): StringCareExtension {
-    return extensions.create(extensionName, StringCareExtension::class.java)
-}
+fun Project.createExtension(): StringCareExtension = extensions.create(extensionName, StringCareExtension::class.java)
 
 fun Project.applicationVariants(): DomainObjectSet<ApplicationVariant>? {
     if (this.plugins.hasPlugin(AppPlugin::class.java)) {
@@ -301,19 +319,31 @@ fun Project.config(extension: StringCareExtension): StringCareConfiguration {
     }
 }
 
-fun Project.registerTask(configuration: StringCareConfiguration) {
-    val gson = Gson()
+fun Project.registerTask(
+    configuration: StringCareConfiguration,
+    buildService: Provider<StringCareBuildService>,
+) {
+    val variantDefault = buildService.get().firstVariantKeyOrDefault("debug")
+    val srcJson = toJsonStringList(configuration.srcFolders)
+    val strJson = toJsonStringList(configuration.stringFiles)
+    val assetsJson = toJsonStringList(configuration.assetsFiles)
 
-    this.tasks.register(gradleTaskNameDoctor, SCPreview::class.java)
-    this.tasks.register(gradleTaskNameObfuscate, SCTestObfuscation::class.java)
+    this.tasks.register(gradleTaskNameDoctor, SCPreview::class.java) { t ->
+        (t as Task).usesService(buildService)
+        (t as SCPreview).stringCareService.set(buildService)
+    }
+    this.tasks.register(gradleTaskNameObfuscate, SCTestObfuscation::class.java) { t ->
+        (t as Task).usesService(buildService)
+        (t as SCTestObfuscation).stringCareService.set(buildService)
+    }
 
     val previewTask = this.tasks.getByPath(gradleTaskNameDoctor) as SCPreview
     previewTask.module = configuration.name
     previewTask.applicationId = configuration.applicationId
-    previewTask.variantName = StringCarePlugin.variantMap.keys.firstOrNull() ?: "debug"
-    previewTask.srcFolders = gson.toJson(configuration.srcFolders)
-    previewTask.stringFiles = gson.toJson(configuration.stringFiles)
-    previewTask.assetsFiles = gson.toJson(configuration.assetsFiles)
+    previewTask.variantName = variantDefault
+    previewTask.srcFolders = srcJson
+    previewTask.stringFiles = strJson
+    previewTask.assetsFiles = assetsJson
     previewTask.mockedFingerprint = configuration.mockedFingerprint
     previewTask.debug = configuration.debug
     previewTask.skip = configuration.skip
@@ -321,10 +351,10 @@ fun Project.registerTask(configuration: StringCareConfiguration) {
     val obfuscateTask = this.tasks.getByPath(gradleTaskNameObfuscate) as SCTestObfuscation
     obfuscateTask.module = configuration.name
     obfuscateTask.applicationId = configuration.applicationId
-    obfuscateTask.variantName = StringCarePlugin.variantMap.keys.firstOrNull() ?: "debug"
-    obfuscateTask.srcFolders = gson.toJson(configuration.srcFolders)
-    obfuscateTask.stringFiles = gson.toJson(configuration.stringFiles)
-    obfuscateTask.assetsFiles = gson.toJson(configuration.assetsFiles)
+    obfuscateTask.variantName = variantDefault
+    obfuscateTask.srcFolders = srcJson
+    obfuscateTask.stringFiles = strJson
+    obfuscateTask.assetsFiles = assetsJson
     obfuscateTask.mockedFingerprint = configuration.mockedFingerprint
     obfuscateTask.debug = configuration.debug
     obfuscateTask.skip = configuration.skip
@@ -336,17 +366,16 @@ fun Process.outputString(): String {
     return "$input \n $error".replace("\r", "")
 }
 
-fun defaultConfig(): StringCareConfiguration {
-    return StringCareConfiguration("app").apply {
+fun defaultConfig(): StringCareConfiguration =
+    StringCareConfiguration("app").apply {
         stringFiles.add("strings.xml")
         srcFolders.add("src/main")
     }
-}
 
-fun ResourceFile.backup(): File {
+fun ResourceFile.backup(tempRoot: String): File {
     val cleanPath =
-        "${StringCarePlugin.tempFolder}${File.separator}${this.module}${File.separator}${this.sourceFolder}${this.file.absolutePath.split(
-            this.sourceFolder
+        "$tempRoot${File.separator}${this.module}${File.separator}${this.sourceFolder}${this.file.absolutePath.split(
+            this.sourceFolder,
         )[1]}"
             .replace("${File.separator}${File.separator}", File.separator)
 
@@ -355,10 +384,10 @@ fun ResourceFile.backup(): File {
     return backupFile
 }
 
-fun AssetsFile.backup(): File {
+fun AssetsFile.backup(tempRoot: String): File {
     val cleanPath =
-        "${StringCarePlugin.tempFolder}${File.separator}${this.module}${File.separator}${this.sourceFolder}${this.file.absolutePath.split(
-            this.sourceFolder
+        "$tempRoot${File.separator}${this.module}${File.separator}${this.sourceFolder}${this.file.absolutePath.split(
+            this.sourceFolder,
         )[1]}"
             .replace("${File.separator}${File.separator}", File.separator)
 
@@ -367,9 +396,13 @@ fun AssetsFile.backup(): File {
     return backupFile
 }
 
-fun File.restore(projectPath: String): File {
-    val cleanPath = "$projectPath${File.separator}${this.absolutePath.split(StringCarePlugin.tempFolder)[1]}"
-        .replace("${File.separator}${File.separator}", File.separator)
+fun File.restore(
+    projectPath: String,
+    tempRoot: String,
+): File {
+    val cleanPath =
+        "$projectPath${File.separator}${this.absolutePath.split(tempRoot)[1]}"
+            .replace("${File.separator}${File.separator}", File.separator)
 
     val restore = File(cleanPath)
     if (restore.exists()) {
@@ -381,17 +414,7 @@ fun File.restore(projectPath: String): File {
     return restore
 }
 
-fun ByteArray.toReadableString(): String {
-    val builder = StringBuilder()
-    this.forEachIndexed { index, byte ->
-        if (index == this.size - 1) {
-            builder.append(byte)
-        } else {
-            builder.append("$byte, ")
-        }
-    }
-    return builder.toString()
-}
+fun ByteArray.toReadableString(): String = joinToString(separator = ", ") { it.toString() }
 
 fun File.getXML(): Document {
     val inputStream = FileInputStream(this)
@@ -407,20 +430,22 @@ fun File.getXML(): Document {
 fun File.updateXML(document: Document) {
     val output = StringWriter()
     val transformer = TransformerFactory.newInstance().newTransformer()
-    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8")
     transformer.transform(DOMSource(document), StreamResult(output))
     val xml = output.toString()
     this.writeText(xml)
 }
 
 fun File.removeAttributes() {
-    val content = this.getContent()
-        .replace("hidden=\"true\"", "")
-        .replace("hidden=\"false\"", "")
-        .replace("containsHtml=\"true\"", "")
-        .replace("containsHtml=\"false\"", "")
-        .replace("androidTreatment=\"true\"", "")
-        .replace("androidTreatment=\"false\"", "")
+    val content =
+        this
+            .getContent()
+            .replace("hidden=\"true\"", "")
+            .replace("hidden=\"false\"", "")
+            .replace("containsHtml=\"true\"", "")
+            .replace("containsHtml=\"false\"", "")
+            .replace("androidTreatment=\"true\"", "")
+            .replace("androidTreatment=\"false\"", "")
     this.writeText(content)
     updateXML(this.getXML())
 }
@@ -432,45 +457,56 @@ fun Task.getModuleName(): String? {
     return if (path.isEmpty()) null else path.split(":")[path.split(":").size - 1]
 }
 
-fun Task.dataFound(): Boolean = this.name.contains(pre)
-        && this.name.contains(build)
-        && this.name != "$pre$build"
-        && !this.name.contains(test)
+fun Task.dataFound(): Boolean =
+    this.name.contains(pre) &&
+        this.name.contains(build) &&
+        this.name != "$pre$build" &&
+        !this.name.contains(test)
 
-fun Task.onMergeResourcesStarts(): Boolean = this.name.contains(merge)
-        && this.name.contains(resources)
-        && !this.name.contains(test)
+fun Task.onMergeResourcesStarts(): Boolean =
+    this.name.contains(merge) &&
+        this.name.contains(resources) &&
+        !this.name.contains(test)
 
-fun Task.onMergeResourcesFinish(): Boolean = this.name.contains(merge)
-        && this.name.contains(resources)
-        && !this.name.contains(test)
+fun Task.onMergeResourcesFinish(): Boolean =
+    this.name.contains(merge) &&
+        this.name.contains(resources) &&
+        !this.name.contains(test)
 
-fun Task.onMergeAssetsStarts(): Boolean = this.name.contains(generate)
-        && this.name.contains(assets)
-        && !this.name.contains(test)
+fun Task.onMergeAssetsStarts(): Boolean =
+    this.name.contains(generate) &&
+        this.name.contains(assets) &&
+        !this.name.contains(test)
 
-fun Task.onMergeAssetsFinish(): Boolean = this.name.contains(merge)
-        && this.name.contains(assets)
-        && !this.name.contains(test)
+fun Task.onMergeAssetsFinish(): Boolean =
+    this.name.contains(merge) &&
+        this.name.contains(assets) &&
+        !this.name.contains(test)
 
-fun Task.dataFoundVariant(): String = this.name.substring(pre.length)
-    .substring(0, this.name.substring(pre.length).length - build.length)
+fun Task.dataFoundVariant(): String =
+    this.name
+        .substring(pre.length)
+        .substring(0, this.name.substring(pre.length).length - build.length)
 
-fun Task.onMergeResourcesStartsVariant(): String = this.name.substring(merge.length)
-    .substring(0, this.name.substring(merge.length).length - resources.length)
+fun Task.onMergeResourcesStartsVariant(): String =
+    this.name
+        .substring(merge.length)
+        .substring(0, this.name.substring(merge.length).length - resources.length)
 
-fun Task.onMergeResourcesFinishVariant(): String = this.name.substring(merge.length)
-    .substring(0, this.name.substring(merge.length).length - resources.length)
+fun Task.onMergeResourcesFinishVariant(): String =
+    this.name
+        .substring(merge.length)
+        .substring(0, this.name.substring(merge.length).length - resources.length)
 
-fun Task.onMergeAssetsStartsVariant(): String = this.name.substring(generate.length)
-    .substring(0, this.name.substring(generate.length).length - assets.length)
+fun Task.onMergeAssetsStartsVariant(): String =
+    this.name
+        .substring(generate.length)
+        .substring(0, this.name.substring(generate.length).length - assets.length)
 
-fun Task.onMergeAssetsFinishVariant(): String = this.name.substring(merge.length)
-    .substring(0, this.name.substring(merge.length).length - assets.length)
-
-fun <R : Any> R.logger(): Lazy<Logger> {
-    return lazy { LoggerFactory.getLogger(this.javaClass) }
-}
+fun Task.onMergeAssetsFinishVariant(): String =
+    this.name
+        .substring(merge.length)
+        .substring(0, this.name.substring(merge.length).length - assets.length)
 
 fun Node.extractHtml(): String {
     val stringBuilder = StringBuilder()
@@ -478,30 +514,32 @@ fun Node.extractHtml(): String {
         val item = this.childNodes.item(i)
         val type = item.getType()
         when (type) {
-            StringType.BR -> stringBuilder.append(
-                "<br>${when {
-                    item.textContent.isNotEmpty() -> item.extractHtml()
-                    else -> ""
-                }
-                }</br>"
-            )
-            StringType.I -> stringBuilder.append(
-                "<i>${when {
-                    item.textContent.isNotEmpty() -> item.extractHtml()
-                    else -> ""
-                }
-                }</i>"
-            )
-            StringType.STRONG -> stringBuilder.append(
-                "<strong>${when {
-                    item.textContent.isNotEmpty() -> item.extractHtml()
-                    else -> ""
-                }
-                }</strong>"
-            )
+            StringType.BR ->
+                stringBuilder.append(
+                    "<br>${when {
+                        item.textContent.isNotEmpty() -> item.extractHtml()
+                        else -> ""
+                    }
+                    }</br>",
+                )
+            StringType.I ->
+                stringBuilder.append(
+                    "<i>${when {
+                        item.textContent.isNotEmpty() -> item.extractHtml()
+                        else -> ""
+                    }
+                    }</i>",
+                )
+            StringType.STRONG ->
+                stringBuilder.append(
+                    "<strong>${when {
+                        item.textContent.isNotEmpty() -> item.extractHtml()
+                        else -> ""
+                    }
+                    }</strong>",
+                )
             StringType.TEXT -> stringBuilder.append(item.textContent)
         }
-
     }
     return stringBuilder.toString()
 }
@@ -510,29 +548,27 @@ enum class StringType {
     BR,
     TEXT,
     I,
-    STRONG
+    STRONG,
 }
 
-fun Node.getType(): StringType {
-    return when {
+fun Node.getType(): StringType =
+    when {
         this.toString().contains("[br:") -> StringType.BR
         this.toString().contains("[i:") -> StringType.I
         this.toString().contains("[strong:") -> StringType.STRONG
         this.toString().contains("[#text") -> StringType.TEXT
         else -> StringType.TEXT
     }
-}
 
 fun StringCareConfiguration.normalize(): StringCareConfiguration {
-    val stringFiles = mutableListOf<String>()
-    val sourceFolders = mutableListOf<String>()
-    this.stringFiles.forEach { file ->
-        stringFiles.add(file.normalizePath())
+    val nextStrings = stringFiles.map { it.normalizePath() }
+    val nextSrc = srcFolders.map { it.normalizePath() }
+    if (nextStrings == stringFiles && nextSrc == srcFolders) {
+        return this
     }
-    this.srcFolders.forEach { folder ->
-        sourceFolders.add(folder.normalizePath())
-    }
-    this.stringFiles = stringFiles
-    this.srcFolders = sourceFolders
+    stringFiles.clear()
+    stringFiles.addAll(nextStrings)
+    srcFolders.clear()
+    srcFolders.addAll(nextSrc)
     return this
 }

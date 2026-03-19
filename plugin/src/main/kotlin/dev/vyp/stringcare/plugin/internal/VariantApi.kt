@@ -2,80 +2,91 @@ package dev.vyp.stringcare.plugin.internal
 
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import dev.vyp.stringcare.plugin.StringCareConfiguration
-import dev.vyp.stringcare.plugin.StringCareExtension
-import dev.vyp.stringcare.plugin.StringCarePlugin
+import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import dev.vyp.stringcare.plugin.tasks.ObfuscateAssetsTask
 import dev.vyp.stringcare.plugin.tasks.ObfuscateStringsTask
 import dev.vyp.stringcare.plugin.tasks.RestoreAssetsTask
 import dev.vyp.stringcare.plugin.tasks.RestoreStringsTask
-import com.google.gson.Gson
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.provider.Provider
 
 private fun String.variantTaskSuffix(): String = replaceFirstChar { it.uppercase() }
 
-fun Project.registerVariantObfuscationTasks(extension: StringCareExtension, config: StringCareConfiguration) {
-    val androidComponents = extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
-        ?: return
+fun Project.registerVariantObfuscationTasks(
+    config: StringCareConfiguration,
+    buildService: Provider<StringCareBuildService>,
+) {
+    val androidComponents =
+        extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
+            ?: return
 
-    val gson = Gson()
-    val projectPath = StringCarePlugin.absoluteProjectPath
-    val moduleName = config.name
+    val absoluteProjectPath = buildService.get().absoluteProjectPath()
+    val moduleNameValue = config.name
     val variantNames = mutableListOf<String>()
 
     androidComponents.onVariants(androidComponents.selector().all()) { variant ->
         val variantName: String = variant.name
         val applicationId = variant.applicationId.get()
-        StringCarePlugin.variantMap[variantName] = applicationId
+        buildService.get().putVariantApplicationId(variantName, applicationId)
         if (config.applicationId.isEmpty()) config.applicationId = applicationId
         val variantCapitalized = variantName.variantTaskSuffix()
 
-        val beforeStrings = tasks.register(
+        tasks.register(
             "stringcareBeforeMergeResources$variantCapitalized",
-            ObfuscateStringsTask::class.java
-        ) {
-            it.projectPath = projectPath
-            it.moduleName = moduleName
-            it.variantName = variantName
-            it.applicationId = applicationId
-            it.skip = config.skip
-            it.debug = config.debug
-            it.mockedFingerprint = config.mockedFingerprint
-            it.srcFoldersJson = gson.toJson(config.srcFolders)
-            it.stringFilesJson = gson.toJson(config.stringFiles)
-            it.assetsFilesJson = gson.toJson(config.assetsFiles)
+            ObfuscateStringsTask::class.java,
+        ) { t ->
+            (t as Task).usesService(buildService)
+            (t as ObfuscateStringsTask).stringCareService.set(buildService)
+            t.projectPath = absoluteProjectPath
+            t.moduleName = moduleNameValue
+            t.variantName = variantName
+            t.applicationId = applicationId
+            t.skip = config.skip
+            t.debug = config.debug
+            t.mockedFingerprint = config.mockedFingerprint
+            t.srcFoldersJson = toJsonStringList(config.srcFolders)
+            t.stringFilesJson = toJsonStringList(config.stringFiles)
+            t.assetsFilesJson = toJsonStringList(config.assetsFiles)
         }
         tasks.register(
             "stringcareAfterMergeResources$variantCapitalized",
-            RestoreStringsTask::class.java
-        ) {
-            it.projectPath = projectPath
-            it.moduleName = moduleName
-            it.skip = config.skip
+            RestoreStringsTask::class.java,
+        ) { t ->
+            (t as Task).usesService(buildService)
+            (t as RestoreStringsTask).stringCareService.set(buildService)
+            t.projectPath = absoluteProjectPath
+            t.moduleName = moduleNameValue
+            t.skip = config.skip
         }
         variantNames.add(variantCapitalized)
 
-        val beforeAssets = tasks.register(
+        tasks.register(
             "stringcareBeforeMergeAssets$variantCapitalized",
-            ObfuscateAssetsTask::class.java
-        ) {
-            it.projectPath = projectPath
-            it.moduleName = moduleName
-            it.variantName = variantName
-            it.applicationId = applicationId
-            it.skip = config.skip
-            it.debug = config.debug
-            it.mockedFingerprint = config.mockedFingerprint
-            it.srcFoldersJson = gson.toJson(config.srcFolders)
-            it.stringFilesJson = gson.toJson(config.stringFiles)
-            it.assetsFilesJson = gson.toJson(config.assetsFiles)
+            ObfuscateAssetsTask::class.java,
+        ) { t ->
+            (t as Task).usesService(buildService)
+            (t as ObfuscateAssetsTask).stringCareService.set(buildService)
+            t.projectPath = absoluteProjectPath
+            t.moduleName = moduleNameValue
+            t.variantName = variantName
+            t.applicationId = applicationId
+            t.skip = config.skip
+            t.debug = config.debug
+            t.mockedFingerprint = config.mockedFingerprint
+            t.srcFoldersJson = toJsonStringList(config.srcFolders)
+            t.stringFilesJson = toJsonStringList(config.stringFiles)
+            t.assetsFilesJson = toJsonStringList(config.assetsFiles)
         }
         tasks.register(
             "stringcareAfterMergeAssets$variantCapitalized",
-            RestoreAssetsTask::class.java
-        ) {
-            it.projectPath = projectPath
-            it.moduleName = moduleName
-            it.skip = config.skip
+            RestoreAssetsTask::class.java,
+        ) { t ->
+            (t as Task).usesService(buildService)
+            (t as RestoreAssetsTask).stringCareService.set(buildService)
+            t.projectPath = absoluteProjectPath
+            t.moduleName = moduleNameValue
+            t.skip = config.skip
         }
     }
 

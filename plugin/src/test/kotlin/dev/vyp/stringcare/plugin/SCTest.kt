@@ -2,19 +2,19 @@ package dev.vyp.stringcare.plugin
 
 import dev.vyp.stringcare.plugin.internal.*
 import dev.vyp.stringcare.plugin.models.StringEntity
+import dev.vyp.stringcare.plugin.utils.modifyForTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import dev.vyp.stringcare.plugin.utils.modifyForTest
 import java.io.File
 
 class SCTest {
-
-    private val configuration = defaultConfig().apply {
-        debug = true
-        applicationId = "com.stringcare.sample"
-        stringFiles.add("strings_extra.xml")
-        srcFolders.add("src/other_source")
-    }
+    private val configuration =
+        defaultConfig().apply {
+            debug = true
+            applicationId = "com.stringcare.sample"
+            stringFiles.add("strings_extra.xml")
+            srcFolders.add("src/other_source")
+        }
 
     @BeforeEach
     fun setup() {
@@ -71,13 +71,13 @@ class SCTest {
         prepareTask(temp).runCommand { _, report ->
             println(report)
             assert(
-                restoreResourceFiles("$temp${File.separator}$testProjectName", defaultMainModule).isEmpty()
+                restoreResourceFiles("$temp${File.separator}$testProjectName", defaultMainModule).isEmpty(),
             )
             assert(
-                backupResourceFiles("$temp${File.separator}$testProjectName", configuration).isNotEmpty()
+                backupResourceFiles("$temp${File.separator}$testProjectName", configuration).isNotEmpty(),
             )
             assert(
-                restoreResourceFiles("$temp${File.separator}$testProjectName", defaultMainModule).isNotEmpty()
+                restoreResourceFiles("$temp${File.separator}$testProjectName", defaultMainModule).isNotEmpty(),
             )
         }
     }
@@ -106,11 +106,12 @@ class SCTest {
             files.forEach { file ->
                 val entities = parseXML(file.file)
                 entities.forEach { entity ->
-                    val obfuscated = obfuscateStringEntity(
-                        key,
-                        entity,
-                        configuration.applicationId
-                    )
+                    val obfuscated =
+                        obfuscateStringEntity(
+                            key,
+                            entity,
+                            configuration.applicationId,
+                        )
                     assert(obfuscated.value != entity.value)
                 }
             }
@@ -129,26 +130,28 @@ class SCTest {
             files.forEach { file ->
                 val entities = parseXML(file.file)
                 entities.forEach { entity ->
-                    val obfuscated = obfuscateStringEntity(
-                        key,
-                        entity,
-                        configuration.applicationId
-                    )
+                    val obfuscated =
+                        obfuscateStringEntity(
+                            key,
+                            entity,
+                            configuration.applicationId,
+                        )
                     assert(obfuscated.value != entity.value)
 
-                    val original = revealStringEntity(
-                        key,
-                        obfuscated,
-                        configuration.applicationId
-                    )
+                    val original =
+                        revealStringEntity(
+                            key,
+                            obfuscated,
+                            configuration.applicationId,
+                        )
 
                     assert(
-                        original.value == when (entity.androidTreatment) {
-                            true -> entity.value.androidTreatment()
-                            else -> entity.value
-                        }
+                        original.value ==
+                            when (entity.androidTreatment) {
+                                true -> entity.value.androidTreatment()
+                                else -> entity.value
+                            },
                     )
-
                 }
             }
         }
@@ -207,9 +210,10 @@ class SCTest {
             assert(restoredEntities.isNotEmpty())
 
             originalEntities.forEach { entity ->
-                val eq = restoredEntities.find {
-                    it.name == entity.name
-                }
+                val eq =
+                    restoredEntities.find {
+                        it.name == entity.name
+                    }
                 eq?.let {
                     assert(entity.name == it.name)
                     assert(entity.value == it.value)
@@ -230,13 +234,14 @@ class SCTest {
                 modifyXML(
                     file.file,
                     report.extractFingerprint(configuration = configuration),
-                    configuration
+                    configuration,
                 )
             }
-            val filesObfuscated = locateResourceFiles(
-                "$temp${File.separator}$testProjectName",
-                configuration
-            )
+            val filesObfuscated =
+                locateResourceFiles(
+                    "$temp${File.separator}$testProjectName",
+                    configuration,
+                )
             filesObfuscated.forEach { file ->
                 val entities = parseXML(file.file)
                 assert(entities.isEmpty())
@@ -279,7 +284,6 @@ class SCTest {
                 assert(androidReport.contains("END REPORT"))
                 println(androidReport)
             }
-
         }
     }
 
@@ -295,8 +299,6 @@ class SCTest {
                 assert(androidReport.contains("END OBFUSCATION"))
                 println(androidReport)
             }
-
         }
     }
-
 }
