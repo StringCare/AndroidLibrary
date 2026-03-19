@@ -2,4 +2,4 @@
 # If the repo URL is not accessible, place the JNI library at stringcare-jni/ (copy from ../stringcare-android-c) or ensure library/CMakeLists.txt path is correct.
 [submodule "stringcare-jni"]
 	path = stringcare-jni
-	url = git@github.com:vypdev/stringcare-android-c.git
+	url = https://github.com/vypdev/stringcare-android-c.git
