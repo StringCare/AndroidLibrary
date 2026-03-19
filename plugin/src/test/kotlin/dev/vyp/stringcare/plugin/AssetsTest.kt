@@ -1,5 +1,6 @@
 package dev.vyp.stringcare.plugin
 
+import dev.vyp.stringcare.plugin.domain.usecases.ObfuscateAssetsUseCase
 import dev.vyp.stringcare.plugin.internal.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
@@ -40,34 +41,56 @@ class AssetsTest {
     }
 
     @Test
-    fun `02 - (PLUGIN) backup assets files`() {
+    fun `02 - (PLUGIN) obfuscate assets to output directory`() {
         val temp = tempPath()
         prepareTask(temp).runCommand { _, _ ->
-            assert(
-                backupAssetsFiles(
-                    "$temp${File.separator}$testProjectName",
-                    configuration.apply {
-                        assetsFiles = mutableListOf("*.json")
-                    },
-                ).isNotEmpty(),
-            )
+            val projectRoot = "$temp${File.separator}$testProjectName"
+            val outDir = File(projectRoot, "build/stringcare-test-out-assets").apply { mkdirs() }
+            val cfg =
+                StringCareConfiguration(configuration.name).apply {
+                    applicationId = configuration.applicationId
+                    debug = configuration.debug
+                    srcFolders.addAll(configuration.srcFolders)
+                    stringFiles.addAll(configuration.stringFiles)
+                    assetsFiles.addAll(listOf("*.json"))
+                    mockedFingerprint = "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00"
+                }
+            val count =
+                ObfuscateAssetsUseCase().obfuscate(
+                    projectRoot,
+                    cfg,
+                    outDir,
+                    cfg.mockedFingerprint,
+                    null,
+                )
+            assert(count > 0)
+            assert(outDir.walkTopDown().any { it.isFile })
         }
         StringCarePlugin.resetFolder()
     }
 
     @Test
-    fun `03 - (PLUGIN) restore assets files`() {
+    fun `03 - (PLUGIN) asset obfuscation does not modify source files`() {
         val temp = tempPath()
-        prepareTask(temp).runCommand { _, report ->
-            println(report)
+        prepareTask(temp).runCommand { _, _ ->
             val projectRoot = "$temp${File.separator}$testProjectName"
             val cfg =
-                configuration.apply {
-                    assetsFiles = mutableListOf("*.json")
+                StringCareConfiguration(configuration.name).apply {
+                    applicationId = configuration.applicationId
+                    debug = configuration.debug
+                    srcFolders.addAll(configuration.srcFolders)
+                    stringFiles.addAll(configuration.stringFiles)
+                    assetsFiles.addAll(listOf("*.json"))
+                    mockedFingerprint = "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00"
                 }
-            assert(restoreAssetsFiles(projectRoot, defaultMainModule, temp).isEmpty())
-            assert(backupAssetsFiles(projectRoot, cfg, temp).isNotEmpty())
-            assert(restoreAssetsFiles(projectRoot, defaultMainModule, temp).isNotEmpty())
+            val files = locateAssetsFiles(projectRoot, cfg)
+            assert(files.isNotEmpty())
+            val before = files.associate { it.file.absolutePath to it.file.readBytes() }
+            val outDir = File(projectRoot, "build/stringcare-test-out-assets-2").apply { mkdirs() }
+            ObfuscateAssetsUseCase().obfuscate(projectRoot, cfg, outDir, cfg.mockedFingerprint, null)
+            before.forEach { (path, bytes) ->
+                assert(bytes.contentEquals(File(path).readBytes())) { "Source was modified at $path" }
+            }
         }
         StringCarePlugin.resetFolder()
     }

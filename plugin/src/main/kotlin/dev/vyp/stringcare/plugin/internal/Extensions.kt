@@ -4,7 +4,6 @@ import dev.vyp.stringcare.plugin.StringCareConfiguration
 import dev.vyp.stringcare.plugin.domain.models.AssetsFile
 import dev.vyp.stringcare.plugin.domain.models.ExecutionResult
 import dev.vyp.stringcare.plugin.domain.models.ResourceFile
-import dev.vyp.stringcare.plugin.domain.models.withFileLock
 import groovy.json.StringEscapeUtils
 import org.gradle.api.GradleException
 import org.w3c.dom.Document
@@ -268,41 +267,6 @@ fun defaultConfig(): StringCareConfiguration =
             },
         )
     }
-
-/**
- * Copies a backup from [tempRoot] back under [projectPath].
- *
- * Backups are stored as `tempRoot/<module>/…` while [projectPath] is already the Gradle module directory,
- * so the path segment after [tempRoot] must be `<module>/src/…` and resolves to `projectPath/src/…`,
- * not `projectPath/<module>/src/…`.
- */
-fun File.restore(
-    projectPath: String,
-    tempRoot: String,
-    module: String,
-): File {
-    val baseDir = File(tempRoot).canonicalFile
-    val backupFile = this.canonicalFile
-    val prefix = baseDir.absolutePath.let { if (it.endsWith(File.separator)) it else it + File.separator }
-    require(backupFile.absolutePath.startsWith(prefix)) {
-        "Backup ${backupFile.absolutePath} is not under temp root ${baseDir.absolutePath}"
-    }
-    var relative = backupFile.absolutePath.substring(prefix.length)
-    val modulePrefix = module + File.separator
-    require(relative.startsWith(modulePrefix)) {
-        "Backup relative path $relative does not start with module directory $modulePrefix"
-    }
-    relative = relative.substring(modulePrefix.length)
-    val restore = File(projectPath, relative).normalize()
-    withFileLock(restore) {
-        if (restore.exists()) {
-            restore.delete()
-        }
-        restore.parentFile?.mkdirs()
-        backupFile.copyTo(restore, overwrite = true)
-    }
-    return restore
-}
 
 fun File.getXML(): Document {
     val inputStream = FileInputStream(this)

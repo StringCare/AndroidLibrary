@@ -17,7 +17,7 @@ stringcare {
 |-----|-----|
 | `StringCarePlugin.absoluteProjectPath` | Resolved per build via `StringCareBuildService.absoluteProjectPath()` (internal) |
 | `StringCarePlugin.variantMap` | `StringCareBuildService` variant map (internal) |
-| `StringCarePlugin.tempFolder` / `resetFolder()` | Service `getOrCreateTempFolder()` / `resetTempFolder()`; tests use `StringCareSession` + `StringCarePlugin.resetFolder()` |
+| `StringCarePlugin.resetFolder()` | Test hook only: clears `StringCareSession` temp root for integration tests (no production temp backup tree) |
 
 ## Native libraries
 

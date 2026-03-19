@@ -1,5 +1,7 @@
 package dev.vyp.stringcare.plugin
 
+import dev.vyp.stringcare.plugin.domain.usecases.ObfuscateStringsUseCase
+import dev.vyp.stringcare.plugin.infrastructure.gradle.FileSystemResourceRepository
 import dev.vyp.stringcare.plugin.internal.*
 import dev.vyp.stringcare.plugin.models.StringEntity
 import dev.vyp.stringcare.plugin.utils.modifyForTest
@@ -59,29 +61,63 @@ class SCTest {
     }
 
     @Test
-    fun `05 - (PLUGIN) backup string files`() {
+    fun `05 - (PLUGIN) obfuscate string files to output directory`() {
         val temp = tempPath()
         prepareTask(temp).runCommand { _, _ ->
-            assert(backupResourceFiles("$temp${File.separator}$testProjectName", configuration).isNotEmpty())
+            val projectRoot = "$temp${File.separator}$testProjectName"
+            val outDir = File(projectRoot, "build/stringcare-test-out-res").apply { mkdirs() }
+            val cfg =
+                StringCareConfiguration(configuration.name).apply {
+                    applicationId = configuration.applicationId
+                    debug = configuration.debug
+                    srcFolders.addAll(configuration.srcFolders)
+                    stringFiles.addAll(configuration.stringFiles)
+                    assetsFiles.addAll(configuration.assetsFiles)
+                    mockedFingerprint = "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00"
+                }
+            val count =
+                ObfuscateStringsUseCase(FileSystemResourceRepository()).obfuscate(
+                    projectRoot,
+                    cfg,
+                    outDir,
+                    cfg.mockedFingerprint,
+                    null,
+                )
+            assert(count > 0)
+            assert(outDir.walkTopDown().any { it.isFile && it.extension == "xml" })
         }
         StringCarePlugin.resetFolder()
     }
 
     @Test
-    fun `06 - (PLUGIN) restore string files`() {
+    fun `06 - (PLUGIN) obfuscate does not modify source files`() {
         val temp = tempPath()
-        prepareTask(temp).runCommand { _, report ->
-            println(report)
-            assert(
-                restoreResourceFiles("$temp${File.separator}$testProjectName", defaultMainModule).isEmpty(),
+        prepareTask(temp).runCommand { _, _ ->
+            val projectRoot = "$temp${File.separator}$testProjectName"
+            val files = locateResourceFiles(projectRoot, configuration)
+            val before = files.associate { it.file.absolutePath to it.file.readText() }
+            val outDir = File(projectRoot, "build/stringcare-test-out-res-2").apply { mkdirs() }
+            val cfg =
+                StringCareConfiguration(configuration.name).apply {
+                    applicationId = configuration.applicationId
+                    debug = configuration.debug
+                    srcFolders.addAll(configuration.srcFolders)
+                    stringFiles.addAll(configuration.stringFiles)
+                    assetsFiles.addAll(configuration.assetsFiles)
+                    mockedFingerprint = "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00"
+                }
+            ObfuscateStringsUseCase(FileSystemResourceRepository()).obfuscate(
+                projectRoot,
+                cfg,
+                outDir,
+                cfg.mockedFingerprint,
+                null,
             )
-            assert(
-                backupResourceFiles("$temp${File.separator}$testProjectName", configuration).isNotEmpty(),
-            )
-            assert(
-                restoreResourceFiles("$temp${File.separator}$testProjectName", defaultMainModule).isNotEmpty(),
-            )
+            before.forEach { (path, text) ->
+                assert(text == File(path).readText()) { "Source was modified at $path" }
+            }
         }
+        StringCarePlugin.resetFolder()
     }
 
     @Test
@@ -179,47 +215,30 @@ class SCTest {
     }
 
     @Test
-    fun `11 - (PLUGIN) obfuscate, restore and compare xml values with originals`() {
+    fun `11 - (PLUGIN) obfuscate to output differs from source while sources stay intact`() {
         val temp = tempPath()
         signingReportTask(temp).runCommand { _, report ->
             println(report)
-            val files = backupResourceFiles("$temp${File.separator}$testProjectName", configuration)
+            val projectRoot = "$temp${File.separator}$testProjectName"
+            val files = locateResourceFiles(projectRoot, configuration)
             assert(files.isNotEmpty())
-            files.forEach { file ->
-                val entities = parseXML(file.file)
-                assert(entities.isNotEmpty())
-                modifyXML(file.file, report.extractFingerprint(configuration = configuration), configuration)
+            val before = files.associate { it.file.absolutePath to it.file.readText() }
+            val outDir = File(projectRoot, "build/stringcare-test-out-res-11").apply { mkdirs() }
+            val key = report.extractFingerprint(configuration = configuration)
+            ObfuscateStringsUseCase(FileSystemResourceRepository()).obfuscate(
+                projectRoot,
+                configuration,
+                outDir,
+                key,
+                null,
+            )
+            before.forEach { (path, text) ->
+                assert(text == File(path).readText()) { "Source must stay unchanged at $path" }
             }
-            val filesObfuscated = locateResourceFiles("$temp${File.separator}$testProjectName", configuration)
-            filesObfuscated.forEach { file ->
-                val entities = parseXML(file.file)
-                assert(entities.isEmpty())
-            }
-
-            val restoredFiles = restoreResourceFiles("$temp${File.separator}$testProjectName", defaultMainModule)
-            assert(restoredFiles.isNotEmpty())
-
-            val originalEntities = mutableListOf<StringEntity>()
-            files.forEach { file ->
-                originalEntities.addAll(parseXML(file.file))
-            }
-            assert(originalEntities.isNotEmpty())
-
-            val restoredEntities = mutableListOf<StringEntity>()
-            restoredFiles.forEach { file ->
-                restoredEntities.addAll(parseXML(file))
-            }
-            assert(restoredEntities.isNotEmpty())
-
-            originalEntities.forEach { entity ->
-                val eq =
-                    restoredEntities.find {
-                        it.name == entity.name
-                    }
-                eq?.let {
-                    assert(entity.name == it.name)
-                    assert(entity.value == it.value)
-                }
+            files.forEach { rf ->
+                val outFile = File(outDir, rf.relativePathUnderRes())
+                assert(outFile.exists())
+                assert(outFile.readText() != File(rf.file.absolutePath).readText())
             }
         }
     }

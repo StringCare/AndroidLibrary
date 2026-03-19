@@ -1,12 +1,11 @@
 package dev.vyp.stringcare.plugin.domain.usecases
 
 import dev.vyp.stringcare.plugin.StringCareConfiguration
-import dev.vyp.stringcare.plugin.domain.models.ResourceFile
-import dev.vyp.stringcare.plugin.domain.models.forEachWithBackup
 import dev.vyp.stringcare.plugin.domain.repositories.ResourceRepository
 import dev.vyp.stringcare.plugin.internal.locateResourceFiles
 import dev.vyp.stringcare.plugin.internal.modifyXML
 import org.gradle.api.Project
+import java.io.File
 
 /** Locates string resource files that the plugin may obfuscate. */
 class ObfuscateStringsUseCase(
@@ -15,18 +14,20 @@ class ObfuscateStringsUseCase(
     fun locateTargets(
         projectPath: String,
         configuration: StringCareConfiguration,
-    ): List<ResourceFile> = resources.locateResourceFiles(projectPath, configuration)
+    ) = resources.locateResourceFiles(projectPath, configuration)
 
     fun obfuscate(
         projectPath: String,
         configuration: StringCareConfiguration,
-        tempRoot: String,
+        outputResRoot: File,
         key: String,
         project: Project? = null,
     ): Int {
         val files = locateResourceFiles(projectPath, configuration, project)
-        forEachWithBackup(files, tempRoot) { resource ->
-            modifyXML(resource.file, key, configuration)
+        files.forEach { resource ->
+            val dest = File(outputResRoot, resource.relativePathUnderRes())
+            dest.parentFile?.mkdirs()
+            modifyXML(resource.file, dest, key, configuration)
         }
         return files.size
     }

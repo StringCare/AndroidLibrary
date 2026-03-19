@@ -43,27 +43,25 @@ Tareas típicas (por variante; ejemplo **prodDebug**):
 
 | Tarea | Rol |
 |-------|-----|
-| `stringcareBeforeMergeResourcesProdDebug` | Ofusca `strings.xml` antes del merge de recursos |
-| `stringcareAfterMergeResourcesProdDebug` | Restaura strings desde backup temporal |
-| `stringcareBeforeMergeAssetsProdDebug` | Ofusca assets (p. ej. `*.json`) |
-| `stringcareAfterMergeAssetsProdDebug` | Restaura assets |
+| `stringcareObfuscateStringResourcesProdDebug` | Escribe strings ofuscados en `build/intermediates/stringcare/generated-res/prodDebug/` |
+| `stringcareObfuscateAssetsProdDebug` | Escribe assets ofuscados en `build/intermediates/stringcare/generated-assets/prodDebug/` |
 | `stringcarePreview` | Vista previa / diagnóstico |
-| `stringcareTestObfuscate` | Prueba de ofuscación (tests del plugin) |
+| `stringcareTestObfuscate` | Prueba de ofuscación en directorio temporal (no modifica fuentes) |
 
 ## 4. Comprobar que no se salta la ofuscación
 
 Con salida detallada:
 
 ```bash
-./gradlew :app:stringcareBeforeMergeResourcesProdDebug --rerun-tasks --info 2>&1 | tee stringcare-verify.log
+./gradlew :app:stringcareObfuscateStringResourcesProdDebug --rerun-tasks --info 2>&1 | tee stringcare-verify.log
 ```
 
-**Esperado si la nativa carga y hay huella de firma:** mensajes del plugin con variante y clave SHA1, backup de recursos, etc. **No** debe aparecer la línea de *Skipping … native library*.
+**Esperado si la nativa carga y hay huella de firma:** mensajes del plugin con variante y clave SHA1, listado de recursos, etc. **No** debe aparecer la línea de *Skipping … native library*.
 
 Comprobar también assets:
 
 ```bash
-./gradlew :app:stringcareBeforeMergeAssetsProdDebug --rerun-tasks --info 2>&1 | tee -a stringcare-verify.log
+./gradlew :app:stringcareObfuscateAssetsProdDebug --rerun-tasks --info 2>&1 | tee -a stringcare-verify.log
 ```
 
 ## 5. Build completa
@@ -72,7 +70,7 @@ Comprobar también assets:
 ./gradlew :app:clean :app:assembleProdDebug --rerun-tasks --info 2>&1 | tee stringcare-assemble.log
 ```
 
-Durante el merge, los recursos en disco pueden estar ofuscados de forma temporal; al final **`stringcareAfterMerge*`** restaura los fuentes del módulo. La comprobación fiable es el **log** de las tareas `BeforeMerge` (y que exista huella vía `signingReport` o configuración del plugin), no solo el `values.xml` final empaquetado.
+Los **fuentes en `src/`** permanecen en texto claro; la ofuscación va a directorios generados bajo `build/intermediates/stringcare/`. La comprobación fiable es el **log** de las tareas `stringcareObfuscate*` (y que exista huella vía `signingReport` o `mockedFingerprint` en el bloque `stringcare { }`).
 
 ## 6. Huella de firma (SHA1)
 

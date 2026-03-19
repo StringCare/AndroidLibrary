@@ -2,10 +2,7 @@ package dev.vyp.stringcare.plugin.internal
 
 import java.util.concurrent.atomic.AtomicReference
 
-/**
- * Holds a temporary directory root for unit tests that run shell workflows without a [StringCareBuildService].
- * Production tasks use [dev.vyp.stringcare.plugin.services.StringCareBuildService] instead.
- */
+/** Holds a temporary directory root for integration tests that clone sample projects. */
 internal object StringCareSession {
     private val testTempRoot = AtomicReference<String?>(null)
 

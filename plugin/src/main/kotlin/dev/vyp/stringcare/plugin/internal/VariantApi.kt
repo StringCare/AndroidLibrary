@@ -6,13 +6,8 @@ import dev.vyp.stringcare.plugin.StringCareExtension
 import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import dev.vyp.stringcare.plugin.tasks.ObfuscateAssetsTask
 import dev.vyp.stringcare.plugin.tasks.ObfuscateStringsTask
-import dev.vyp.stringcare.plugin.tasks.RestoreAssetsTask
-import dev.vyp.stringcare.plugin.tasks.RestoreStringsTask
-import dev.vyp.stringcare.plugin.infrastructure.gradle.AndroidTaskNames
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.TaskCollection
 
 private fun String.variantTaskSuffix(): String = replaceFirstChar { it.uppercase() }
 
@@ -25,7 +20,6 @@ fun Project.registerVariantObfuscationTasks(
         extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
             ?: return
 
-    val absoluteProjectPath = buildService.get().absoluteProjectPath()
     val moduleNameValue = bookkeeping.name
     androidComponents.onVariants(androidComponents.selector().all()) { variant ->
         val variantName: String = variant.name
@@ -34,105 +28,84 @@ fun Project.registerVariantObfuscationTasks(
         if (bookkeeping.applicationId.isEmpty()) bookkeeping.applicationId = applicationId
         val variantCapitalized = variantName.variantTaskSuffix()
 
-        tasks.register(
-            "stringcareBeforeMergeResources$variantCapitalized",
-            ObfuscateStringsTask::class.java,
-        ) { t ->
-            (t as Task).usesService(buildService)
-            t.stringCareService.set(buildService)
-            t.projectPath.set(absoluteProjectPath)
-            t.moduleName.set(moduleNameValue)
-            t.variantName.set(variantName)
-            t.applicationId.set(applicationId)
-            t.skip.set(provider { extension.skip })
-            t.debug.set(provider { extension.debug })
-            t.mockedFingerprint.set(provider { extension.mockedFingerprint })
-            t.srcFoldersJson.set(provider { toJsonStringList(extension.srcFolders) })
-            t.stringFilesJson.set(provider { toJsonStringList(extension.stringFiles) })
-            t.assetsFilesJson.set(provider { toJsonStringList(extension.assetsFiles) })
-            t.xmlInputFiles.from(
-                provider {
-                    val includes =
-                        extension.srcFolders
-                            .ifEmpty { listOf("src/main/res") }
-                            .flatMap { src ->
-                                extension.stringFiles
-                                    .ifEmpty { listOf("strings.xml") }
-                                    .map { name -> "$src/**/$name" }
+        val obfuscateStrings =
+            tasks.register(
+                "stringcareObfuscateStringResources$variantCapitalized",
+                ObfuscateStringsTask::class.java,
+            ) { t ->
+                t.projectPath.set(layout.projectDirectory.asFile.absolutePath)
+                t.moduleName.set(moduleNameValue)
+                t.variantName.set(variantName)
+                t.applicationId.set(applicationId)
+                t.skip.set(provider { extension.skip })
+                t.debug.set(provider { extension.debug })
+                t.mockedFingerprint.set(provider { extension.mockedFingerprint })
+                t.srcFoldersJson.set(provider { toJsonStringList(extension.srcFolders) })
+                t.stringFilesJson.set(provider { toJsonStringList(extension.stringFiles) })
+                t.assetsFilesJson.set(provider { toJsonStringList(extension.assetsFiles) })
+                t.xmlInputFiles.from(
+                    provider {
+                        val includes =
+                            extension.srcFolders
+                                .ifEmpty { listOf("src/main/res") }
+                                .flatMap { src ->
+                                    extension.stringFiles
+                                        .ifEmpty { listOf("strings.xml") }
+                                        .map { name -> "$src/**/$name" }
+                                }
+                        fileTree(layout.projectDirectory).matching { pattern ->
+                            includes.forEach { pattern.include(it) }
+                            pattern.exclude("**/build/**", "**/.git/**", "**/.gradle/**", "**/node_modules/**")
+                        }
+                    },
+                )
+                t.outputDirectory.set(
+                    layout.buildDirectory.dir("intermediates/stringcare/generated-res/$variantName"),
+                )
+            }
+        variant.sources.res?.addGeneratedSourceDirectory(
+            obfuscateStrings,
+            ObfuscateStringsTask::outputDirectory,
+        )
+
+        val obfuscateAssets =
+            tasks.register(
+                "stringcareObfuscateAssets$variantCapitalized",
+                ObfuscateAssetsTask::class.java,
+            ) { t ->
+                t.projectPath.set(layout.projectDirectory.asFile.absolutePath)
+                t.moduleName.set(moduleNameValue)
+                t.variantName.set(variantName)
+                t.applicationId.set(applicationId)
+                t.skip.set(provider { extension.skip })
+                t.debug.set(provider { extension.debug })
+                t.mockedFingerprint.set(provider { extension.mockedFingerprint })
+                t.srcFoldersJson.set(provider { toJsonStringList(extension.srcFolders) })
+                t.stringFilesJson.set(provider { toJsonStringList(extension.stringFiles) })
+                t.assetsFilesJson.set(provider { toJsonStringList(extension.assetsFiles) })
+                t.assetInputFiles.from(
+                    provider {
+                        val patterns = extension.assetsFiles
+                        if (patterns.isEmpty()) {
+                            return@provider files()
+                        }
+                        fileTree(layout.projectDirectory).matching { tree ->
+                            extension.srcFolders.ifEmpty { listOf("src/main") }.forEach { src ->
+                                patterns.forEach { name ->
+                                    tree.include("$src/**/$name")
+                                }
                             }
-                    fileTree(absoluteProjectPath).matching { pattern ->
-                        includes.forEach { pattern.include(it) }
-                        pattern.exclude("**/build/**", "**/.git/**", "**/.gradle/**", "**/node_modules/**")
-                    }
-                },
-            )
-            t.outputDirectory.set(layout.buildDirectory.dir("stringcare/obfuscate-strings/$variantName"))
-        }
-        tasks.register(
-            "stringcareAfterMergeResources$variantCapitalized",
-            RestoreStringsTask::class.java,
-        ) { t ->
-            (t as Task).usesService(buildService)
-            t.stringCareService.set(buildService)
-            t.projectPath.set(absoluteProjectPath)
-            t.moduleName.set(moduleNameValue)
-            t.skip.set(provider { extension.skip })
-        }
-
-        tasks.register(
-            "stringcareBeforeMergeAssets$variantCapitalized",
-            ObfuscateAssetsTask::class.java,
-        ) { t ->
-            (t as Task).usesService(buildService)
-            t.stringCareService.set(buildService)
-            t.projectPath.set(absoluteProjectPath)
-            t.moduleName.set(moduleNameValue)
-            t.variantName.set(variantName)
-            t.applicationId.set(applicationId)
-            t.skip.set(provider { extension.skip })
-            t.debug.set(provider { extension.debug })
-            t.mockedFingerprint.set(provider { extension.mockedFingerprint })
-            t.srcFoldersJson.set(provider { toJsonStringList(extension.srcFolders) })
-            t.stringFilesJson.set(provider { toJsonStringList(extension.stringFiles) })
-            t.assetsFilesJson.set(provider { toJsonStringList(extension.assetsFiles) })
-        }
-        tasks.register(
-            "stringcareAfterMergeAssets$variantCapitalized",
-            RestoreAssetsTask::class.java,
-        ) { t ->
-            (t as Task).usesService(buildService)
-            t.stringCareService.set(buildService)
-            t.projectPath.set(absoluteProjectPath)
-            t.moduleName.set(moduleNameValue)
-            t.skip.set(provider { extension.skip })
-        }
-
-        tasks.named("stringcareBeforeMergeAssets$variantCapitalized").configure {
-            it.mustRunAfter(tasks.named("stringcareBeforeMergeResources$variantCapitalized"))
-        }
-
-        val mergeRes =
-            "${AndroidTaskNames.MERGE}${variantCapitalized}${AndroidTaskNames.RESOURCES}"
-        val beforeRes = "stringcareBeforeMergeResources$variantCapitalized"
-        val afterRes = "stringcareAfterMergeResources$variantCapitalized"
-        val processRes =
-            "${AndroidTaskNames.PROCESS}${variantCapitalized}${AndroidTaskNames.RESOURCES}"
-        namedLike(mergeRes).configureEach { task -> task.dependsOn(beforeRes) }
-        namedLike(afterRes).configureEach { task -> task.dependsOn(mergeRes) }
-        namedLike(processRes).configureEach { task -> task.dependsOn(afterRes) }
-
-        val genAssets =
-            "${AndroidTaskNames.GENERATE}${variantCapitalized}${AndroidTaskNames.ASSETS}"
-        val beforeAssets = "stringcareBeforeMergeAssets$variantCapitalized"
-        val mergeAssets =
-            "${AndroidTaskNames.MERGE}${variantCapitalized}${AndroidTaskNames.ASSETS}"
-        val afterAssets = "stringcareAfterMergeAssets$variantCapitalized"
-        namedLike(genAssets).configureEach { task -> task.dependsOn(beforeAssets) }
-        namedLike(afterAssets).configureEach { task -> task.dependsOn(mergeAssets) }
-        namedLike(
-            "${AndroidTaskNames.COMPRESS}${variantCapitalized}${AndroidTaskNames.ASSETS}",
-        ).configureEach { task -> task.dependsOn(afterAssets) }
+                            tree.exclude("**/build/**", "**/.git/**", "**/.gradle/**", "**/node_modules/**")
+                        }
+                    },
+                )
+                t.outputDirectory.set(
+                    layout.buildDirectory.dir("intermediates/stringcare/generated-assets/$variantName"),
+                )
+            }
+        variant.sources.assets?.addGeneratedSourceDirectory(
+            obfuscateAssets,
+            ObfuscateAssetsTask::outputDirectory,
+        )
     }
 }
-
-private fun Project.namedLike(name: String): TaskCollection<Task> = tasks.matching { it.name == name }

@@ -6,13 +6,15 @@ data class AssetsFile(
     val file: File,
     val sourceFolder: String,
     val module: String,
-) : Backupable {
-    override fun backup(tempRoot: String): File {
-        val cleanPath =
-            "$tempRoot${File.separator}$module${File.separator}$sourceFolder${file.absolutePath.split(sourceFolder)[1]}"
-                .replace("${File.separator}${File.separator}", File.separator)
-        val backupFile = File(cleanPath)
-        copyToBackupAtomically(file, backupFile)
-        return backupFile
+) {
+    /**
+     * Path relative to the `assets/` directory for writing generated assets.
+     */
+    fun relativePathUnderAssets(): String {
+        val path = file.absolutePath.replace('\\', '/')
+        val marker = "/assets/"
+        val idx = path.indexOf(marker)
+        require(idx >= 0) { "Expected .../assets/... in ${file.absolutePath}" }
+        return path.substring(idx + marker.length)
     }
 }

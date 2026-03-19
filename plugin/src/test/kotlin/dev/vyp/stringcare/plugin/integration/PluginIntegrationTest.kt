@@ -198,4 +198,16 @@ class PluginIntegrationTest {
                 second.output.contains("Configuration cache entry reused."),
         )
     }
+
+    @Test
+    fun `app assemble prodDebug succeeds with configuration cache build cache and parallel`() {
+        val result =
+            runRepoBuild(
+                ":app:assembleProdDebug",
+                "--configuration-cache",
+                "--build-cache",
+                "--parallel",
+            )
+        assertTrue(result.output.contains("BUILD SUCCESSFUL"))
+    }
 }

@@ -1,42 +1,29 @@
 package dev.vyp.stringcare.plugin.tasks
 
 import dev.vyp.stringcare.plugin.StringCareConfiguration
+import dev.vyp.stringcare.plugin.domain.usecases.ObfuscateStringsUseCase
+import dev.vyp.stringcare.plugin.infrastructure.gradle.FileSystemResourceRepository
 import dev.vyp.stringcare.plugin.internal.LoadResult
 import dev.vyp.stringcare.plugin.internal.Stark
-import dev.vyp.stringcare.plugin.internal.backupResourceFiles
 import dev.vyp.stringcare.plugin.internal.extractFingerprint
 import dev.vyp.stringcare.plugin.internal.getContent
-import dev.vyp.stringcare.plugin.internal.modifyXML
+import dev.vyp.stringcare.plugin.internal.locateResourceFiles
 import dev.vyp.stringcare.plugin.internal.parseJsonStringList
 import dev.vyp.stringcare.plugin.internal.parseXML
-import dev.vyp.stringcare.plugin.internal.restoreResourceFiles
 import dev.vyp.stringcare.plugin.internal.runCommand
 import dev.vyp.stringcare.plugin.internal.signingReportTask
-import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
-import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import java.io.File
+import java.nio.file.Files
 
 /**
- * Manual verification task that prints before/after XML content for obfuscation.
- *
- * @property stringCareService Shared build state/provider.
- * @property module Target module name.
- * @property assetsFiles JSON array of configured asset patterns.
- * @property stringFiles JSON array of configured XML files.
- * @property srcFolders JSON array of source-set roots.
- * @property debug Enables verbose debug behavior in config.
- * @property skip If true, task exits without side effects.
- * @property applicationId Android application id for native obfuscation.
- * @property mockedFingerprint Optional fixed fingerprint for deterministic runs.
- * @property variantName Variant under test.
+ * Manual verification task that prints before/after XML content for obfuscation into a temp directory
+ * (sources are never modified).
  */
 abstract class SCTestObfuscation : DefaultTask() {
-    @get:ServiceReference("stringCareBuildService")
-    abstract val stringCareService: Property<StringCareBuildService>
-
     @get:Input
     abstract val module: Property<String>
 
@@ -76,7 +63,6 @@ abstract class SCTestObfuscation : DefaultTask() {
     }
 
     @TaskAction
-    /** Runs backup, obfuscation and restore while printing full trace to stdout. */
     fun greet() {
         println("== TEST OBFUSCATION ======================================")
         var key = ""
@@ -109,32 +95,35 @@ abstract class SCTestObfuscation : DefaultTask() {
         signingReportTask().runCommand { _, result ->
             key = result.extractFingerprint(module.get(), variantName.get(), configuration)
         }
-        val service = stringCareService.get()
-        val tempRoot = service.getOrCreateTempFolder()
-        val projectRoot = service.absoluteProjectPath()
-        val filesToObfuscate = backupResourceFiles(projectRoot, configuration, tempRoot)
-        filesToObfuscate.forEach { file ->
-            val originalEntities = parseXML(file.file)
-            println("\t============================")
-            println("\tpath: ${file.file.absolutePath}")
-            originalEntities.forEach { entity ->
-                entity.attributes.forEach { attribute ->
-                    println("\"${attribute.name}\": \"${attribute.value}\"")
+        val projectRoot = project.projectDir.absolutePath
+        val filesToObfuscate = locateResourceFiles(projectRoot, configuration, project)
+        val outRoot = Files.createTempDirectory("stringcare-test-obf").toFile()
+        try {
+            val useCase = ObfuscateStringsUseCase(FileSystemResourceRepository())
+            useCase.obfuscate(projectRoot, configuration, outRoot, key, project)
+            filesToObfuscate.forEach { file ->
+                val originalEntities = parseXML(file.file)
+                println("\t============================")
+                println("\tpath: ${file.file.absolutePath}")
+                originalEntities.forEach { entity ->
+                    entity.attributes.forEach { attribute ->
+                        println("\"${attribute.name}\": \"${attribute.value}\"")
+                    }
+                    println("\"\tvalue\": \"${entity.value}\"")
+                    println("\t============================")
                 }
-                println("\"\tvalue\": \"${entity.value}\"")
+                println("")
+                println("\t=== content ================")
+                println(file.file.getContent())
+                println("\t============================")
+                val outFile = File(outRoot, file.relativePathUnderRes())
+                println("\t=== content obfuscated (generated) ================")
+                println(outFile.getContent())
                 println("\t============================")
             }
-            println("")
-            println("\t=== content ================")
-            println(file.file.getContent())
-            println("\t============================")
-            modifyXML(file.file, key, configuration)
-            println("\t=== content obfuscated ================")
-            println(file.file.getContent())
-            println("\t============================")
+        } finally {
+            outRoot.deleteRecursively()
         }
-        restoreResourceFiles(projectRoot, module.get(), tempRoot)
-        service.resetTempFolder()
         println("== END OBFUSCATION ==================================")
     }
 }

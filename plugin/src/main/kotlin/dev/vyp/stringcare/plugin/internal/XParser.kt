@@ -1,7 +1,6 @@
 package dev.vyp.stringcare.plugin.internal
 
 import dev.vyp.stringcare.plugin.StringCareConfiguration
-import dev.vyp.stringcare.plugin.StringCarePlugin
 import dev.vyp.stringcare.plugin.domain.models.ResourceFile
 import dev.vyp.stringcare.plugin.domain.models.SAttribute
 import dev.vyp.stringcare.plugin.domain.models.StringEntity
@@ -25,38 +24,6 @@ fun locateResourceFiles(
         isValid = { file, normalized -> file.validForXMLConfiguration(normalized) },
         mapFile = { file, normalized -> file.resourceFile(normalized) },
     )
-
-fun backupResourceFiles(
-    projectPath: String,
-    configuration: StringCareConfiguration,
-    tempRoot: String,
-): List<ResourceFile> {
-    val files = locateResourceFiles(projectPath, configuration.normalize())
-    return backupLocatedFiles(files, tempRoot)
-}
-
-/** Test convenience: uses [StringCareSession] temp root set by [tempPath]. */
-fun backupResourceFiles(
-    projectPath: String,
-    configuration: StringCareConfiguration,
-): List<ResourceFile> = backupResourceFiles(projectPath, configuration, StringCareSession.requireTestTempRoot())
-
-/** Test convenience: uses [StringCareSession] temp root set by [tempPath]. */
-fun restoreResourceFiles(
-    projectPath: String,
-    module: String,
-): List<File> {
-    val tempRoot = StringCareSession.requireTestTempRoot()
-    val out = restoreResourceFiles(projectPath, module, tempRoot)
-    StringCarePlugin.resetFolder()
-    return out
-}
-
-fun restoreResourceFiles(
-    projectPath: String,
-    module: String,
-    tempRoot: String,
-): List<File> = restoreBackedUpFiles(projectPath, module, tempRoot)
 
 /**
  * Parses obfuscatable `<string>` nodes from [file].
@@ -118,12 +85,21 @@ fun modifyXML(
     key: String,
     configuration: StringCareConfiguration,
 ) {
-    val stringEntities = parseXML(file)
+    modifyXML(source = file, dest = file, key, configuration)
+}
+
+fun modifyXML(
+    source: File,
+    dest: File,
+    key: String,
+    configuration: StringCareConfiguration,
+) {
+    val stringEntities = parseXML(source)
     if (configuration.debug) {
-        PrintUtils.print(null, file.getContent(), true)
+        PrintUtils.print(null, source.getContent(), true)
     }
 
-    val doc = file.getXML()
+    val doc = source.getXML()
     val stringNodeList = doc.getElementsByTagName(XmlAttributes.TAG_STRING)
     for (i in 0 until stringNodeList.length) {
         val node = stringNodeList.item(i)
@@ -136,10 +112,10 @@ fun modifyXML(
         }
     }
 
-    file.updateXML(doc)
-    file.removeAttributes()
+    dest.updateXML(doc)
+    dest.removeAttributes()
     if (configuration.debug) {
-        PrintUtils.print(null, file.getContent(), true)
+        PrintUtils.print(null, dest.getContent(), true)
     }
 }
 

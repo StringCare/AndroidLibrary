@@ -10,7 +10,6 @@ import dev.vyp.stringcare.plugin.tasks.SCPreview
 import dev.vyp.stringcare.plugin.tasks.SCTestObfuscation
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 import java.io.File
 
@@ -67,8 +66,6 @@ fun Project.registerTask(
     val assetsJson = toJsonStringList(configuration.assetsFiles)
 
     this.tasks.register(gradleTaskNameDoctor, SCPreview::class.java) { t ->
-        (t as Task).usesService(buildService)
-        t.stringCareService.set(buildService)
         t.module.set(configuration.name)
         t.applicationId.set(configuration.applicationId)
         t.variantName.set(variantDefault)
@@ -80,8 +77,6 @@ fun Project.registerTask(
         t.skip.set(configuration.skip)
     }
     this.tasks.register(gradleTaskNameObfuscate, SCTestObfuscation::class.java) { t ->
-        (t as Task).usesService(buildService)
-        t.stringCareService.set(buildService)
         t.module.set(configuration.name)
         t.applicationId.set(configuration.applicationId)
         t.variantName.set(variantDefault)

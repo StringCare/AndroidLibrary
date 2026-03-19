@@ -5,39 +5,25 @@ import dev.vyp.stringcare.plugin.domain.usecases.ObfuscateAssetsUseCase
 import dev.vyp.stringcare.plugin.internal.PrintUtils
 import dev.vyp.stringcare.plugin.internal.LoadResult
 import dev.vyp.stringcare.plugin.internal.Stark
-import dev.vyp.stringcare.plugin.internal.backupAssets
 import dev.vyp.stringcare.plugin.internal.fingerPrint
 import dev.vyp.stringcare.plugin.internal.obfuscateAssets
 import dev.vyp.stringcare.plugin.internal.parseJsonStringList
-import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
-import org.gradle.work.DisableCachingByDefault
 
-@DisableCachingByDefault(because = "Mutates asset files in the source tree")
 /**
- * Obfuscates configured assets for one Android variant before merge assets.
- *
- * @property stringCareService Shared build state/provider.
- * @property projectPath Absolute module path used to scan files.
- * @property moduleName Gradle module name.
- * @property variantName Variant being processed (e.g. `debug`).
- * @property applicationId Variant application id for JNI obfuscation.
- * @property skip If true, task exits without side effects.
- * @property debug Enables verbose logging.
- * @property mockedFingerprint Optional fixed fingerprint for local tests.
- * @property srcFoldersJson JSON array of source-set folders.
- * @property stringFilesJson JSON array of XML filenames (kept for config parity).
- * @property assetsFilesJson JSON array of asset file names/patterns to process.
+ * Writes obfuscated assets into a generated directory for AGP to merge. Sources are never modified.
  */
 abstract class ObfuscateAssetsTask : DefaultTask() {
     private val obfuscateAssetsUseCase = ObfuscateAssetsUseCase()
-
-    @get:ServiceReference("stringCareBuildService")
-    abstract val stringCareService: Property<StringCareBuildService>
 
     @get:Input
     abstract val projectPath: Property<String>
@@ -69,6 +55,13 @@ abstract class ObfuscateAssetsTask : DefaultTask() {
     @get:Input
     abstract val assetsFilesJson: Property<String>
 
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val assetInputFiles: ConfigurableFileCollection
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
     init {
         skip.convention(false)
         debug.convention(false)
@@ -92,8 +85,13 @@ abstract class ObfuscateAssetsTask : DefaultTask() {
     }
 
     @TaskAction
-    /** Executes backup + obfuscation flow for selected assets. */
     fun run() {
+        val out = outputDirectory.get().asFile
+        if (out.exists()) {
+            out.deleteRecursively()
+        }
+        out.mkdirs()
+
         val config = configuration()
         Stark.setVerboseNativeLogging(config.debug)
         if (skip.get()) {
@@ -107,7 +105,6 @@ abstract class ObfuscateAssetsTask : DefaultTask() {
                 return
             }
         }
-        val tempRoot = stringCareService.get().getOrCreateTempFolder()
         PrintUtils.print("", "ApplicationId: ${applicationId.get()}", tab = true)
         fingerPrint(moduleName.get(), variantName.get(), config) { key ->
             if (key == "none" || key.trim().isEmpty()) {
@@ -115,8 +112,13 @@ abstract class ObfuscateAssetsTask : DefaultTask() {
                 return@fingerPrint
             }
             PrintUtils.print(moduleName.get(), "${variantName.get()}:$key")
-            PrintUtils.print(moduleName.get(), backupAssets)
-            obfuscateAssetsUseCase.obfuscate(projectPath.get(), config, tempRoot, key, project)
+            obfuscateAssetsUseCase.obfuscate(
+                projectPath.get(),
+                config,
+                out,
+                key,
+                project,
+            )
             PrintUtils.print(moduleName.get(), obfuscateAssets)
         }
     }

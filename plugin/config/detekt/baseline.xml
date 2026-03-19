@@ -3,8 +3,6 @@
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>TooGenericExceptionCaught:Stark.kt$Stark.Companion$e: Throwable</ID>
-    <ID>UnusedParameter:VariantApi.kt$extension: StringCareExtension</ID>
     <ID>UnusedPrivateProperty:PrintUtils.kt$PrintUtils.Companion$private val logger = LoggerFactory.getLogger(StringCarePlugin::class.java)</ID>
-    <ID>UnusedPrivateProperty:VariantApi.kt$val beforeStrings = tasks.register( "stringcareBeforeMergeResources$variantCapitalized", ObfuscateStringsTask::class.java, ) { it.projectPath = projectPath it.moduleName = moduleName it.variantName = variantName it.applicationId = applicationId it.skip = config.skip it.debug = config.debug it.mockedFingerprint = config.mockedFingerprint it.srcFoldersJson = gson.toJson(config.srcFolders) it.stringFilesJson = gson.toJson(config.stringFiles) it.assetsFilesJson = gson.toJson(config.assetsFiles) }</ID>
   </CurrentIssues>
 </SmellBaseline>

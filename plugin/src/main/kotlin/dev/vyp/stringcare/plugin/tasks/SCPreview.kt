@@ -5,32 +5,16 @@ import dev.vyp.stringcare.plugin.internal.getContent
 import dev.vyp.stringcare.plugin.internal.locateResourceFiles
 import dev.vyp.stringcare.plugin.internal.parseJsonStringList
 import dev.vyp.stringcare.plugin.internal.parseXML
-import dev.vyp.stringcare.plugin.services.StringCareBuildService
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
-import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
 /**
  * Prints a debug report of files/entities that StringCare would process.
- *
- * @property stringCareService Shared build state/provider.
- * @property module Target module name.
- * @property assetsFiles JSON array of configured asset patterns.
- * @property stringFiles JSON array of configured XML files.
- * @property srcFolders JSON array of source-set roots.
- * @property debug Enables verbose debug behavior in config.
- * @property skip If true, configuration marks execution as skipped.
- * @property applicationId Android application id for report context.
- * @property mockedFingerprint Optional fixed fingerprint for local testing.
- * @property variantName Variant shown in report headers.
  */
 abstract class SCPreview : DefaultTask() {
-    @get:ServiceReference("stringCareBuildService")
-    abstract val stringCareService: Property<StringCareBuildService>
-
     @get:Input
     abstract val module: Property<String>
 
@@ -70,7 +54,6 @@ abstract class SCPreview : DefaultTask() {
     }
 
     @TaskAction
-    /** Emits report output to stdout with parsed entities and source contents. */
     fun greet() {
         println("== REPORT ======================================")
         val task = this
@@ -87,7 +70,7 @@ abstract class SCPreview : DefaultTask() {
                 skip = task.skip.get()
                 debug = task.debug.get()
             }
-        val projectRoot = stringCareService.get().absoluteProjectPath()
+        val projectRoot = project.projectDir.absolutePath
         val files = locateResourceFiles(projectRoot, configuration, project)
         println("\tLocated files(${files.size}) for obfuscating")
         println("\tConfig (module=${configuration.name}, debug=${configuration.debug})")

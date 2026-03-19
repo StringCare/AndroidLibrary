@@ -1,7 +1,6 @@
 package dev.vyp.stringcare.plugin.internal
 
 import dev.vyp.stringcare.plugin.StringCareConfiguration
-import dev.vyp.stringcare.plugin.StringCarePlugin
 import dev.vyp.stringcare.plugin.domain.models.AssetsFile
 import org.gradle.api.Project
 import java.io.File
@@ -21,38 +20,6 @@ fun locateAssetsFiles(
         mapFile = { file, normalized -> file.assetsFile(normalized) },
     )
 
-/** Test convenience: uses [StringCareSession] temp root set by [tempPath]. */
-fun backupAssetsFiles(
-    projectPath: String,
-    configuration: StringCareConfiguration,
-): List<AssetsFile> = backupAssetsFiles(projectPath, configuration, StringCareSession.requireTestTempRoot())
-
-fun backupAssetsFiles(
-    projectPath: String,
-    configuration: StringCareConfiguration,
-    tempRoot: String,
-): List<AssetsFile> {
-    val files = locateAssetsFiles(projectPath, configuration.normalize())
-    return backupLocatedFiles(files, tempRoot)
-}
-
-fun restoreAssetsFiles(
-    projectPath: String,
-    module: String,
-    tempRoot: String,
-): List<File> = restoreBackedUpFiles(projectPath, module, tempRoot)
-
-/** Test convenience: uses [StringCareSession] temp root set by [tempPath]. */
-fun restoreAssetsFiles(
-    projectPath: String,
-    module: String,
-): List<File> {
-    val tempRoot = StringCareSession.requireTestTempRoot()
-    val out = restoreAssetsFiles(projectPath, module, tempRoot)
-    StringCarePlugin.resetFolder()
-    return out
-}
-
 fun obfuscateFile(
     key: String,
     file: File,
@@ -65,6 +32,16 @@ fun obfuscateFile(
             mockId,
         )
     file.writeBytes(obfuscation)
+}
+
+fun obfuscateFileTo(
+    key: String,
+    source: File,
+    dest: File,
+    mockId: String,
+) {
+    val obfuscation = Stark.obfuscate(key, source.readBytes(), mockId)
+    dest.writeBytes(obfuscation)
 }
 
 fun revealFile(
