@@ -13,6 +13,7 @@ StringCare Android provides **compile-time obfuscation** for strings and assets 
 - [Publishing](publishing.md) — Release workflow, secrets, and local publish (`publishToMavenLocal`).
 - [Migration](migration.md) — Upgrading from 4.x to 5.0 (groupId, plugin ID, package, Gradle/AGP).
 - [Architecture](architecture.md) — Mono-repo layout, library vs plugin, JNI, and Variant API.
+- [AGP generated resources](agp-generated-resources.md) — Why the plugin uses `addGeneratedSourceDirectory` instead of mutating `src/` or post-merge XML.
 - [Contributing](contributing.md) — Release workflow secrets and local publish steps.
 - [Troubleshooting](troubleshooting.md) — Submodule, signing, plugin not found, publish job, JNI/NDK.
 - [Verify obfuscation](verify-obfuscation.md) — Comandos `gradlew` para comprobar que strings/assets se ofuscan (nativas del host, `syncPluginNativeLibraries`).

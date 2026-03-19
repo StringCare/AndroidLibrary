@@ -1,47 +1,80 @@
 package dev.vyp.stringcare.plugin.internal
 
-import com.google.common.io.Files
-import dev.vyp.stringcare.plugin.StringCarePlugin
-import dev.vyp.stringcare.plugin.models.ExecutionResult
+import dev.vyp.stringcare.plugin.domain.models.ExecutionResult
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
-fun execute(command: String): ExecutionResult = execute(Runtime.getRuntime(), command)
+private const val DEFAULT_COMMAND_TIMEOUT_SECONDS = 300L
+private const val COMMAND_TIMEOUT_PROPERTY = "stringcare.command.timeout.seconds"
 
-private fun execute(runtime: Runtime, command: String): ExecutionResult {
+private fun commandTimeoutSeconds(): Long =
+    System
+        .getProperty(COMMAND_TIMEOUT_PROPERTY)
+        ?.toLongOrNull()
+        ?.takeIf { it > 0 }
+        ?: DEFAULT_COMMAND_TIMEOUT_SECONDS
+
+fun execute(command: String): Result<ExecutionResult> = executeShell(shellCommand(command), command)
+
+fun execute(command: List<String>): Result<ExecutionResult> = executeShell(command, command.joinToString(" "))
+
+private fun shellCommand(command: String): List<String> =
+    when (getOs()) {
+        Os.WINDOWS -> listOf("cmd", "/c", command.normalize())
+        Os.OSX, Os.LINUX -> listOf("/bin/bash", "-c", command)
+    }
+
+private fun executeShell(
+    command: List<String>,
+    displayCommand: String,
+): Result<ExecutionResult> {
     return try {
-        when (getOs()) {
-            Os.WINDOWS -> {
-                val process = runtime.exec(
-                    arrayOf(
-                        "cmd",
-                        "/c",
-                        command.normalize()
-                    )
-                )
-                ExecutionResult(
-                    command.normalize(),
-                    process.outputString()
-                )
-            }
-            Os.OSX, Os.LINUX -> {
-                ExecutionResult(
-                    command,
-                    runtime.exec(
-                        arrayOf(
-                            "/bin/bash",
-                            "-c",
-                            command
-                        )
-                    ).outputString()
-                )
-            }
+        val process =
+            ProcessBuilder(command)
+                .redirectErrorStream(true)
+                .start()
+        val output =
+            process.inputStream.bufferedReader().use { reader ->
+                reader.readText()
+            }.replace("\r", "")
+        val completed = process.waitFor(commandTimeoutSeconds(), TimeUnit.SECONDS)
+        if (!completed) {
+            process.destroyForcibly()
+            return Result.success(
+                ExecutionResult.Timeout(
+                    command = displayCommand,
+                    result = output,
+                ),
+            )
+        }
+        val exit = process.exitValue()
+        if (exit != 0) {
+            Result.success(
+                ExecutionResult.Failure(
+                    command = displayCommand,
+                    result = output,
+                    exitCode = exit,
+                ),
+            )
+        } else {
+            Result.success(
+                ExecutionResult.Success(
+                    command = displayCommand,
+                    result = output,
+                    exitCode = exit,
+                ),
+            )
         }
     } catch (e: IOException) {
-        ExecutionResult(command.normalize(), "")
+        Result.failure(e)
+    } catch (e: InterruptedException) {
+        Thread.currentThread().interrupt()
+        Result.failure(e)
     }
 }
 
 fun tempPath(): String {
-    StringCarePlugin.tempFolder = Files.createTempDir().absolutePath
-    return StringCarePlugin.tempFolder
+    val dir = kotlin.io.path.createTempDirectory("stringcare-").toFile().absolutePath
+    StringCareSession.installTestTempRoot(dir)
+    return dir
 }

@@ -1,72 +1,24 @@
-# Migration from StringCare 4.x to 5.0
+# Migration guide (5.x → current refactor)
 
-## GroupId and artifact IDs
+## For consumers of the published plugin
 
-- **Old:** `io.github.stringcare` (or `com.stringcare`)  
-- **New:** `dev.vyp.stringcare`
+No changes are required in `build.gradle.kts` if you only use the public DSL:
 
-Update dependencies and plugin coordinates:
+```kotlin
+stringcare {
+    debug = true
+    // ...
+}
+```
 
-| 4.x | 5.0 |
+## For forks or code that used internal statics
+
+| Old | New |
 |-----|-----|
-| `io.github.stringcare:library` | `dev.vyp.stringcare:library` |
-| `com.stringcare` plugin ID | `dev.vyp.stringcare.plugin` |
+| `StringCarePlugin.absoluteProjectPath` | Resolved per build via `StringCareBuildService.absoluteProjectPath()` (internal) |
+| `StringCarePlugin.variantMap` | `StringCareBuildService` variant map (internal) |
+| `StringCarePlugin.resetFolder()` | Test hook only: clears `StringCareSession` temp root for integration tests (no production temp backup tree) |
 
-## Gradle (Kotlin DSL)
+## Native libraries
 
-**Before (4.x, Groovy):**
-
-```groovy
-buildscript {
-    dependencies {
-        classpath 'com.stringcare:gradle-plugin:4.x'
-    }
-}
-apply plugin: 'com.stringcare'
-dependencies {
-    implementation 'io.github.stringcare:library:4.x'
-}
-```
-
-**After (5.0, Kotlin DSL):**
-
-```kotlin
-plugins {
-    id("dev.vyp.stringcare.plugin")
-}
-dependencies {
-    implementation("dev.vyp.stringcare:library:5.0.0")
-}
-```
-
-Resolve the plugin from Maven Central or a local `includeBuild`; see [README](README.md#installation-kotlin-dsl).
-
-## Plugin configuration
-
-- Extension and task names are unchanged (`stringcare { ... }`, `stringFiles`, `assetsFiles`, `srcFolders`, `debug`, `skip`).
-- AGP 8.x and Gradle 8.x are required; the plugin uses the Variant API.
-
-## Library package
-
-- **Old:** `com.stringcare.library`  
-- **New:** `dev.vyp.stringcare.library`
-
-Update imports in your app:
-
-```kotlin
-// Before
-import com.stringcare.library.SC
-import com.stringcare.library.SCTextView
-
-// After
-import dev.vyp.stringcare.library.SC
-import dev.vyp.stringcare.library.SCTextView
-```
-
-## API compatibility
-
-Public API (e.g. `SC.reveal()`, `SC.obfuscate()`, `SCTextView`, resources usage) is unchanged. Only package and Maven coordinates differ.
-
-## Build / CI
-
-This repo uses the JNI native library as a Git submodule. Clone with `git clone --recurse-submodules` or `git submodule update --init --recursive`. In GitHub Actions use `checkout` with `submodules: true`.
+When updating bundled `.dylib` / `.so` / `.dll`, refresh SHA-256 entries in `Stark.kt` (`EXPECTED_SHA256`).

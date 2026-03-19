@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 class PluginApplicationTest {
-
     @Test
     fun `plugin applies and creates stringcare extension`() {
         val project: Project = ProjectBuilder.builder().build()

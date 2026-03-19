@@ -1,0 +1,59 @@
+# Detekt baseline for StringCare plugin — strict but pragmatic for Gradle plugin code
+build:
+  # Tighten to 0 after phase7-18 (detekt cleanup)
+  maxIssues: 999
+config:
+  validation: true
+style:
+  active: true
+  WildcardImport:
+    active: false
+  UtilityClassWithPublicConstructor:
+    active: false
+  MaxLineLength:
+    active: true
+    maxLineLength: 140
+    excludes: ['**/test/**']
+  ReturnCount:
+    active: true
+    max: 4
+complexity:
+  LongMethod:
+    active: true
+    threshold: 120
+  LongParameterList:
+    active: true
+    functionThreshold: 8
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 50
+    thresholdInObjects: 20
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 40
+  ComplexCondition:
+    active: true
+    threshold: 6
+  NestedBlockDepth:
+    active: true
+    threshold: 8
+empty-blocks:
+  active: true
+exceptions:
+  active: true
+  SwallowedException:
+    active: false
+naming:
+  active: true
+  FunctionNaming:
+    active: true
+    ignoreAnnotated: ['Composable']
+    excludes: ['**/PrintUtils.kt', '**/test/**']
+  TopLevelPropertyNaming:
+    active: false
+potential-bugs:
+  active: true
+performance:
+  active: true
+coroutines:
+  active: false

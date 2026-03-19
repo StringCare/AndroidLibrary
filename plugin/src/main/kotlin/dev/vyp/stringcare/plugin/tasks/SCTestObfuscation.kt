@@ -1,114 +1,129 @@
 package dev.vyp.stringcare.plugin.tasks
 
-import com.google.gson.Gson
 import dev.vyp.stringcare.plugin.StringCareConfiguration
-import dev.vyp.stringcare.plugin.StringCarePlugin
-import dev.vyp.stringcare.plugin.internal.backupResourceFiles
+import dev.vyp.stringcare.plugin.domain.usecases.ObfuscateStringsUseCase
+import dev.vyp.stringcare.plugin.infrastructure.gradle.FileSystemResourceRepository
+import dev.vyp.stringcare.plugin.internal.LoadResult
+import dev.vyp.stringcare.plugin.internal.Stark
 import dev.vyp.stringcare.plugin.internal.extractFingerprint
 import dev.vyp.stringcare.plugin.internal.getContent
-import dev.vyp.stringcare.plugin.internal.modifyXML
+import dev.vyp.stringcare.plugin.internal.locateResourceFiles
+import dev.vyp.stringcare.plugin.internal.parseJsonStringList
 import dev.vyp.stringcare.plugin.internal.parseXML
-import dev.vyp.stringcare.plugin.internal.restoreResourceFiles
 import dev.vyp.stringcare.plugin.internal.runCommand
 import dev.vyp.stringcare.plugin.internal.signingReportTask
-import dev.vyp.stringcare.plugin.internal.Stark
 import org.gradle.api.DefaultTask
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import java.io.File
+import java.nio.file.Files
 
-open class SCTestObfuscation : DefaultTask() {
+/**
+ * Manual verification task that prints before/after XML content for obfuscation into a temp directory
+ * (sources are never modified).
+ */
+abstract class SCTestObfuscation : DefaultTask() {
+    @get:Input
+    abstract val module: Property<String>
 
-    @Input
-    var module = String()
+    @get:Input
+    abstract val assetsFiles: Property<String>
 
-    @Input
-    var assetsFiles = String()
+    @get:Input
+    abstract val stringFiles: Property<String>
 
-    @Input
-    var stringFiles = String()
+    @get:Input
+    abstract val srcFolders: Property<String>
 
-    @Input
-    var srcFolders = String()
+    @get:Input
+    abstract val debug: Property<Boolean>
 
-    @Input
-    var debug = false
+    @get:Input
+    abstract val skip: Property<Boolean>
 
-    @Input
-    var skip = false
+    @get:Input
+    abstract val applicationId: Property<String>
 
-    @Input
-    var applicationId = ""
+    @get:Input
+    abstract val mockedFingerprint: Property<String>
 
-    @Input
-    var mockedFingerprint = ""
+    @get:Input
+    abstract val variantName: Property<String>
 
-    @Input
-    var variantName = "debug"
+    init {
+        assetsFiles.convention("")
+        stringFiles.convention("")
+        srcFolders.convention("")
+        debug.convention(false)
+        skip.convention(false)
+        applicationId.convention("")
+        mockedFingerprint.convention("")
+        variantName.convention("debug")
+    }
 
     @TaskAction
     fun greet() {
         println("== TEST OBFUSCATION ======================================")
         var key = ""
-        val gson = Gson()
-
         val task = this
-        val configuration = StringCareConfiguration(module).apply {
-            @Suppress("UNCHECKED_CAST")
-            val lSrcFolders = gson.fromJson(task.srcFolders, MutableList::class.java)
-            if (task.srcFolders.isNotEmpty()) {
-                srcFolders.addAll(lSrcFolders as MutableList<String>)
+        val configuration =
+            StringCareConfiguration(module.get()).apply {
+                srcFolders.addAll(parseJsonStringList(task.srcFolders.get()))
+                stringFiles.addAll(parseJsonStringList(task.stringFiles.get()))
+                assetsFiles.addAll(parseJsonStringList(task.assetsFiles.get()))
+                if (task.mockedFingerprint.get().isNotEmpty()) {
+                    mockedFingerprint = task.mockedFingerprint.get()
+                }
+                applicationId = task.applicationId.get()
+                skip = task.skip.get()
+                debug = task.debug.get()
             }
-            @Suppress("UNCHECKED_CAST")
-            val lStringFiles = gson.fromJson(task.stringFiles, MutableList::class.java)
-            if (task.stringFiles.isNotEmpty()) {
-                stringFiles.addAll(lStringFiles as MutableList<String>)
-            }
-            @Suppress("UNCHECKED_CAST")
-            val lAssetsFiles = gson.fromJson(task.assetsFiles, MutableList::class.java)
-            if (task.assetsFiles.isNotEmpty()) {
-                assetsFiles.addAll(lAssetsFiles as MutableList<String>)
-            }
-            if (task.mockedFingerprint.isNotEmpty()) {
-                mockedFingerprint = task.mockedFingerprint
-            }
-            applicationId = task.applicationId
-            skip = task.skip
-            debug = task.debug
-        }
-        println("\t== $variantName ======================================")
+        println("\t== ${variantName.get()} ======================================")
+        Stark.setVerboseNativeLogging(configuration.debug)
         if (configuration.skip) {
             println("\tSkipping (skip=true)")
             return
         }
-        if (!Stark.isNativeLibLoaded()) {
-            println("\tSkipping (native library not available for this architecture)")
-            return
+        when (val nativeLoad = Stark.isNativeLibLoaded()) {
+            LoadResult.Loaded -> Unit
+            is LoadResult.Failed -> {
+                println("\tSkipping (${nativeLoad.message})")
+                return
+            }
         }
         signingReportTask().runCommand { _, result ->
-            key = result.extractFingerprint(module, variantName, configuration)
+            key = result.extractFingerprint(module.get(), variantName.get(), configuration)
         }
-        val filesToObfuscate = backupResourceFiles(StringCarePlugin.absoluteProjectPath, configuration)
-        filesToObfuscate.forEach { file ->
-            val originalEntities = parseXML(file.file)
-            println("\t============================")
-            println("\tpath: ${file.file.absolutePath}")
-            originalEntities.forEach { entity ->
-                entity.attributes.forEach { attribute ->
-                    println("\"${attribute.name}\": \"${attribute.value}\"")
+        val projectRoot = project.projectDir.absolutePath
+        val filesToObfuscate = locateResourceFiles(projectRoot, configuration, project)
+        val outRoot = Files.createTempDirectory("stringcare-test-obf").toFile()
+        try {
+            val useCase = ObfuscateStringsUseCase(FileSystemResourceRepository())
+            useCase.obfuscate(projectRoot, configuration, outRoot, key, project)
+            filesToObfuscate.forEach { file ->
+                val originalEntities = parseXML(file.file)
+                println("\t============================")
+                println("\tpath: ${file.file.absolutePath}")
+                originalEntities.forEach { entity ->
+                    entity.attributes.forEach { attribute ->
+                        println("\"${attribute.name}\": \"${attribute.value}\"")
+                    }
+                    println("\"\tvalue\": \"${entity.value}\"")
+                    println("\t============================")
                 }
-                println("\"\tvalue\": \"${entity.value}\"")
+                println("")
+                println("\t=== content ================")
+                println(file.file.getContent())
+                println("\t============================")
+                val outFile = File(outRoot, file.relativePathUnderRes())
+                println("\t=== content obfuscated (generated) ================")
+                println(outFile.getContent())
                 println("\t============================")
             }
-            println("")
-            println("\t=== content ================")
-            println(file.file.getContent())
-            println("\t============================")
-            modifyXML(file.file, key, configuration)
-            println("\t=== content obfuscated ================")
-            println(file.file.getContent())
-            println("\t============================")
+        } finally {
+            outRoot.deleteRecursively()
         }
-        restoreResourceFiles(StringCarePlugin.absoluteProjectPath, module)
         println("== END OBFUSCATION ==================================")
     }
 }

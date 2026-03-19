@@ -1,8 +1,17 @@
+import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.api.tasks.testing.Test
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm") version "2.0.21"
+    kotlin("plugin.serialization") version "2.0.21"
     id("java-gradle-plugin")
     id("maven-publish")
     id("signing")
+    id("io.gitlab.arturbosch.detekt") version "1.23.7"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    jacoco
 }
 
 gradlePlugin {
@@ -31,16 +40,88 @@ repositories {
 
 dependencies {
     implementation(gradleApi())
-    implementation("com.android.tools.build:gradle:8.7.3")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
-    implementation("com.google.guava:guava:33.3.1-jre")
-    implementation("com.google.code.gson:gson:2.11.0")
+    compileOnly("com.android.tools.build:gradle:8.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    testImplementation(gradleTestKit())
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "17"
+tasks.withType<KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform {
+        if (name == "test") {
+            excludeTags("integration")
+        }
+    }
+}
+
+val sourceSets = extensions.getByType(SourceSetContainer::class.java)
+tasks.register<Test>("integrationTest") {
+    group = "verification"
+    description =
+        "Runs @Tag(\"integration\") tests (git clone KotlinSample, nested Gradle). " +
+            "Optional; default :plugin:test excludes these."
+    testClassesDirs = sourceSets.named("test").get().output.classesDirs
+    classpath = sourceSets.named("test").get().runtimeClasspath
+    useJUnitPlatform {
+        includeTags("integration")
+    }
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+    extensions.configure(org.gradle.testing.jacoco.plugins.JacocoTaskExtension::class.java) {
+        isEnabled = true
+    }
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
+/** Soft gate: raise minimum over time (target &gt;80% per roadmap). */
+tasks.jacocoTestCoverageVerification {
+    dependsOn(tasks.test)
+    violationRules {
+        rule {
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = "0.12".toBigDecimal()
+            }
+        }
+    }
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom(files(layout.projectDirectory.file("config/detekt/detekt.yml")))
+    baseline = file("config/detekt/baseline.xml")
+    parallel = true
+}
+
+ktlint {
+    version.set("1.3.1")
+    ignoreFailures.set(true)
+    filter {
+        exclude("**/build/**")
+        exclude("**/Vars.kt")
+    }
 }
 
 publishing {
@@ -98,7 +179,7 @@ if (project.hasProperty("signing.gnupg.keyName")) {
  * Prebuilts from stringcare-android-c (Git submodule path in this repo: `stringcare-jni`).
  * Relative to `plugin/`: `../stringcare-jni/dist` (same tree as `dist/` in stringcare-android-c: `macos/`, `linux/`, `windows/`, …).
  */
-val stringcareJniDist = layout.projectDirectory.dir("../../stringcare-android-c/dist")
+val stringcareJniDist = layout.projectDirectory.dir("../stringcare-jni/dist")
 val pluginJniSource = layout.projectDirectory.dir("src/main/kotlin/dev/vyp/stringcare/plugin/internal/jni")
 val pluginNativesGenerated = layout.buildDirectory.dir("generated/stringcare-plugin-natives")
 
@@ -141,7 +222,7 @@ tasks.register<Sync>("syncDistNativesToPluginJni") {
         if (!stringcareJniDist.asFile.exists()) {
             throw GradleException(
                 "stringcare-jni/dist not found. Init submodule: git submodule update --init --recursive " +
-                    "then build natives in stringcare-android-c (see that repo's docs)."
+                    "then build natives in stringcare-android-c (see that repo's docs).",
             )
         }
     }

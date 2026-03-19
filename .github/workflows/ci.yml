@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.PAT }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Plugin unit tests
+        run: ./gradlew :plugin:test :plugin:jacocoTestReport :plugin:jacocoTestCoverageVerification :plugin:detekt --no-daemon
+
+      - name: Plugin integration tests (optional)
+        continue-on-error: true
+        run: ./gradlew :plugin:integrationTest --no-daemon
+
+      - name: Sample app assembleDebug
+        run: ./gradlew :app:assembleDebug --no-daemon
+
+      - name: Performance non-regression check (assembleDebug)
+        env:
+          PERF_MAX_SECONDS: "240"
+        run: |
+          ./gradlew :app:clean --no-daemon
+          ./gradlew :app:assembleDebug --no-daemon
+          start=$(date +%s)
+          ./gradlew :app:assembleDebug --no-daemon
+          end=$(date +%s)
+          elapsed=$((end - start))
+          echo "Measured assembleDebug (warm) time: ${elapsed}s"
+          if [ "$elapsed" -gt "$PERF_MAX_SECONDS" ]; then
+            echo "Performance regression: ${elapsed}s > ${PERF_MAX_SECONDS}s"
+            exit 1
+          fi
+
+  agp-compat:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        agp-version: ["8.0.2", "8.7.3", "9.0.0"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.PAT }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Set AGP version in version catalog
+        run: sed -i.bak 's/^agp = ".*"/agp = "${{ matrix.agp-version }}"/' gradle/libs.versions.toml
+
+      - name: Set Gradle version for selected AGP
+        run: |
+          if [ "${{ matrix.agp-version }}" = "9.0.0" ]; then
+            sed -i.bak 's#^distributionUrl=.*#distributionUrl=https\://services.gradle.org/distributions/gradle-9.1.0-bin.zip#' gradle/wrapper/gradle-wrapper.properties
+          else
+            sed -i.bak 's#^distributionUrl=.*#distributionUrl=https\://services.gradle.org/distributions/gradle-8.11.1-all.zip#' gradle/wrapper/gradle-wrapper.properties
+          fi
+
+      - name: AGP compatibility check (assembleDebug)
+        run: ./gradlew :app:assembleDebug --no-daemon

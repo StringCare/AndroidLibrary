@@ -9,18 +9,22 @@ The plugin registers two tasks you can run from the command line or IDE:
   Example: `./gradlew :app:stringcarePreview`
 
 - **`stringcareTestObfuscate`**  
-  Performs a dry run of the obfuscation logic (backup, obfuscate, then restore) without changing the final build output. Useful to confirm that obfuscation and key derivation work in your environment.  
+  Runs obfuscation into a temporary directory and prints before/after content. **Source files in the module are never modified.**  
   Example: `./gradlew :app:stringcareTestObfuscate`
 
 Both tasks are registered once per project (not per variant). They use the first variant’s configuration (e.g. debug) for fingerprint and paths when the project is an Android application.
 
 ## Variant tasks (internal)
 
-The plugin also registers **per-variant** tasks that hook into the Android build. You do not need to run these yourself; they are wired before and after the merge steps:
+The plugin registers **per-variant** tasks that feed **generated** resource and asset directories into the Android merge pipeline via AGP’s **`addGeneratedSourceDirectory`**. You do not need to run these yourself.
 
-- **`stringcareBeforeMergeResources<Variant>`** — Runs before the variant’s merge of resources; obfuscates the string XML files.
-- **`stringcareAfterMergeResources<Variant>`** — Runs after merge; restores the original string files from backup.
-- **`stringcareBeforeMergeAssets<Variant>`** — Runs before the variant’s asset merge; obfuscates asset files.
-- **`stringcareAfterMergeAssets<Variant>`** — Runs after asset merge; restores the original assets.
+- **`stringcareObfuscateStringResources<Variant>`** — Writes obfuscated string XML under `build/intermediates/stringcare/generated-res/<variant>/`. Registered as an extra `res` source layer (highest priority overlay).
+- **`stringcareObfuscateAssets<Variant>`** — Writes obfuscated assets under `build/intermediates/stringcare/generated-assets/<variant>/`. Registered as an extra `assets` source layer.
 
-`<Variant>` is the variant name with the first letter capitalized (e.g. `Debug`, `Release`, or `ProdDebug` if you use product flavors). The plugin connects these so that the merge tasks see the obfuscated resources/assets, and the originals are restored afterward so the source tree stays unchanged. Dependencies are set so that the “before” task runs before the corresponding merge task, and the “after” task runs after it.
+`<Variant>` is the variant name with the first letter capitalized (e.g. `Debug`, `Release`, or `ProdDebug` if you use product flavors).
+
+### Behaviour
+
+- **Sources are never modified** — Plaintext files stay in `src/main/res` and `src/main/assets` for version control and IDE indexing.
+- **Gradle caching** — Obfuscate tasks declare proper inputs (`xmlInputFiles` / `assetInputFiles`) and outputs (`outputDirectory`), so incremental builds and build cache can apply.
+- AGP wires `merge*Resources` / asset merge tasks to depend on the obfuscate tasks automatically when generated directories are registered.

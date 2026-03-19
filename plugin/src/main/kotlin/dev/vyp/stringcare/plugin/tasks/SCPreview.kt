@@ -1,77 +1,79 @@
 package dev.vyp.stringcare.plugin.tasks
 
-import com.google.gson.Gson
 import dev.vyp.stringcare.plugin.StringCareConfiguration
-import dev.vyp.stringcare.plugin.StringCarePlugin
 import dev.vyp.stringcare.plugin.internal.getContent
 import dev.vyp.stringcare.plugin.internal.locateResourceFiles
+import dev.vyp.stringcare.plugin.internal.parseJsonStringList
 import dev.vyp.stringcare.plugin.internal.parseXML
 import org.gradle.api.DefaultTask
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
-open class SCPreview : DefaultTask() {
+/**
+ * Prints a debug report of files/entities that StringCare would process.
+ */
+abstract class SCPreview : DefaultTask() {
+    @get:Input
+    abstract val module: Property<String>
 
-    @Input
-    var module = String()
+    @get:Input
+    abstract val assetsFiles: Property<String>
 
-    @Input
-    var assetsFiles = String()
+    @get:Input
+    abstract val stringFiles: Property<String>
 
-    @Input
-    var stringFiles = String()
+    @get:Input
+    abstract val srcFolders: Property<String>
 
-    @Input
-    var srcFolders = String()
+    @get:Input
+    abstract val debug: Property<Boolean>
 
-    @Input
-    var debug = false
+    @get:Input
+    abstract val skip: Property<Boolean>
 
-    @Input
-    var skip = false
+    @get:Input
+    abstract val applicationId: Property<String>
 
-    @Input
-    var applicationId = ""
+    @get:Input
+    abstract val mockedFingerprint: Property<String>
 
-    @Input
-    var mockedFingerprint = ""
+    @get:Input
+    abstract val variantName: Property<String>
 
-    @Input
-    var variantName = "debug"
+    init {
+        assetsFiles.convention("")
+        stringFiles.convention("")
+        srcFolders.convention("")
+        debug.convention(false)
+        skip.convention(false)
+        applicationId.convention("")
+        mockedFingerprint.convention("")
+        variantName.convention("debug")
+    }
 
     @TaskAction
     fun greet() {
-        val gson = Gson()
         println("== REPORT ======================================")
         val task = this
-        println("\t== $variantName ======================================")
-        val configuration = StringCareConfiguration(module).apply {
-            @Suppress("UNCHECKED_CAST")
-            val lSrcFolders = gson.fromJson(task.srcFolders, MutableList::class.java)
-            if (task.srcFolders.isNotEmpty()) {
-                srcFolders.addAll(lSrcFolders as MutableList<String>)
+        println("\t== ${variantName.get()} ======================================")
+        val configuration =
+            StringCareConfiguration(module.get()).apply {
+                srcFolders.addAll(parseJsonStringList(task.srcFolders.get()))
+                stringFiles.addAll(parseJsonStringList(task.stringFiles.get()))
+                assetsFiles.addAll(parseJsonStringList(task.assetsFiles.get()))
+                if (task.mockedFingerprint.get().isNotEmpty()) {
+                    mockedFingerprint = task.mockedFingerprint.get()
+                }
+                applicationId = task.applicationId.get()
+                skip = task.skip.get()
+                debug = task.debug.get()
             }
-            @Suppress("UNCHECKED_CAST")
-            val lStringFiles = gson.fromJson(task.stringFiles, MutableList::class.java)
-            if (task.stringFiles.isNotEmpty()) {
-                stringFiles.addAll(lStringFiles as MutableList<String>)
-            }
-            @Suppress("UNCHECKED_CAST")
-            val lAssetsFiles = gson.fromJson(task.assetsFiles, MutableList::class.java)
-            if (task.assetsFiles.isNotEmpty()) {
-                assetsFiles.addAll(lAssetsFiles as MutableList<String>)
-            }
-            if (task.mockedFingerprint.isNotEmpty()) {
-                mockedFingerprint = task.mockedFingerprint
-            }
-            applicationId = task.applicationId
-            skip = task.skip
-            debug = task.debug
-        }
-        val files = locateResourceFiles(StringCarePlugin.absoluteProjectPath, configuration)
+        val projectRoot = project.projectDir.absolutePath
+        val files = locateResourceFiles(projectRoot, configuration, project)
         println("\tLocated files(${files.size}) for obfuscating")
-        println("\tConfig (${gson.toJson(configuration)})")
+        println("\tConfig (module=${configuration.name}, debug=${configuration.debug})")
         files.forEach { file ->
             println("\t- ${file.file.name}")
             println("\t\t${file.module}${File.separator}${file.sourceFolder}${File.separator}")

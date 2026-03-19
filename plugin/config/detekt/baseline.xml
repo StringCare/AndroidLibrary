@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>TooGenericExceptionCaught:Stark.kt$Stark.Companion$e: Throwable</ID>
+    <ID>UnusedPrivateProperty:PrintUtils.kt$PrintUtils.Companion$private val logger = LoggerFactory.getLogger(StringCarePlugin::class.java)</ID>
+  </CurrentIssues>
+</SmellBaseline>
