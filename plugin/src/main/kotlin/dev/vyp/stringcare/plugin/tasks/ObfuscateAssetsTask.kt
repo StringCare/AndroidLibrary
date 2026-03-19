@@ -22,76 +22,87 @@ abstract class ObfuscateAssetsTask : DefaultTask() {
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
 
-    @Input
-    var projectPath: String = ""
+    @get:Input
+    abstract val projectPath: Property<String>
 
-    @Input
-    var moduleName: String = ""
+    @get:Input
+    abstract val moduleName: Property<String>
 
-    @Input
-    var variantName: String = ""
+    @get:Input
+    abstract val variantName: Property<String>
 
-    @Input
-    var applicationId: String = ""
+    @get:Input
+    abstract val applicationId: Property<String>
 
-    @Input
-    var skip: Boolean = false
+    @get:Input
+    abstract val skip: Property<Boolean>
 
-    @Input
-    var debug: Boolean = false
+    @get:Input
+    abstract val debug: Property<Boolean>
 
-    @Input
-    var mockedFingerprint: String = ""
+    @get:Input
+    abstract val mockedFingerprint: Property<String>
 
-    @Input
-    var srcFoldersJson: String = "[]"
+    @get:Input
+    abstract val srcFoldersJson: Property<String>
 
-    @Input
-    var stringFilesJson: String = "[]"
+    @get:Input
+    abstract val stringFilesJson: Property<String>
 
-    @Input
-    var assetsFilesJson: String = "[]"
+    @get:Input
+    abstract val assetsFilesJson: Property<String>
 
-    private fun configuration(): StringCareConfiguration =
-        StringCareConfiguration(moduleName).apply {
-            this.applicationId = this@ObfuscateAssetsTask.applicationId
-            this.skip = this@ObfuscateAssetsTask.skip
-            this.debug = this@ObfuscateAssetsTask.debug
-            this.mockedFingerprint = this@ObfuscateAssetsTask.mockedFingerprint
-            srcFolders.addAll(parseJsonStringList(srcFoldersJson))
-            stringFiles.addAll(parseJsonStringList(stringFilesJson))
-            assetsFiles.addAll(parseJsonStringList(assetsFilesJson))
+    init {
+        skip.convention(false)
+        debug.convention(false)
+        mockedFingerprint.convention("")
+        srcFoldersJson.convention("[]")
+        stringFilesJson.convention("[]")
+        assetsFilesJson.convention("[]")
+    }
+
+    private fun configuration(): StringCareConfiguration {
+        val task = this
+        return StringCareConfiguration(task.moduleName.get()).apply {
+            applicationId = task.applicationId.get()
+            skip = task.skip.get()
+            debug = task.debug.get()
+            mockedFingerprint = task.mockedFingerprint.get()
+            srcFolders.addAll(parseJsonStringList(task.srcFoldersJson.get()))
+            stringFiles.addAll(parseJsonStringList(task.stringFilesJson.get()))
+            assetsFiles.addAll(parseJsonStringList(task.assetsFilesJson.get()))
         }
+    }
 
     @TaskAction
     fun run() {
         val config = configuration()
         Stark.setVerboseNativeLogging(config.debug)
-        if (skip) {
-            PrintUtils.print(moduleName, "Skipping $variantName")
+        if (skip.get()) {
+            PrintUtils.print(moduleName.get(), "Skipping ${variantName.get()}")
             return
         }
         if (!Stark.isNativeLibLoaded()) {
-            PrintUtils.print(moduleName, "Skipping $variantName (native library not available for this architecture)")
+            PrintUtils.print(moduleName.get(), "Skipping ${variantName.get()} (native library not available for this architecture)")
             return
         }
         val tempRoot = stringCareService.get().getOrCreateTempFolder()
-        PrintUtils.print("", "ApplicationId: $applicationId", tab = true)
-        fingerPrint(moduleName, variantName, config) { key ->
+        PrintUtils.print("", "ApplicationId: ${applicationId.get()}", tab = true)
+        fingerPrint(moduleName.get(), variantName.get(), config) { key ->
             if (key == "none" || key.trim().isEmpty()) {
-                PrintUtils.print("No SHA1 key found for :$moduleName:$variantName")
+                PrintUtils.print("No SHA1 key found for :${moduleName.get()}:${variantName.get()}")
                 return@fingerPrint
             }
-            PrintUtils.print(moduleName, "$variantName:$key")
-            PrintUtils.print(moduleName, backupAssets)
-            backupAssetsFiles(projectPath, config, tempRoot)
-            val files = locateAssetsFiles(projectPath, config)
+            PrintUtils.print(moduleName.get(), "${variantName.get()}:$key")
+            PrintUtils.print(moduleName.get(), backupAssets)
+            backupAssetsFiles(projectPath.get(), config, tempRoot)
+            val files = locateAssetsFiles(projectPath.get(), config)
             files.forEach { file ->
-                if (debug) PrintUtils.print(null, file.file.getContent())
+                if (debug.get()) PrintUtils.print(null, file.file.getContent())
                 obfuscateFile(key, file.file, config.applicationId)
-                if (debug) PrintUtils.print(null, file.file.getContent())
+                if (debug.get()) PrintUtils.print(null, file.file.getContent())
             }
-            PrintUtils.print(moduleName, obfuscateAssets)
+            PrintUtils.print(moduleName.get(), obfuscateAssets)
         }
     }
 }

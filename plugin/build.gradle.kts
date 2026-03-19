@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.api.tasks.testing.Test
+
 plugins {
     kotlin("jvm") version "2.0.21"
     kotlin("plugin.serialization") version "2.0.21"
@@ -50,8 +53,32 @@ jacoco {
     toolVersion = "0.8.12"
 }
 
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform {
+        if (name == "test") {
+            excludeTags("integration")
+        }
+    }
+}
+
+val sourceSets = extensions.getByType(SourceSetContainer::class.java)
+tasks.register<Test>("integrationTest") {
+    group = "verification"
+    description =
+        "Runs @Tag(\"integration\") tests (git clone KotlinSample, nested Gradle). " +
+            "Optional; default :plugin:test excludes these."
+    testClassesDirs = sourceSets.named("test").get().output.classesDirs
+    classpath = sourceSets.named("test").get().runtimeClasspath
+    useJUnitPlatform {
+        includeTags("integration")
+    }
+}
+
 tasks.test {
     finalizedBy(tasks.jacocoTestReport)
+    extensions.configure(org.gradle.testing.jacoco.plugins.JacocoTaskExtension::class.java) {
+        isEnabled = true
+    }
 }
 
 tasks.jacocoTestReport {
@@ -65,8 +92,8 @@ tasks.jacocoTestReport {
 detekt {
     buildUponDefaultConfig = true
     allRules = false
-    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
-    baseline = file("$rootDir/config/detekt/baseline.xml")
+    config.setFrom(files(layout.projectDirectory.file("config/detekt/detekt.yml")))
+    baseline = file("config/detekt/baseline.xml")
     parallel = true
 }
 

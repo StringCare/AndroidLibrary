@@ -14,22 +14,26 @@ abstract class RestoreAssetsTask : DefaultTask() {
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
 
-    @Input
-    var projectPath: String = ""
+    @get:Input
+    abstract val projectPath: Property<String>
 
-    @Input
-    var moduleName: String = ""
+    @get:Input
+    abstract val moduleName: Property<String>
 
-    @Input
-    var skip: Boolean = false
+    @get:Input
+    abstract val skip: Property<Boolean>
+
+    init {
+        skip.convention(false)
+    }
 
     @TaskAction
     fun run() {
-        if (skip) return
-        PrintUtils.print(moduleName, restoreAssets)
+        if (skip.get()) return
+        PrintUtils.print(moduleName.get(), restoreAssets)
         val service = stringCareService.get()
         val tempRoot = service.getOrCreateTempFolder()
-        restoreAssetsFiles(projectPath, moduleName, tempRoot)
+        restoreAssetsFiles(projectPath.get(), moduleName.get(), tempRoot)
         service.resetTempFolder()
     }
 }

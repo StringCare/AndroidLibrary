@@ -2,6 +2,20 @@
 
 #### [Wiki](https://github.com/StringCare/AndroidLibrary/wiki)
 
+## Requirements (this repo)
+
+- **Gradle** 8.11+ (configuration cache validated on sample `:app:assembleDebug`)
+- **JDK** 17
+- **Android Gradle Plugin** 8.7+ (as used by the sample app)
+- **Troubleshooting**: If host native libs fail to load, set `stringcare` `debug = true` for verbose JNI logs, or set env `STRINGCARE_NATIVE_DEBUG` (see `Stark`).
+
+See repo root [CHANGELOG.md](../CHANGELOG.md), [MIGRATION.md](../MIGRATION.md), [SECURITY.md](../SECURITY.md).
+
+### Tests
+
+- Default `./gradlew :plugin:test` excludes `@Tag("integration")` (network + `git clone` KotlinSample + nested Gradle).
+- Full suite: `./gradlew :plugin:integrationTest` (may fail offline or if the sample repo changes).
+
 
 License
 -------

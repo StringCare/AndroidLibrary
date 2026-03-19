@@ -21,7 +21,11 @@ jobs:
         run: chmod +x gradlew
 
       - name: Plugin unit tests
-        run: ./gradlew :plugin:test :plugin:detekt --no-daemon
+        run: ./gradlew :plugin:test :plugin:jacocoTestReport :plugin:detekt --no-daemon
+
+      - name: Plugin integration tests (optional)
+        continue-on-error: true
+        run: ./gradlew :plugin:integrationTest --no-daemon
 
       - name: Sample app assembleDebug
         run: ./gradlew :app:assembleDebug --no-daemon

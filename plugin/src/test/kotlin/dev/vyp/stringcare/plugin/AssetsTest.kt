@@ -2,9 +2,11 @@ package dev.vyp.stringcare.plugin
 
 import dev.vyp.stringcare.plugin.internal.*
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.io.File
 
+@Tag("integration")
 class AssetsTest {
     // private val logger by logger()
 
@@ -58,21 +60,16 @@ class AssetsTest {
         val temp = tempPath()
         prepareTask(temp).runCommand { _, report ->
             println(report)
-            assert(
-                restoreAssetsFiles("$temp${File.separator}$testProjectName", defaultMainModule).isEmpty(),
-            )
-            assert(
-                backupAssetsFiles(
-                    "$temp${File.separator}$testProjectName",
-                    configuration.apply {
-                        assetsFiles = mutableListOf("*.json")
-                    },
-                ).isNotEmpty(),
-            )
-            assert(
-                restoreAssetsFiles("$temp${File.separator}$testProjectName", defaultMainModule).isNotEmpty(),
-            )
+            val projectRoot = "$temp${File.separator}$testProjectName"
+            val cfg =
+                configuration.apply {
+                    assetsFiles = mutableListOf("*.json")
+                }
+            assert(restoreAssetsFiles(projectRoot, defaultMainModule, temp).isEmpty())
+            assert(backupAssetsFiles(projectRoot, cfg, temp).isNotEmpty())
+            assert(restoreAssetsFiles(projectRoot, defaultMainModule, temp).isNotEmpty())
         }
+        StringCarePlugin.resetFolder()
     }
 
     @Test
@@ -80,7 +77,7 @@ class AssetsTest {
         val temp = tempPath()
         signingReportTask(temp).runCommand { _, report ->
             println(report)
-            val key = report.extractFingerprint(variant = "prodDebug", configuration = configuration)
+            val key = report.extractFingerprint(variant = "debug", configuration = configuration)
             println(key)
             assert(key.isNotEmpty())
             val files =
@@ -112,7 +109,7 @@ class AssetsTest {
         val temp = tempPath()
         signingReportTask(temp).runCommand { _, report ->
             println(report)
-            val key = report.extractFingerprint(variant = "prodDebug", configuration = configuration)
+            val key = report.extractFingerprint(variant = "debug", configuration = configuration)
             println(key)
             assert(key.isNotEmpty())
             val files =

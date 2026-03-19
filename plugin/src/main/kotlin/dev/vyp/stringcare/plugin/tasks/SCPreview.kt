@@ -17,49 +17,60 @@ abstract class SCPreview : DefaultTask() {
     @get:ServiceReference("stringCareBuildService")
     abstract val stringCareService: Property<StringCareBuildService>
 
-    @Input
-    var module = String()
+    @get:Input
+    abstract val module: Property<String>
 
-    @Input
-    var assetsFiles = String()
+    @get:Input
+    abstract val assetsFiles: Property<String>
 
-    @Input
-    var stringFiles = String()
+    @get:Input
+    abstract val stringFiles: Property<String>
 
-    @Input
-    var srcFolders = String()
+    @get:Input
+    abstract val srcFolders: Property<String>
 
-    @Input
-    var debug = false
+    @get:Input
+    abstract val debug: Property<Boolean>
 
-    @Input
-    var skip = false
+    @get:Input
+    abstract val skip: Property<Boolean>
 
-    @Input
-    var applicationId = ""
+    @get:Input
+    abstract val applicationId: Property<String>
 
-    @Input
-    var mockedFingerprint = ""
+    @get:Input
+    abstract val mockedFingerprint: Property<String>
 
-    @Input
-    var variantName = "debug"
+    @get:Input
+    abstract val variantName: Property<String>
+
+    init {
+        assetsFiles.convention("")
+        stringFiles.convention("")
+        srcFolders.convention("")
+        debug.convention(false)
+        skip.convention(false)
+        applicationId.convention("")
+        mockedFingerprint.convention("")
+        variantName.convention("debug")
+    }
 
     @TaskAction
     fun greet() {
         println("== REPORT ======================================")
         val task = this
-        println("\t== $variantName ======================================")
+        println("\t== ${variantName.get()} ======================================")
         val configuration =
-            StringCareConfiguration(module).apply {
-                srcFolders.addAll(parseJsonStringList(task.srcFolders))
-                stringFiles.addAll(parseJsonStringList(task.stringFiles))
-                assetsFiles.addAll(parseJsonStringList(task.assetsFiles))
-                if (task.mockedFingerprint.isNotEmpty()) {
-                    mockedFingerprint = task.mockedFingerprint
+            StringCareConfiguration(module.get()).apply {
+                srcFolders.addAll(parseJsonStringList(task.srcFolders.get()))
+                stringFiles.addAll(parseJsonStringList(task.stringFiles.get()))
+                assetsFiles.addAll(parseJsonStringList(task.assetsFiles.get()))
+                if (task.mockedFingerprint.get().isNotEmpty()) {
+                    mockedFingerprint = task.mockedFingerprint.get()
                 }
-                applicationId = task.applicationId
-                skip = task.skip
-                debug = task.debug
+                applicationId = task.applicationId.get()
+                skip = task.skip.get()
+                debug = task.debug.get()
             }
         val projectRoot = stringCareService.get().absoluteProjectPath()
         val files = locateResourceFiles(projectRoot, configuration)

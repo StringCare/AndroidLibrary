@@ -23,6 +23,9 @@ fun Project.registerVariantObfuscationTasks(
 
     val absoluteProjectPath = buildService.get().absoluteProjectPath()
     val moduleNameValue = config.name
+    val srcJson = toJsonStringList(config.srcFolders)
+    val strJson = toJsonStringList(config.stringFiles)
+    val assetsJson = toJsonStringList(config.assetsFiles)
     val variantNames = mutableListOf<String>()
 
     androidComponents.onVariants(androidComponents.selector().all()) { variant ->
@@ -37,27 +40,27 @@ fun Project.registerVariantObfuscationTasks(
             ObfuscateStringsTask::class.java,
         ) { t ->
             (t as Task).usesService(buildService)
-            (t as ObfuscateStringsTask).stringCareService.set(buildService)
-            t.projectPath = absoluteProjectPath
-            t.moduleName = moduleNameValue
-            t.variantName = variantName
-            t.applicationId = applicationId
-            t.skip = config.skip
-            t.debug = config.debug
-            t.mockedFingerprint = config.mockedFingerprint
-            t.srcFoldersJson = toJsonStringList(config.srcFolders)
-            t.stringFilesJson = toJsonStringList(config.stringFiles)
-            t.assetsFilesJson = toJsonStringList(config.assetsFiles)
+            t.stringCareService.set(buildService)
+            t.projectPath.set(absoluteProjectPath)
+            t.moduleName.set(moduleNameValue)
+            t.variantName.set(variantName)
+            t.applicationId.set(applicationId)
+            t.skip.set(config.skip)
+            t.debug.set(config.debug)
+            t.mockedFingerprint.set(config.mockedFingerprint)
+            t.srcFoldersJson.set(srcJson)
+            t.stringFilesJson.set(strJson)
+            t.assetsFilesJson.set(assetsJson)
         }
         tasks.register(
             "stringcareAfterMergeResources$variantCapitalized",
             RestoreStringsTask::class.java,
         ) { t ->
             (t as Task).usesService(buildService)
-            (t as RestoreStringsTask).stringCareService.set(buildService)
-            t.projectPath = absoluteProjectPath
-            t.moduleName = moduleNameValue
-            t.skip = config.skip
+            t.stringCareService.set(buildService)
+            t.projectPath.set(absoluteProjectPath)
+            t.moduleName.set(moduleNameValue)
+            t.skip.set(config.skip)
         }
         variantNames.add(variantCapitalized)
 
@@ -66,31 +69,32 @@ fun Project.registerVariantObfuscationTasks(
             ObfuscateAssetsTask::class.java,
         ) { t ->
             (t as Task).usesService(buildService)
-            (t as ObfuscateAssetsTask).stringCareService.set(buildService)
-            t.projectPath = absoluteProjectPath
-            t.moduleName = moduleNameValue
-            t.variantName = variantName
-            t.applicationId = applicationId
-            t.skip = config.skip
-            t.debug = config.debug
-            t.mockedFingerprint = config.mockedFingerprint
-            t.srcFoldersJson = toJsonStringList(config.srcFolders)
-            t.stringFilesJson = toJsonStringList(config.stringFiles)
-            t.assetsFilesJson = toJsonStringList(config.assetsFiles)
+            t.stringCareService.set(buildService)
+            t.projectPath.set(absoluteProjectPath)
+            t.moduleName.set(moduleNameValue)
+            t.variantName.set(variantName)
+            t.applicationId.set(applicationId)
+            t.skip.set(config.skip)
+            t.debug.set(config.debug)
+            t.mockedFingerprint.set(config.mockedFingerprint)
+            t.srcFoldersJson.set(srcJson)
+            t.stringFilesJson.set(strJson)
+            t.assetsFilesJson.set(assetsJson)
         }
         tasks.register(
             "stringcareAfterMergeAssets$variantCapitalized",
             RestoreAssetsTask::class.java,
         ) { t ->
             (t as Task).usesService(buildService)
-            (t as RestoreAssetsTask).stringCareService.set(buildService)
-            t.projectPath = absoluteProjectPath
-            t.moduleName = moduleNameValue
-            t.skip = config.skip
+            t.stringCareService.set(buildService)
+            t.projectPath.set(absoluteProjectPath)
+            t.moduleName.set(moduleNameValue)
+            t.skip.set(config.skip)
         }
     }
 
-    project.afterEvaluate {
+    // AGP registers merge/process tasks after variant API callbacks; use afterEvaluate + findByName (nullable).
+    afterEvaluate {
         for (variantCapitalized in variantNames) {
             val mergeRes = "merge${variantCapitalized}Resources"
             val beforeRes = "stringcareBeforeMergeResources$variantCapitalized"

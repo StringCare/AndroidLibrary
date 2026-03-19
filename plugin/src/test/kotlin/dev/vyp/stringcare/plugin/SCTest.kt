@@ -4,9 +4,11 @@ import dev.vyp.stringcare.plugin.internal.*
 import dev.vyp.stringcare.plugin.models.StringEntity
 import dev.vyp.stringcare.plugin.utils.modifyForTest
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.io.File
 
+@Tag("integration")
 class SCTest {
     private val configuration =
         defaultConfig().apply {

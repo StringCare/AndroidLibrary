@@ -330,34 +330,30 @@ fun Project.registerTask(
 
     this.tasks.register(gradleTaskNameDoctor, SCPreview::class.java) { t ->
         (t as Task).usesService(buildService)
-        (t as SCPreview).stringCareService.set(buildService)
+        t.stringCareService.set(buildService)
+        t.module.set(configuration.name)
+        t.applicationId.set(configuration.applicationId)
+        t.variantName.set(variantDefault)
+        t.srcFolders.set(srcJson)
+        t.stringFiles.set(strJson)
+        t.assetsFiles.set(assetsJson)
+        t.mockedFingerprint.set(configuration.mockedFingerprint)
+        t.debug.set(configuration.debug)
+        t.skip.set(configuration.skip)
     }
     this.tasks.register(gradleTaskNameObfuscate, SCTestObfuscation::class.java) { t ->
         (t as Task).usesService(buildService)
-        (t as SCTestObfuscation).stringCareService.set(buildService)
+        t.stringCareService.set(buildService)
+        t.module.set(configuration.name)
+        t.applicationId.set(configuration.applicationId)
+        t.variantName.set(variantDefault)
+        t.srcFolders.set(srcJson)
+        t.stringFiles.set(strJson)
+        t.assetsFiles.set(assetsJson)
+        t.mockedFingerprint.set(configuration.mockedFingerprint)
+        t.debug.set(configuration.debug)
+        t.skip.set(configuration.skip)
     }
-
-    val previewTask = this.tasks.getByPath(gradleTaskNameDoctor) as SCPreview
-    previewTask.module = configuration.name
-    previewTask.applicationId = configuration.applicationId
-    previewTask.variantName = variantDefault
-    previewTask.srcFolders = srcJson
-    previewTask.stringFiles = strJson
-    previewTask.assetsFiles = assetsJson
-    previewTask.mockedFingerprint = configuration.mockedFingerprint
-    previewTask.debug = configuration.debug
-    previewTask.skip = configuration.skip
-
-    val obfuscateTask = this.tasks.getByPath(gradleTaskNameObfuscate) as SCTestObfuscation
-    obfuscateTask.module = configuration.name
-    obfuscateTask.applicationId = configuration.applicationId
-    obfuscateTask.variantName = variantDefault
-    obfuscateTask.srcFolders = srcJson
-    obfuscateTask.stringFiles = strJson
-    obfuscateTask.assetsFiles = assetsJson
-    obfuscateTask.mockedFingerprint = configuration.mockedFingerprint
-    obfuscateTask.debug = configuration.debug
-    obfuscateTask.skip = configuration.skip
 }
 
 fun Process.outputString(): String {
